@@ -1,0 +1,118 @@
+@import url('https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
+
+@import "variables/colors.less";
+@import "_libs/_lib.less";
+@import "_libs/custom/_lib.less";
+
+.appearance (@value: none) {
+    -webkit-appearance:     @value;
+    -moz-appearance:        @value;
+    -ms-appearance:         @value;
+    -o-appearance:          @value;
+    appearance:             @value;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "Saira", sans-serif;
+}
+
+body {
+    margin: 0 !important;
+    background: @__background-base-color;
+    .lib-flex(@flex-direction: column);
+    &>* {
+        margin: 0 auto;
+    }
+}
+
+header {
+    width: 100%;
+    .lib-flex(@justify-content: space-around);
+    background: @__attention_lime;
+    border-bottom: 1px dotted @__border-header-color;
+    margin-bottom: 45px;
+}
+
+main {
+    max-width: 1280px;
+    .lib-flex(@flex-direction: column);
+    &>* {
+        margin: 0 auto;
+    }
+}
+
+main > *:not(:last-child) {
+    margin-bottom: 20px;
+}
+
+main div.styled-select {
+    height: fit-content;
+    position: relative;
+    &::after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 0px;
+        height: 0px;
+        margin: auto 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        top: 0;
+        bottom: 0;
+        right: 15px;
+        transform: translateY(25%);
+    }
+    &:not(:focus-within)::after {
+        border-top: 6px solid;
+    }
+    &:focus-within::after {
+        border-bottom: 6px solid;
+    }
+}
+
+main select {
+    .appearance();
+    text-align: center;
+
+    min-width: 200px;
+    width: 15vw;
+    padding: 10px 0;
+
+    background: @__logo_orange;
+    border: none;
+}
+
+main input {
+    .appearance();
+    border-image: 0;
+    margin: 0;
+    padding: 10px 0;
+    text-align: center;
+}
+
+main button {
+    .appearance();
+    text-align: center;
+
+    min-width: 200px;
+    width: 15vw;
+    padding: 10px 0;
+    font-weight: bolder;
+
+    background: @__logo_orange;
+    border-style: outset;
+    //border-right: inset;
+    //border-bottom: inset;
+    border-width: 7px;
+    border-color: darken(@__logo_orange, 5%);
+
+    &:active {
+        background: darken(@__logo_orange, 10%);
+        border-style: inset;
+        //border-right: outset;
+        //border-bottom: outset;
+        border-width: 7px;
+        border-color: @__logo_orange;
+    }
+}

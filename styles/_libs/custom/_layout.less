@@ -1,0 +1,128 @@
+
+//
+//  Counter core padding indent for full-width boxes
+//  ---------------------------------------------
+.lib-no-layout-indent(
+  @indent: @layout__width-xs-indent
+) {
+  .lib-css(margin-left, -@indent);
+  .lib-css(margin-right, -@indent);
+}
+
+//
+//  Initial css-class no-layout-indent
+//  ---------------------------------------------
+.lib-init-no-layout-indent() {
+  & when (@media-common = true) {
+    .no-layout-indent {
+      .lib-no-layout-indent();
+    }
+  }
+  .media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__m) {
+    .no-layout-indent {
+      .lib-no-layout-indent(@layout-indent__width);
+    }
+  }
+  .media-width(@extremum, @break) when (@extremum = 'min') and (@break = @screen__l) {
+    .no-layout-indent {
+      .lib-css(margin-left, initial);
+      .lib-css(margin-right, initial);
+    }
+  }
+}
+
+.lib-items-per-row__area(
+  @breakpoint,
+  @full__selector,
+  @override__selector,
+  @normal__selector,
+  @margin-value-per-row,
+  @items-per-row,
+  @margin-left
+) {
+  .media-width(@extremum, @break) when (@extremum = 'min') and (@break = @breakpoint) {
+    @{full__selector} {
+      .lib-css(width, calc(~'(100% - @{margin-value-per-row})/@{items-per-row}'));
+    }
+    @{override__selector} {
+      .lib-css(margin-left, @margin-left);
+    }
+    @{normal__selector} {
+      .lib-css(margin-left, 0);
+    }
+  }
+}
+
+//
+//  Items per row.
+//
+//  Required params: @parent__selector, @child__selector
+//  Notice: margin-left = "0" is not allowed. use "0%" if needed.
+//  ---------------------------------------------
+.lib-items-per-row(
+  @parent__selector: ~'.items-container',
+  @child__selector: ~'.item-per-row',
+  @margin-left: 2.5%,
+  @common__items-per-row: 2,
+  @tablet__items-per-row: 3,
+  @desktop__items-per-row: 4
+) {
+  @full__selector: ~'@{parent__selector} @{child__selector}';
+  @common__first-of-n__selector: ~'@{full__selector}:nth-child(@{common__items-per-row}n + 1)';
+  @common__margins-per-row: @common__items-per-row - 1;
+  @common__margin-value-per-row: @margin-left * @common__margins-per-row;
+
+  @tablet__first-of-n__selector: ~'@{full__selector}:nth-child(@{tablet__items-per-row}n + 1)';
+  @tablet__margins-per-row: @tablet__items-per-row - 1;
+  @tablet__margin-value-per-row: @margin-left * @tablet__margins-per-row;
+
+  @desktop__first-of-n__selector: ~'@{full__selector}:nth-child(@{desktop__items-per-row}n + 1)';
+  @desktop__margins-per-row: @desktop__items-per-row - 1;
+  @desktop__margin-value-per-row: @margin-left * @desktop__margins-per-row;
+
+  //
+  //  Common
+  //  _____________________________________________
+
+  & when (@media-common = true) {
+    @{parent__selector} {
+      .lib-flex(@flex-wrap: wrap);
+    }
+    @{full__selector} {
+      .lib-css(box-sizing, border-box);
+      .lib-css(margin-left, @margin-left);
+      .lib-css(width, calc(~'(100% - @{common__margin-value-per-row})/@{common__items-per-row}'));
+    }
+    @{common__first-of-n__selector} {
+      .lib-css(margin-left, 0);
+    }
+  }
+
+  //
+  //  Tablet
+  //  _____________________________________________
+
+  .lib-items-per-row__area(
+    @breakpoint: @screen__m,
+    @full__selector: @full__selector,
+    @override__selector: @common__first-of-n__selector,
+    @normal__selector: @tablet__first-of-n__selector,
+    @margin-value-per-row: @tablet__margin-value-per-row,
+    @items-per-row: @tablet__items-per-row,
+    @margin-left: @margin-left
+  );
+
+  //
+  //  Desktop
+  //  _____________________________________________
+
+  .lib-items-per-row__area(
+    @breakpoint: @screen__l,
+    @full__selector: @full__selector,
+    @override__selector: @tablet__first-of-n__selector,
+    @normal__selector: @desktop__first-of-n__selector,
+    @margin-value-per-row: @desktop__margin-value-per-row,
+    @items-per-row: @desktop__items-per-row,
+    @margin-left: @margin-left
+  );
+}
