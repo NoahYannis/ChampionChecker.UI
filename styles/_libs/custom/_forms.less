@@ -1,0 +1,188 @@
+
+//
+//  Forms
+//  _____________________________________________
+
+//  #############################################
+//  Radiobox lib
+//  Inspired by https://css-tricks.com/custom-styling-form-inputs-with-modern-css-features/
+//  #############################################
+
+//  ---------------------------------------------
+//  Helper: Remove default browser style's.
+//  ---------------------------------------------
+.lib-radiobox-remove-default-browser-stylings() {
+    input[type='checkbox'],
+    input[type='radio'] {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+}
+
+//  ---------------------------------------------
+//  Master: Init
+//  ---------------------------------------------
+.lib-radiobox-init(
+    @radiobox__checkbox__width: 21px; 
+    @radiobox__checkbox-switch__width: 38px; 
+    @radiobox__radio__width: 19px; 
+    @radiobox__active__color: @theme__color__primary;
+    @radiobox__active__color__inner: @theme__color__primary;
+    @radiobox__checked__border-color: @theme__color__primary;
+    @radiobox__checked__background-color: @color-white;
+    @radiobox__focus__box-shadow: @focus__box-shadow;
+    @radiobox__border__color: @border-color__base;
+    @radiobox__border__color__hover: @border-color__base;
+    @radiobox__border__radius__checkbox: 0;
+    @radiobox__border__radius__switch: 11px;
+    @radiobox__background__color: @color-white;
+    @radiobox__disabled__color: #F6F8FF;
+    @radiobox__disabled__color__inner: #E1E6F9;
+    @radiobox__arrow__width: 5px;
+    @radiobox__arrow__height: 8px;
+    @radiobox__margin: 0 10px 0 0;
+    @radiobox__label__margin-left: 0;
+) {
+    @supports(-webkit-appearance: none) or (-moz-appearance: none) {
+
+    .lib-radiobox-remove-default-browser-stylings();
+
+        input[type='checkbox'],
+        input[type='radio']:not([name^=ratings]) {
+            --active-color-inner: @radiobox__active__color__inner;
+            --checked-border-color: @radiobox__checked__border-color;
+            --checked-background-color: @radiobox__checked__background-color;
+            --focus-box-shadow: @radiobox__focus__box-shadow;
+            --border-color: @radiobox__border__color;
+            --border-color-hover: @radiobox__border__color__hover;
+            --background-color: @radiobox__background__color;
+            --disabled-color: @radiobox__disabled__color;
+            --disabled-color-inner: @radiobox__disabled__color__inner;
+            --arrow-width: @radiobox__arrow__width;
+            --arrow-height: @radiobox__arrow__height;
+            --margin: @radiobox__margin;
+            --label-margin-left: @radiobox__label__margin-left;
+
+            .lib-flex(
+                @justify-content: center;
+                @align-items: center;
+            );
+
+            height: @radiobox__checkbox__width;
+            outline: none;
+            position: relative;
+            margin: var(--margin);
+            cursor: pointer;
+            border: 1px solid var(--bc, var(--border-color));
+            background: var(--b, var(--background-color));
+            transition: background .3s, border-color .3s, box-shadow .2s;
+            &:after {
+                content: '';
+                display: block;
+                transition: transform var(--d-t, .3s) var(--d-t-e, ease), opacity var(--d-o, .2s);
+            }
+            &:checked {
+                --b: var(--checked-background-color);
+                --bc: var(--checked-border-color);
+                --d-o: .3s;
+                --d-t: .6s;
+                --d-t-e: cubic-bezier(.2, .85, .32, 1.2);
+            }
+            &:disabled {
+                --b: var(--disabled-color);
+                cursor: not-allowed;
+                opacity: .9;
+                &:checked {
+                    --b: var(--disabled-color-inner);
+                    --bc: var(--border-color);
+                }
+                & + label {
+                    cursor: not-allowed;
+                }
+            }
+            &:hover {
+                &:not(:checked) {
+                    &:not(:disabled) {
+                        --bc: var(--border-color-hover);
+                    }
+                }
+            }
+            &:focus {
+                box-shadow: var(--focus-box-shadow);
+            }
+            &:not(.switch) {
+                width: @radiobox__checkbox__width;
+                min-width: @radiobox__checkbox__width;
+                &:after {
+                    opacity: var(--o, 0);
+                }
+                &:checked {
+                    --o: 1;
+                }
+            }
+            & + label {
+                cursor: pointer;
+                margin-left: var(--label-margin-left);
+            }
+        }
+        input[type='checkbox'] {
+            .lib-css(top, inherit);
+            &:not(.switch) {
+                border-radius: @radiobox__border__radius__checkbox;
+                &:after {
+                    width: var(--arrow-width);
+                    height: var(--arrow-height);
+                    border: 2px solid var(--active-color-inner);
+                    border-top: 0;
+                    border-left: 0;
+                    .lib-css(margin-bottom, 2px);
+                    transform: rotate(var(--r, 20deg));
+                }
+                &:checked {
+                    --r: 43deg;
+                }
+            }
+            &.switch {
+                .lib-flex(
+                    @justify-content: flex-start;
+                    @align-items: center;
+                );
+                width: @radiobox__checkbox-switch__width;
+                min-width: @radiobox__checkbox-switch__width;
+                border-radius: @radiobox__border__radius__switch;
+                &:after {
+                    border-radius: 50%;
+                    width: 15px;
+                    height: 15px;
+                    margin: 0 2px;
+                    background: var(--ab, var(--border-color));
+                }
+                &:checked {
+                    .lib-vendor-prefix-justify-content(@_value: flex-end);
+                    --ab: var(--active-color-inner);
+                }
+                &:disabled {
+                    &:not(:checked) {
+                        &:after {
+                            opacity: .6;
+                        }
+                    }
+                }
+            }
+        }
+        input[type='radio']:not([name^=ratings]) {
+            border-radius: 50%;
+            &:after {
+                width: @radiobox__radio__width;
+                height: @radiobox__radio__width;
+                border-radius: 50%;
+                background: var(--active-color-inner);
+                opacity: 0;
+                transform: scale(var(--s, .7));
+            }
+            &:checked {
+                --s: .5;
+            }
+        }
+    }
+}

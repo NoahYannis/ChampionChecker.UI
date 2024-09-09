@@ -1,0 +1,177 @@
+
+//
+//  Utilities
+//  _____________________________________________
+
+//
+//  Display flex shortcut's. (custom)
+//  ---------------------------------------------
+
+//
+// collected property mixins
+//
+
+.lib-flex(
+    @display: flex;
+    @justify-content: flex-start;
+    @align-items: stretch;
+    @flex-direction: row;
+    @flex-wrap: nowrap;
+) {
+    .lib-vendor-prefix-display(@_value: @display);
+    .lib-vendor-prefix-justify-content(@_value: @justify-content);
+    .lib-vendor-box-align(@_value: @align-items);
+    .lib-vendor-prefix-flex-direction(@_value: @flex-direction);
+    .lib-vendor-prefix-flex-wrap(@_value: @flex-wrap);
+}
+
+//
+// Single property mixins
+//
+
+// property "justify-content"
+// @from https://autoprefixer.github.io/
+
+.lib-vendor-prefix-justify-content(
+    @_value
+) when (@_value = center), (@_value = space-evenly) {
+    -webkit-box-pack: @_value;
+    -ms-flex-pack: @_value;
+    justify-content: @_value;
+}
+.lib-vendor-prefix-justify-content(
+    @_value
+) when (@_value = space-between) {
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: @_value;
+}
+.lib-vendor-prefix-justify-content(
+    @_value
+) when (@_value = space-around) {
+    -ms-flex-pack: distribute;
+    justify-content: @_value;
+}
+.lib-vendor-prefix-justify-content(
+    @_value
+) when (@_value = flex-start), (@_value = start) {
+    -webkit-box-pack: start;
+    -ms-flex-pack: start;
+    justify-content: @_value;
+}
+.lib-vendor-prefix-justify-content(
+    @_value
+) when (@_value = flex-end), (@_value = end) {
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: @_value;
+}
+
+// property "align-self"
+// @from https://autoprefixer.github.io/
+
+.lib-vendor-prefix-align-self(
+    @_value
+) when (@_value = flex-start) {
+    -ms-flex-item-align: start;
+    align-self: @_value;
+}
+.lib-vendor-prefix-align-self(
+    @_value
+) when (@_value = flex-end) {
+    -ms-flex-item-align: end;
+    align-self: @_value;
+}
+.lib-vendor-prefix-align-self(
+    @_value
+) when (@_value = auto) {
+    -ms-flex-item-align: @_value;
+    -ms-grid-row-align: @_value;
+    align-self: @_value;
+}
+.lib-vendor-prefix-align-self(
+    @_value
+) when (@_value = center) {
+    -ms-flex-item-align: @_value;
+    -ms-grid-row-align: @_value;
+    align-self: @_value;
+}
+.lib-vendor-prefix-align-self(
+    @_value
+) when (@_value = baseline) {
+    -ms-flex-item-align: @_value;
+    align-self: @_value;
+}
+.lib-vendor-prefix-align-self(
+    @_value
+) when (@_value = stretch) {
+    -ms-flex-item-align: @_value;
+    -ms-grid-row-align: @_value;
+    align-self: @_value;
+}
+
+//
+//  Input placeholder opacity (custom)
+//  extends ".lib-input-placeholder"
+//  ---------------------------------------------
+
+.lib-input-placeholder-opacity(
+    @_input-placeholder-opacity: 1
+) {
+    &::-webkit-input-placeholder {
+        .lib-css(opacity, @_input-placeholder-opacity);
+    }
+
+    &:-moz-placeholder {
+        .lib-css(opacity, @_input-placeholder-opacity);
+    }
+
+    &::-moz-placeholder {
+        .lib-css(opacity, @_input-placeholder-opacity);
+    }
+
+    &:-ms-input-placeholder {
+        .lib-css(opacity, @_input-placeholder-opacity);
+    }
+}
+
+.lib-ul-remove-default-stylings() {
+    padding: 0;
+    list-style-type: none;
+}
+
+//
+//  Scrollbar styling's
+//  @see https://www.digitalocean.com/community/tutorials/css-scrollbars-de
+//  ---------------------------------------------
+
+.lib-scrollbar-styling(
+    @color__background,
+    @color__scroll-item,
+    @ff__width: thin,
+    @webkit__scrollbar__width: 12px,
+    @webkit__scroll-item__border-radius: 20px,
+    @webkit__scroll-item__border: 3px solid @color__scroll-item
+) {
+
+    /* Works on Firefox */
+    * {
+        scrollbar-width: @ff__width;
+        scrollbar-color: @color__background @color__scroll-item;
+    }
+
+    /* Works on Chrome, Edge, and Safari */
+    *::-webkit-scrollbar {
+        width: @webkit__scrollbar__width;
+    }
+
+    *::-webkit-scrollbar-track {
+        background: @color__background;
+    }
+
+    *::-webkit-scrollbar-thumb {
+        background-color: @color__scroll-item;
+        border-radius: @webkit__scroll-item__border-radius;
+        border: @webkit__scroll-item__border;
+    }
+}
