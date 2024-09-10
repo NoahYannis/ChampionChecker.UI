@@ -5,7 +5,6 @@ namespace MVVM\Model;
 use RuntimeException;
 use InvalidArgumentException;
 use DateTime;
-use MVVM\Model\Referee;
 
 class Competition {
     private ?int $id;

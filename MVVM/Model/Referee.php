@@ -1,20 +1,29 @@
 <?php
 
+namespace MVVM\Model;
+
+use RuntimeException;
+use InvalidArgumentException;
+
 class Referee {
-    private int $id;
+    private ?int $id;
     private string $firstName;
     private string $lastName;
     private ?array $competitions = [];
 
-    public function __construct(string $firstName, string $lastName, ?int $id = null) {
+    public function __construct(
+        ?int $id = null,          
+        string $firstName,
+        string $lastName,
+        ?array $competitions = []
+    ) {
+        $this->id = $id;          
         $this->firstName = $firstName;
         $this->lastName = $lastName;
-        if ($id !== null) {
-            $this->id = $id;
-        }
+        $this->competitions = $competitions;
     }
 
-    public function getId(): int {
+    public function getId(): ?int {
         return $this->id;
     }
 

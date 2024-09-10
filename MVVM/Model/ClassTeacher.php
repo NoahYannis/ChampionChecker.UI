@@ -6,14 +6,14 @@ use RuntimeException;
 use InvalidArgumentException;
 
 class ClassTeacher {
-    private int $id;
+    private ?int $id;
     private string $firstName;
     private string $lastName;
     private int $classId;
     private ?ClassModel $class = null;
 
     public function __construct(
-        int $id,
+        int $id = null,
         string $firstName,
         string $lastName,
         int $classId,
@@ -26,7 +26,7 @@ class ClassTeacher {
         $this->class = $class;
     }
 
-    public function getId(): int {
+    public function getId(): ?int {
         return $this->id;
     }
 
