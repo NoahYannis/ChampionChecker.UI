@@ -1,76 +1,104 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <link rel="stylesheet/less" type="text/css"
-          href="http://localhost/ChampionChecker_dev/styles/styles.less"/>
-    <script src="https://cdn.jsdelivr.net/npm/less"></script>
-    <meta charset="utf-8">
-    <meta name="description" content="Endergebis">
 
-    <title>Klassenpunkte Eintragen</title>
+<head>
+	<link rel="stylesheet/less" type="text/css"
+	<link rel="stylesheet/less" type="text/css" href="styles/styles.less" />
+	<script src="https://cdn.jsdelivr.net/npm/less"></script>
+	<meta charset="utf-8">
+	<meta name="description" content="Endergebis">
+
+	<title>Klassenpunkte Eintragen</title>
 </head>
 
 <body>
-<header>
-    <h1>Klassenpunkte</h1>
-</header>
+	<header>
+		<h1>Klassenpunkte</h1>
+	</header>
 
-<main class="main-content">
+	<main class="main-content">
 
-	<?php
-	/**
-	 * test values
-	 * later to be get() from backend
-	 */
+		<?php
+		/**
+		 * test values
+		 * later to be get() from backend
+		 */
 
-	$participantClassesNames = ["BG22a", "BG22b", "BG22c", "BG22d/e",
-		"BG23a", "BG23b", "BG23c", "BG23d", "BG23e",];
+		$participantClassesNames = [
+			"BG22a",
+			"BG22b",
+			"BG22c",
+			"BG22d/e",
+			"BG23a",
+			"BG23b",
+			"BG23c",
+			"BG23d",
+			"BG23e",
+		];
 
-	$availableDisciplines = array(
-		"Mannschaft" => ["Fußball", "Volleyball", "Handball",
-			"Basketballzielwurf", "Tauziehen", "Staffellauf",
-			"Mannschaftsseilspringen", "Dart", "Medizinballstoß",
-			"Deponie(treppen)lauf", "Sprint", "Pedalo",],
-		"Einzeln" => ["Tischtennis", "Medizinballstoß", "Deponielauf",
-			"Seilspringen", "Zielwerfen", "Pedalo-Rennen",
-			"Staffellauf", "Sprint", "Dart", "Basketballzielwurf"],
-	);
-	?>
+		$availableDisciplines = array(
+			"Mannschaft" => [
+				"Fußball",
+				"Volleyball",
+				"Handball",
+				"Basketballzielwurf",
+				"Tauziehen",
+				"Staffellauf",
+				"Mannschaftsseilspringen",
+				"Dart",
+				"Medizinballstoß",
+				"Deponie(treppen)lauf",
+				"Sprint",
+				"Pedalo",
+			],
+			"Einzeln" => [
+				"Tischtennis",
+				"Medizinballstoß",
+				"Deponielauf",
+				"Seilspringen",
+				"Zielwerfen",
+				"Pedalo-Rennen",
+				"Staffellauf",
+				"Sprint",
+				"Dart",
+				"Basketballzielwurf"
+			],
+		);
+		?>
 
-    <div class="styled-select">
-        <select name="class">
-            <option value="">Bitte auswählen!</option>
-			<?php foreach ($participantClassesNames
-						   as $participantClassName): ?>
-                <option value="<?= $participantClassName ?>">
-					<?= $participantClassName ?>
-                </option>
-			<?php endforeach; ?>
-        </select>
-    </div>
-
-    <div class="styled-select">
-        <select name="discipline">
-            <option value="">Bitte auswählen!</option>
-			<?php foreach ($availableDisciplines as $key => $disciplinesNames): ?>
-            <optgroup label="<?=$key?>">
-				<?php foreach ($disciplinesNames as $disciplineName): ?>
-                    <option value="<?= $disciplineName ?>">
-						<?= $disciplineName ?>
-                    </option>
+		<div class="styled-select">
+			<select name="class">
+				<option value="">Bitte auswählen!</option>
+				<?php foreach (
+					$participantClassesNames
+					as $participantClassName
+				): ?>
+					<option value="<?= $participantClassName ?>">
+						<?= $participantClassName ?>
+					</option>
 				<?php endforeach; ?>
-				<?php endforeach; ?>
-        </select>
-    </div>
+			</select>
+		</div>
 
-    <input name="points" type="text" required minlength="1" maxlength="2"/>
+		<div class="styled-select">
+			<select name="discipline">
+				<option value="">Bitte auswählen!</option>
+				<?php foreach ($availableDisciplines as $key => $disciplinesNames): ?>
+					<optgroup label="<?= $key ?>">
+						<?php foreach ($disciplinesNames as $disciplineName): ?>
+							<option value="<?= $disciplineName ?>">
+								<?= $disciplineName ?>
+							</option>
+						<?php endforeach; ?>
+					<?php endforeach; ?>
+			</select>
+		</div>
 
-    <button type="submit" name="submit" value="Abschicken">Abschicken</button>
-
-</main>
-
-<footer>
-
-</footer>
+		<input name="points" type="text" required minlength="1" maxlength="2" />
+		<button type="submit" name="submit" value="Abschicken">Abschicken</button>
+		
+	</main>
+	<footer/>
+	</footer>
 </body>
 </html>
