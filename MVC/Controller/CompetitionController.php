@@ -2,13 +2,13 @@
 
 namespace MVC\Controller;
 
-use MVC\Model\ClassModel;
+use MVC\Model\Competition;
 use RuntimeException;
 
 /**
- * @implements IController<ClassModel>
+ * @implements IController<Competition>
  */
-class ClassController implements IController {
+class CompetitionController implements IController {
     private string $apiUrl;
 
     public function __construct() {
@@ -18,75 +18,79 @@ class ClassController implements IController {
 
     /**
      * @param int $id
-     * @return ClassModel|null
+     * @return Competition|null
      */
-    public function getById(int $id): ?ClassModel {
-        $data = $this->getApiData("/api/class/$id");
+    public function getById(int $id): ?Competition {
+        $data = $this->getApiData("/api/competition/$id");
         if (isset($data['id'])) {
-            return new ClassModel(
+            return new Competition(
                 id: $data['id'],
                 name: $data['name'],
-                students: $data['students'] ?? [],
-                pointsAchieved: $data['pointsAchieved'],
-                classTeacherId: $data['classTeacherId'] ?? null
+                participants: $data['participants'] ?? [],
+                date: $data['date'],
+                refereeId: $data['refereeId'],
+                referee: $data['referee'],
             );
         }
         return null;
     }
 
     /**
-     * @return ClassModel[]
+     * @return Competition[]
      */
     public function getAll(): array {
-        $data = $this->getApiData('/api/class');
+        $data = $this->getApiData('/api/competition');
         foreach ($data as $item) {
-            $classes[] = new ClassModel(
+            $competitions[] = new Competition(
                 id: $item['id'],
                 name: $item['name'],
-                students: $item['students'] ?? [],
-                pointsAchieved: $item['pointsAchieved'],
-                classTeacherId: $item['classTeacherId'] ?? null
+                participants: $item['participants'] ?? [],
+                date: $item['date'],
+                refereeId: $item['refereeId'],
+                referee: $item['referee'],
             );
         }
-        return $classes ?? [];
+        return $competitions ?? [];
     }
 
     /**
-     * @param ClassModel $model
+     * @param Competition $model
      * @return void
      */
     public function create(object $model): void {
-        if (!$model instanceof ClassModel) {
-            throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
+        if (!$model instanceof Competition) {
+            throw new \InvalidArgumentException('Model must be an instance of Competition.');
         }
 
         $data = [
             'name' => $model->getName(),
-            'students' => $model->getStudents(),
-            'pointsAchieved' => $model->getPointsAchieved(),
-            'classTeacherId' => $model->getClassTeacherId()
+            'participants' => $model->getParticipants(),
+            'date' => $model->getDate(),
+            'refereeId' => $model->getRefereeId(),
+            'referee' => $model->getReferee()
         ];
 
-        $this->sendApiRequest('/api/class', 'POST', $data);
+        $this->sendApiRequest('/api/competition', 'POST', $data);
     }
 
     /**
-     * @param ClassModel $model
+     * @param Competition $model
      * @return void
      */
     public function update(object $model): void {
-        if (!$model instanceof ClassModel) {
-            throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
+        if (!$model instanceof Competition) {
+            throw new \InvalidArgumentException('Model must be an instance of Competition.');
         }
 
         $data = [
             'name' => $model->getName(),
-            'students' => $model->getStudents(),
-            'pointsAchieved' => $model->getPointsAchieved(),
-            'classTeacherId' => $model->getClassTeacherId()
+            'participants' => $model->getParticipants(),
+            'date' => $model->getDate(),
+            'refereeId' => $model->getRefereeId(),
+            'referee' => $model->getReferee()
         ];
 
-        $this->sendApiRequest("/api/class/{$model->getId()}", 'PUT', $data);
+        $this->sendApiRequest("/api/competition/{$model->getId()}", 'PUT', $data);
     }
 
     /**
@@ -94,7 +98,7 @@ class ClassController implements IController {
      * @return void
      */
     public function delete(int $id): void {
-        $this->sendApiRequest("/api/class/$id", 'DELETE');
+        $this->sendApiRequest("/api/competition/$id", 'DELETE');
     }
 
 
