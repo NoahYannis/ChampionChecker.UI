@@ -10,6 +10,8 @@ class Competition {
     private ?int $id;
     private string $name;
     private ?array $participants = [];
+    private bool $isTeam;
+    private ?bool $isMale;
     private ?DateTime $date = null;
     private ?int $refereeId = null;
     private ?Referee $referee = null;
@@ -18,6 +20,8 @@ class Competition {
         int $id = null,
         string $name,
         ?array $participants = [],
+        bool $isTeam = false,
+        ?bool $isMale = null,
         ?DateTime $date = null,
         ?int $refereeId = null,
         ?Referee $referee = null
@@ -25,6 +29,8 @@ class Competition {
         $this->id = $id;
         $this->name = $name;
         $this->participants = $participants;
+        $this->isTeam = $isTeam;
+        $this->isMale = $isMale;
         $this->date = $date;
         $this->refereeId = $refereeId;
         $this->referee = $referee;
@@ -58,6 +64,22 @@ class Competition {
 
     public function setParticipants(?array $participants): void {
         $this->participants = $participants;
+    }
+
+    public function getIsTeam(): bool {
+        return $this->isTeam;
+    }
+
+    public function setIsTeam(bool $isTeam): void {
+        $this->isTeam = $isTeam;
+    }
+
+    public function getIsMale(): ?bool {
+        return $this->isMale;
+    }
+
+    public function setIsMale(?bool $isMale): void {
+        $this->isMale = $isMale;
     }
 
     public function getDate(): ?DateTime {

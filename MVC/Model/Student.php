@@ -9,10 +9,9 @@ class Student {
     private ?int $id;
     private string $firstName;
     private string $lastName;
-
+    private bool $isMale;
     private int $classId;
     private ClassModel $class;
-
     private ?array $competitions = [];
     private ?array $competitionResults = [];
 
@@ -20,6 +19,7 @@ class Student {
         ?int $id = null,          
         string $firstName,
         string $lastName,
+        bool $isMale = false,
         int $classId,
         ClassModel $class,
         ?array $competitions = [],
@@ -28,6 +28,7 @@ class Student {
         $this->id = $id;          
         $this->firstName = $firstName;
         $this->lastName = $lastName;
+        $this->isMale = $isMale;
         $this->classId = $classId;
         $this->class = $class;
         $this->competitions = $competitions;
@@ -65,6 +66,14 @@ class Student {
             throw new InvalidArgumentException('LastName must be between 1 and 50 characters.');
         }
         $this->lastName = $lastName;
+    }
+
+    public function getIsMale(): bool {
+        return $this->isMale;
+    }
+
+    public function setIsMale(bool $isMale): void {
+        $this->isMale = $isMale;
     }
 
     public function getClassId(): int {

@@ -38,11 +38,6 @@ interface IController {
     public function delete(int $id): void;
 
     /**
-     * @param string $criteria
-     * @return T[]
-     */
-
-    /**
      * @param string $endpoint
      * @return mixed
      */

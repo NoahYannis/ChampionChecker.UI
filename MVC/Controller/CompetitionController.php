@@ -4,6 +4,7 @@ namespace MVC\Controller;
 
 use MVC\Model\Competition;
 use RuntimeException;
+use DateTime;
 
 /**
  * @implements IController<Competition>
@@ -45,7 +46,9 @@ class CompetitionController implements IController {
                 id: $item['id'],
                 name: $item['name'],
                 participants: $item['participants'] ?? [],
-                date: $item['date'],
+                isTeam: $item['isTeam'],
+                isMale: $item['isMale'],
+                date: new DateTime($item['date']),
                 refereeId: $item['refereeId'],
                 referee: $item['referee'],
             );

@@ -2,115 +2,98 @@
 <html lang="de">
 
 <head>
-    <link rel="stylesheet/less" type="text/css" href="styles/styles.less" />
-    <script src="https://cdn.jsdelivr.net/npm/less"></script>
-    <meta charset="utf-8">
-    <meta name="description" content="Endergebnis Tischtennis">
+	<link rel="stylesheet/less" type="text/css" href="styles/styles.less" />
+	<script src="https://cdn.jsdelivr.net/npm/less"></script>
+	<meta charset="utf-8">
+	<meta name="description" content="Endergebnis Tischtennis">
 
-    <title>Klassenpunkte Eintragen</title>
+	<title>Klassenpunkte Eintragen</title>
 </head>
 
 <body>
-    <header>
-        <h1>Klassenpunkte</h1>
-    </header>
+	<header>
+		<h1>Klassenpunkte</h1>
+	</header>
 
-    <main class="main-content">
+	<main class="main-content">
 
-        <?php
-		
+		<?php
+
 		require_once __DIR__ . '/MVC/Model/ClassModel.php';
+		require_once __DIR__ . '/MVC/Model/Competition.php';
+
 		require_once __DIR__ . '/MVC/Controller/IController.php';
 		require_once __DIR__ . '/MVC/Controller/ClassController.php';
+		require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
 
 		use MVC\Controller\ClassController;
+		use MVC\Controller\CompetitionController;
 
-		$controller = new ClassController();
-		$classes = $controller->getAll();
+		$classController = new ClassController();
+		$classes = $classController->getAll();
 		$participantClassesNames = [];
 
 		foreach ($classes as $class) {
-    		$participantClassesNames[] = $class->getName();
+			$participantClassesNames[] = $class->getName();
 		}
 
-		// $participantClassesNames = [
-		// 	"BG22a",
-		// 	"BG22b",
-		// 	"BG22c",
-		// 	"BG22d/e",
-		// 	"BG23a",
-		// 	"BG23b",
-		// 	"BG23c",
-		// 	"BG23d",
-		// 	"BG23e",
-		// ];
+		$competitionController = new CompetitionController();
+		$competitionModels = $competitionController->getAll();
+		$teamCompetitions = array("Mannschaft" => []);
+		$soloCompetitions = array("Einzeln" => []);
 
-		$availableDisciplines = array(
-			"Mannschaft" => [
-				"Fußball",
-				"Volleyball",
-				"Handball",
-				"Basketballzielwurf",
-				"Tauziehen",
-				"Staffellauf",
-				"Mannschaftsseilspringen",
-				"Dart",
-				"Medizinballstoß",
-				"Deponie(treppen)lauf",
-				"Sprint",
-				"Pedalo",
-			],
-			"Einzeln" => [
-				"Tischtennis",
-				"Medizinballstoß",
-				"Deponielauf",
-				"Seilspringen",
-				"Zielwerfen",
-				"Pedalo-Rennen",
-				"Staffellauf",
-				"Sprint",
-				"Dart",
-				"Basketballzielwurf"
-			],
-		);
+		foreach ($competitionModels as $comp) {
+			if ($comp->getIsTeam()) {
+				$teamCompetitions["Mannschaft"][] = $comp->getName();
+			} else {
+				$soloCompetitions["Einzeln"][] = $comp->getName();
+			}
+		}
 		?>
 
-        <div class="styled-select">
-            <select name="class">
-                <option value="">Klasse auswählen:</option>
-                <?php foreach (
+		<div class="styled-select">
+			<select name="classes">
+				<option value="">Klasse auswählen:</option>
+				<?php foreach (
 					$participantClassesNames
 					as $participantClassName
 				): ?>
-                <option value="<?= $participantClassName ?>">
-                    <?= $participantClassName ?>
-                </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+					<option value="<?= $participantClassName ?>">
+						<?= $participantClassName ?>
+					</option>
+				<?php endforeach; ?>
+			</select>
+		</div>
 
-        <div class="styled-select">
-            <select name="discipline">
-                <option value="">Wettbewerb auswählen:</option>
-                <?php foreach ($availableDisciplines as $key => $disciplinesNames): ?>
-                <optgroup label="<?= $key ?>">
-                    <?php foreach ($disciplinesNames as $disciplineName): ?>
-                    <option value="<?= $disciplineName ?>">
-                        <?= $disciplineName ?>
-                    </option>
-                    <?php endforeach; ?>
-                    <?php endforeach; ?>
-            </select>
-        </div>
+		<div class="styled-select">
+			<select name="competitions">
+				<option value="">Wettbewerb auswählen:</option>
+				<?php foreach ($teamCompetitions as $key => $compNames): ?>
+					<optgroup label="<?= $key ?>">
+						<?php foreach ($compNames as $name): ?>
+							<option value="<?= $name ?>">
+								<?= $name ?>
+							</option>
+						<?php endforeach; ?>
+					<?php endforeach; ?>
+				<?php foreach ($soloCompetitions as $key => $compNames): ?>
+					<optgroup label="<?= $key ?>">
+						<?php foreach ($compNames as $name): ?>
+							<option value="<?= $name ?>">
+								<?= $name ?>
+							</option>
+						<?php endforeach; ?>
+					<?php endforeach; ?>
+			</select>
+		</div>
 
-        <input name="points" placeholder="Punktzahl eingeben:" type="number" Punktzahl eingeben:" 
-		type="text" required minlength="1" maxlength="2" />
+		<input name="points" placeholder="Punktzahl eingeben:" type="number" Punktzahl eingeben:"
+			type="text" required minlength="1" maxlength="2" />
 
-        <button type="submit" name="submit" value="Abschicken">Abschicken</button>
-
-    </main>
-    <footer />
-    </footer>
+		<button type="submit" name="submit" value="Abschicken">Abschicken</button>
+	</main>
+	<footer />
+	</footer>
 </body>
 
 </html>
