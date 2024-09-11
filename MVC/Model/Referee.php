@@ -1,29 +1,26 @@
 <?php
 
-namespace MVVM\Model;
+namespace MVC\Model;
 
 use RuntimeException;
 use InvalidArgumentException;
 
-class ClassTeacher {
+class Referee {
     private ?int $id;
     private string $firstName;
     private string $lastName;
-    private int $classId;
-    private ?ClassModel $class = null;
+    private ?array $competitions = [];
 
     public function __construct(
-        int $id = null,
+        ?int $id = null,          
         string $firstName,
         string $lastName,
-        int $classId,
-        ?ClassModel $class = null
+        ?array $competitions = []
     ) {
-        $this->id = $id;
+        $this->id = $id;          
         $this->firstName = $firstName;
         $this->lastName = $lastName;
-        $this->classId = $classId;
-        $this->class = $class;
+        $this->competitions = $competitions;
     }
 
     public function getId(): ?int {
@@ -59,19 +56,12 @@ class ClassTeacher {
         $this->lastName = $lastName;
     }
 
-    public function getClass(): ?ClassModel {
-        return $this->class;
+    public function getCompetitions(): ?array {
+        return $this->competitions;
     }
 
-    public function setClass(?ClassModel $class): void {
-        $this->class = $class;
-    }
-
-    public function getClassId(): int {
-        return $this->classId;
-    }
-
-    public function setClassId(int $classId): void {
-        $this->classId = $classId;
+    public function setCompetitions(?array $competitions): void {
+        $this->competitions = $competitions;
     }
 }
+

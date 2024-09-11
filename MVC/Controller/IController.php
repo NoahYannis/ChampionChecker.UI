@@ -1,6 +1,6 @@
 <?php
 
-namespace MVVM\Controller;
+namespace MVC\Controller;
 
 
 // Controller-Interface, das die CRUD-Methoden für die Entitäten vorgibt.

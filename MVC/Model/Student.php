@@ -1,6 +1,6 @@
 <?php
 
-namespace MVVM\Model;
+namespace MVC\Model;
 
 use RuntimeException;
 use InvalidArgumentException;

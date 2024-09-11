@@ -1,8 +1,8 @@
 <?php
 
-namespace MVVM\Controller;
+namespace MVC\Controller;
 
-use MVVM\Model\ClassModel;
+use MVC\Model\ClassModel;
 use RuntimeException;
 
 /**
@@ -21,7 +21,7 @@ class ClassController implements IController {
      * @return ClassModel|null
      */
     public function getById(int $id): ?ClassModel {
-        $data = $this->getApiData("api/class/$id");
+        $data = $this->getApiData("/api/class/$id");
         if (isset($data['id'])) {
             return new ClassModel(
                 $data['id'],
@@ -38,7 +38,7 @@ class ClassController implements IController {
      * @return ClassModel[]
      */
     public function getAll(): array {
-        $data = $this->getApiData('api/class');
+        $data = $this->getApiData('/api/class');
         foreach ($data as $item) {
             $classes[] = new ClassModel(
                 $item['id'],
@@ -67,7 +67,7 @@ class ClassController implements IController {
             'classTeacherId' => $model->getClassTeacherId()
         ];
 
-        $this->sendApiRequest('api/class', 'POST', $data);
+        $this->sendApiRequest('/api/class', 'POST', $data);
     }
 
     /**
@@ -86,7 +86,7 @@ class ClassController implements IController {
             'classTeacherId' => $model->getClassTeacherId()
         ];
 
-        $this->sendApiRequest("api/class/{$model->getId()}", 'PUT', $data);
+        $this->sendApiRequest("/api/class/{$model->getId()}", 'PUT', $data);
     }
 
     /**
@@ -94,7 +94,7 @@ class ClassController implements IController {
      * @return void
      */
     public function delete(int $id): void {
-        $this->sendApiRequest("api/class/$id", 'DELETE');
+        $this->sendApiRequest("/api/class/$id", 'DELETE');
     }
 
 
