@@ -2,7 +2,7 @@
 <html lang="de">
 
 <head>
-	<link rel="stylesheet/less" type="text/css" href="styles/styles.less" />
+<link rel="stylesheet/less" type="text/css" href="/ChampionChecker.UI/styles/styles.less" />
 	<script src="https://cdn.jsdelivr.net/npm/less"></script>
 	<meta charset="utf-8">
 	<meta name="description" content="">
@@ -18,14 +18,13 @@
 
 		<?php
 
-		require_once __DIR__ . '/MVC/Model/ClassModel.php';
-		require_once __DIR__ . '/MVC/Model/Competition.php';
+        require_once __DIR__ . '/../Model/ClassModel.php';
+        require_once __DIR__ . '/../Model/Competition.php';
 
-		require_once __DIR__ . '/MVC/Controller/IController.php';
-		require_once __DIR__ . '/MVC/Controller/ClassController.php';
-		require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
+		require_once __DIR__ . '/../Controller/IController.php';
+		require_once __DIR__ . '/../Controller/ClassController.php';
+		require_once __DIR__ . '/../Controller/CompetitionController.php';
 
-		use MVC\Controller\ClassController;
 		use MVC\Controller\CompetitionController;
 
 	//	$classController = new ClassController();
