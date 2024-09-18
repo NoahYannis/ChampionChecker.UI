@@ -9,29 +9,32 @@ use DateTime;
 class Competition {
     private ?int $id;
     private string $name;
-    private ?array $participants = [];
+    private ?array $classParticipants;
+    private ?array $studentParticipants;
     private bool $isTeam;
     private ?bool $isMale;
-    private ?DateTime $date = null;
-    private ?int $refereeId = null;
-    private ?Referee $referee = null;
+    private ?DateTime $date;
+    private ?int $refereeId;
+    private ?Referee $referee;
 
     public function __construct(
         int $id = null,
         string $name,
-        ?array $participants = [],
+        ?array $classParticipants = [],
+        ?array $studentParticipants = [],
         bool $isTeam = false,
         ?bool $isMale = null,
-        ?DateTime $date = null,
+        $date = null,
         ?int $refereeId = null,
         ?Referee $referee = null
     ) {
         $this->id = $id;
         $this->name = $name;
-        $this->participants = $participants;
+        $this->classParticipants = $classParticipants;
+        $this->studentParticipants = $studentParticipants;
         $this->isTeam = $isTeam;
         $this->isMale = $isMale;
-        $this->date = $date;
+        $this->date = $date instanceof DateTime ? $date : new DateTime($date);
         $this->refereeId = $refereeId;
         $this->referee = $referee;
     }
@@ -58,12 +61,20 @@ class Competition {
         $this->name = $name;
     }
 
-    public function getParticipants(): ?array {
-        return $this->participants;
+    public function getClassParticipants(): ?array {
+        return $this->classParticipants;
     }
 
-    public function setParticipants(?array $participants): void {
-        $this->participants = $participants;
+    public function setClassParticipants(?array $classParticipants): void {
+        $this->classParticipants = $classParticipants;
+    }
+
+    public function getStudentParticipants(): ?array {
+        return $this->studentParticipants;
+    }
+
+    public function setStudentParticipants(?array $studentParticipants): void {
+        $this->studentParticipants = $studentParticipants;
     }
 
     public function getIsTeam(): bool {

@@ -27,7 +27,8 @@ class CompetitionController implements IController {
             return new Competition(
                 id: $data['id'],
                 name: $data['name'],
-                participants: $data['participants'] ?? [],
+                classParticipants: $data['classParticipants'] ?? [],
+                studentParticipants: $data['studentParticipants'] ?? [],
                 date: $data['date'],
                 refereeId: $data['refereeId'],
                 referee: $data['referee'],
@@ -45,7 +46,8 @@ class CompetitionController implements IController {
             $competitions[] = new Competition(
                 id: $item['id'],
                 name: $item['name'],
-                participants: $item['participants'] ?? [],
+                classParticipants: $item['classParticipants'] ?? [],
+                studentParticipants: $item['studentParticipants'] ?? [],
                 isTeam: $item['isTeam'],
                 isMale: $item['isMale'],
                 date: new DateTime($item['date']),
@@ -67,7 +69,8 @@ class CompetitionController implements IController {
 
         $data = [
             'name' => $model->getName(),
-            'participants' => $model->getParticipants(),
+            'classParticipants' => $model->getClassParticipants(),
+            'studentParticipants' => $model->getStudentParticipants(),
             'date' => $model->getDate(),
             'refereeId' => $model->getRefereeId(),
             'referee' => $model->getReferee()
@@ -87,7 +90,8 @@ class CompetitionController implements IController {
 
         $data = [
             'name' => $model->getName(),
-            'participants' => $model->getParticipants(),
+            'classParticipants' => $model->getClassParticipants(),
+            'studentParticipants' => $model->getStudentParticipants(),
             'date' => $model->getDate(),
             'refereeId' => $model->getRefereeId(),
             'referee' => $model->getReferee()
