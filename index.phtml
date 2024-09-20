@@ -6,7 +6,6 @@
 	<script src="https://cdn.jsdelivr.net/npm/less"></script>
 	<meta charset="utf-8">
 	<meta name="description" content="Endergebnis Tischtennis">
-
 	<title>Klassenpunkte Eintragen</title>
 </head>
 
@@ -22,65 +21,75 @@
 
 		require_once __DIR__ . '/MVC/Model/ClassModel.php';
 		require_once __DIR__ . '/MVC/Model/Competition.php';
-
 		require_once __DIR__ . '/MVC/Controller/IController.php';
 		require_once __DIR__ . '/MVC/Controller/ClassController.php';
 		require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
 
 		use MVC\Controller\CompetitionController;
+		use MVC\Model\Competition;
 
-		if (!isset($_SESSION['competitions'])) 
-		{
+
+		$_SESSION['competitions'] = null; // TODO: Gecachte Wettbwerbe und Klassen korrekt anzeigen.
+		
+		if (!isset($_SESSION['competitions'])) {
 			// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
 			$competitionController = new CompetitionController();
 			$competitionModels = $competitionController->getAll();
-			
-			$teamCompetitions = array("Mannschaft" => []);
-			$soloCompetitions = array("Einzeln" => []);
-			
+
+			$teamCompetitions = ["Mannschaft" => []];
+			$soloCompetitions = ["Einzeln" => []];
+
 			foreach ($competitionModels as $comp) {
 				if ($comp->getIsTeam()) {
-					$teamCompetitions["Mannschaft"][] = $comp->getName();
+					$teamCompetitions["Mannschaft"][] = $comp;
 				} else {
-					$soloCompetitions["Einzeln"][] = $comp->getName();
+					$soloCompetitions["Einzeln"][] = $comp; 
 				}
 			}
-			
+
 			// Wettbewerbe cachen
 			$_SESSION['competitions'] = [
 				'team' => $teamCompetitions,
 				'solo' => $soloCompetitions
 			];
+
+			var_dump($_SESSION['competitions']);
+			flush();
 		} 
 		else 
 		{
-			// Gecachte Wettbewerbe laden
+			// Gecachte Wettbewerbe laden falls vorhanden
+			/** @var Competition[] $teamCompetitions */
 			$teamCompetitions = $_SESSION['competitions']['team'];
+
+			/** @var Competition[] $soloCompetitions */
 			$soloCompetitions = $_SESSION['competitions']['solo'];
+		}
 
-			$competitionSelected = !empty($_POST['competitions']);
-			$selectedCompetition = null;
+		$competitionSelected = !empty($_POST['competitions']);
+		$selectedCompetition = null;
 
-			// Selektierten Wettbewerb laden falls vorhanden
-			if ($competitionSelected) {
-				$selectedName = $_POST['competitions'];
-				
-				// Selektierten Wettbewerb im Team- und Solo-Array suchen
-				foreach (['team' => $teamCompetitions['Mannschaft'], 'solo' => $soloCompetitions['Einzeln']] as $type => $competitions) {
-					if (in_array($selectedName, $competitions)) {
-						$selectedCompetition = $selectedName;
-						break; 
+		// Selektierten Wettbewerb laden falls vorhanden
+		if ($competitionSelected) {
+			$selectedCompName = $_POST['competitions'];
+			foreach (['team' => $teamCompetitions, 'solo' => $soloCompetitions] as $type => $competitions) {
+				foreach ($competitions as $compArray) {
+					foreach ($compArray as $comp) {
+						if ($comp instanceof Competition && $comp->getName() === $selectedCompName) {
+							$selectedCompetition = $comp;
+							break 2; // Beide Schleifen verlassen
+						}
 					}
 				}
-				
-				// Für Debug-Zwecke
-				if ($selectedCompetition) {
-					echo 'Ausgewählter Wettbewerb gefunden: ' . htmlspecialchars($selectedCompetition);
-				} else {
-					echo 'Wettbewerb nicht gefunden.';
+			}
+
+			if ($selectedCompetition) {
+				$classParticipants = $selectedCompetition->getClassParticipants();
+				$participantClassesNames = [];
+
+				foreach ($classParticipants as $class) {
+					$participantClassesNames[] = $class['name'];
 				}
-		
-				// TOOD: Alle zugehörigen Klassen des Wettbewerbs laden und in Select-Element anzeigen
 			}
 		}
 		?>
@@ -90,26 +99,25 @@
 				<!-- Wettbewerbs-Auswahl -->
 				<select name="competitions" id="competitions" onchange="this.form.submit()">
 					<option value="">Wettbewerb auswählen:</option>
-					<?php foreach ($teamCompetitions as $key => $compNames): ?>
-						<optgroup label="<?= $key ?>">
-							<?php foreach ($compNames as $name): ?>
-								<option value="<?= $name ?>" <?= isset($_POST['competitions']) && $_POST['competitions'] == $name ? 'selected' : '' ?>>
-									<?= $name ?>
+					<?php foreach ($teamCompetitions as $key => $competitions): ?>
+						<optgroup label="<?= htmlspecialchars($key) ?>">
+							<?php foreach ($competitions as $comp): ?>
+								<option value="<?= htmlspecialchars($comp->getName()) ?>" <?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
+									<?= htmlspecialchars($comp->getName()) ?>
 								</option>
 							<?php endforeach; ?>
 						</optgroup>
 					<?php endforeach; ?>
-					<?php foreach ($soloCompetitions as $key => $compNames): ?>
-						<optgroup label="<?= $key ?>">
-							<?php foreach ($compNames as $name): ?>
-								<option value="<?= $name ?>" <?= isset($_POST['competitions']) && $_POST['competitions'] == $name ? 'selected' : '' ?>>
-									<?= $name ?>
+					<?php foreach ($soloCompetitions as $key => $competitions): ?>
+						<optgroup label="<?= htmlspecialchars($key) ?>">
+							<?php foreach ($competitions as $comp): ?>
+								<option value="<?= htmlspecialchars($comp->getName()) ?>" <?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
+									<?= htmlspecialchars($comp->getName()) ?>
 								</option>
 							<?php endforeach; ?>
 						</optgroup>
 					<?php endforeach; ?>
 				</select>
-				<input type="hidden" name="class_id" id="class_id" value="">
 			</div>
 
 			<div class="styled-select">
@@ -117,20 +125,17 @@
 				<select name="classes" id="classes" <?= !$competitionSelected ? 'disabled' : '' ?>>
 					<option value="">Klasse auswählen:</option>
 					<?php foreach ($participantClassesNames as $participantClassName): ?>
-						<option value="<?= $participantClassName ?>" <?= isset($_POST['classes']) && $_POST['classes'] == $participantClassName ? 'selected' : '' ?>>
-							<?= $participantClassName ?>
+						<option value="<?= htmlspecialchars($participantClassName) ?>" <?= isset($_POST['classes']) && $_POST['classes'] == $participantClassName ? 'selected' : '' ?>>
+							<?= htmlspecialchars($participantClassName) ?>
 						</option>
 					<?php endforeach; ?>
 				</select>
 			</div>
+			<input name="points" placeholder="Punktzahl eingeben:" type="number" required minlength="1" maxlength="2" />
 		</form>
 
-
-
-		<input name="points" placeholder="Punktzahl eingeben:" type="number" Punktzahl eingeben:"
-			type="text" required minlength="1" maxlength="2" />
-
 		<button type="submit" name="submit" value="Abschicken">Abschicken</button>
+
 	</main>
 	<footer />
 	</footer>
