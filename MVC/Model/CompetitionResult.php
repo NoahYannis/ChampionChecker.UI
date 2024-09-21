@@ -8,28 +8,22 @@ use InvalidArgumentException;
 class CompetitionResult {
     private ?int $id;
     private int $pointsAchieved;
-
     private int $competitionId;
-    private Competition $competition;
-
-    private int $winnerId;
-    private Student $winner;
+    private ?int $classId;
+    private ?int $studentId;
 
     public function __construct(
         ?int $id = null,
         int $pointsAchieved,
         int $competitionId,
-        Competition $competition,
-        int $winnerId,
-        Student $winner,
+        ?int $classId,
+        ?int $studentId,
     ) {
         $this->id = $id; 
         $this->pointsAchieved = $pointsAchieved;
         $this->competitionId = $competitionId;
-        $this->competition = $competition;
-        $this->winnerId = $winnerId;
-        $this->winner = $winner;
-        $this->id = $id; 
+        $this->classId = $classId;
+        $this->studentId = $studentId;
     }
 
     public function getId(): ?int {
@@ -62,27 +56,19 @@ class CompetitionResult {
         $this->competitionId = $competitionId;
     }
 
-    public function getCompetition(): Competition {
-        return $this->competition;
+    public function getClassId(): ?int {
+        return $this->classId;
     }
 
-    public function setCompetition(Competition $competition): void {
-        $this->competition = $competition;
+    public function setClassId(?int $classId): void {
+        $this->classId = $classId;
     }
 
-    public function getWinnerId(): int {
-        return $this->winnerId;
+    public function getStudentId(): ?int {
+        return $this->studentId;
     }
 
-    public function setWinnerId(int $winnerId): void {
-        $this->winnerId = $winnerId;
-    }
-
-    public function getWinner(): Student {
-        return $this->winner;
-    }
-
-    public function setWinner(Student $winner): void {
-        $this->winner = $winner;
+    public function setStudentId(?int $studentId): void {
+        $this->studentId = $studentId;
     }
 }
