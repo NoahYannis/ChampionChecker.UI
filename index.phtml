@@ -29,21 +29,33 @@
 		use MVC\Model\Competition;
 
 
+		/**
+		 * Überprüft, ob eine bestimmte Option im POST-Request ausgewählt wurde.
+		 *
+		 * @param string $postVar Der Name des POST-Parameters, der überprüft werden soll.
+		 * @param string $option Der Wert der Option, die überprüft wird.
+		 * @return string Gibt 'selected' zurück, wenn die Option ausgewählt ist, andernfalls einen leeren String.
+		 */		function isOptionSelected($postVar, $option)
+		{
+			return isset($_POST[$postVar]) && $_POST[$postVar] == $option ? 'selected' : '';
+		}
+
+
 		$_SESSION['competitions'] = null; // TODO: Gecachte Wettbwerbe und Klassen korrekt anzeigen.
-		
+
 		if (!isset($_SESSION['competitions'])) {
 			// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
 			$competitionController = new CompetitionController();
 			$competitionModels = $competitionController->getAll();
 
-			$teamCompetitions = ["Mannschaft" => []];
-			$soloCompetitions = ["Einzeln" => []];
+			$teamCompetitions = [];
+			$soloCompetitions = [];
 
 			foreach ($competitionModels as $comp) {
 				if ($comp->getIsTeam()) {
-					$teamCompetitions["Mannschaft"][] = $comp;
+					$teamCompetitions[] = $comp;
 				} else {
-					$soloCompetitions["Einzeln"][] = $comp; 
+					$soloCompetitions[] = $comp;
 				}
 			}
 
@@ -52,9 +64,7 @@
 				'team' => $teamCompetitions,
 				'solo' => $soloCompetitions
 			];
-		} 
-		else 
-		{
+		} else {
 			// Gecachte Wettbewerbe laden falls vorhanden
 			/** @var Competition[] $teamCompetitions */
 			$teamCompetitions = $_SESSION['competitions']['team'];
@@ -68,15 +78,14 @@
 
 		// Selektierten Wettbewerb laden falls vorhanden
 		if ($competitionSelected) {
+
 			$selectedCompName = $_POST['competitions'];
-			foreach (['team' => $teamCompetitions, 'solo' => $soloCompetitions] as $type => $competitions) {
-				foreach ($competitions as $compArray) {
-					foreach ($compArray as $comp) {
-						if ($comp instanceof Competition && $comp->getName() === $selectedCompName) {
-							$selectedCompetition = $comp;
-							break 2; // Beide Schleifen verlassen
-						}
-					}
+			$allCompetitions = array_merge($teamCompetitions, $soloCompetitions);
+
+			foreach ($allCompetitions as $comp) {
+				if ($comp instanceof Competition && $comp->getName() === $selectedCompName) {
+					$selectedCompetition = $comp;
+					break; 
 				}
 			}
 
@@ -95,25 +104,25 @@
 			<div class="styled-select">
 				<!-- Wettbewerbs-Auswahl -->
 				<select name="competitions" id="competitions" onchange="this.form.submit()">
-					<option value="">Wettbewerb auswählen:</option>
-					<?php foreach ($teamCompetitions as $key => $competitions): ?>
-						<optgroup label="<?= htmlspecialchars($key) ?>">
-							<?php foreach ($competitions as $comp): ?>
-								<option value="<?= htmlspecialchars($comp->getName()) ?>" <?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-									<?= htmlspecialchars($comp->getName()) ?>
-								</option>
-							<?php endforeach; ?>
-						</optgroup>
-					<?php endforeach; ?>
-					<?php foreach ($soloCompetitions as $key => $competitions): ?>
-						<optgroup label="<?= htmlspecialchars($key) ?>">
-							<?php foreach ($competitions as $comp): ?>
-								<option value="<?= htmlspecialchars($comp->getName()) ?>" <?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-									<?= htmlspecialchars($comp->getName()) ?>
-								</option>
-							<?php endforeach; ?>
-						</optgroup>
-					<?php endforeach; ?>
+					<option selected disabled value="">Wettbewerb auswählen:</option>
+
+					<!-- Gruppe für Mannschaft -->
+					<optgroup label="Mannschaft">
+						<?php foreach ($teamCompetitions as $comp): ?>
+							<option value="<?= htmlspecialchars($comp->getName()) ?>" <?= isOptionSelected("competitions", $comp->getName()) ?>>
+								<?= htmlspecialchars($comp->getName()) ?>
+							</option>
+						<?php endforeach; ?>
+					</optgroup>
+
+					<!-- Gruppe für Einzeln -->
+					<optgroup label="Einzel">
+						<?php foreach ($soloCompetitions as $comp): ?>
+							<option value="<?= htmlspecialchars($comp->getName()) ?>" <?= isOptionSelected("competitions", $comp->getName()) ?>>
+								<?= htmlspecialchars($comp->getName()) ?>
+							</option>
+						<?php endforeach; ?>
+					</optgroup>
 				</select>
 			</div>
 
@@ -122,7 +131,7 @@
 				<select name="classes" id="classes" <?= !$competitionSelected ? 'disabled' : '' ?>>
 					<option value="">Klasse auswählen:</option>
 					<?php foreach ($participantClassesNames as $participantClassName): ?>
-						<option value="<?= htmlspecialchars($participantClassName) ?>" <?= isset($_POST['classes']) && $_POST['classes'] == $participantClassName ? 'selected' : '' ?>>
+						<option value="<?= htmlspecialchars($comp->getName()) ?>" <?= isOptionSelected("classes", $comp->getName()) ?>>
 							<?= htmlspecialchars($participantClassName) ?>
 						</option>
 					<?php endforeach; ?>
