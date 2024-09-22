@@ -17,10 +17,8 @@
 	<main class="main-content">
 
 		<?php
-		session_start();
-
-		require_once __DIR__ . '/MVC/Model/ClassModel.php';
 		require_once __DIR__ . '/MVC/Model/Competition.php';
+		require_once __DIR__ . '/MVC/Model/ClassModel.php';
 		require_once __DIR__ . '/MVC/Controller/IController.php';
 		require_once __DIR__ . '/MVC/Controller/ClassController.php';
 		require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
@@ -28,6 +26,7 @@
 		use MVC\Controller\CompetitionController;
 		use MVC\Model\Competition;
 
+		session_start();
 
 		/**
 		 * Überprüft, ob eine bestimmte Option im POST-Request ausgewählt wurde.
@@ -40,8 +39,6 @@
 			return isset($_POST[$postVar]) && $_POST[$postVar] == $option ? 'selected' : '';
 		}
 
-
-		$_SESSION['competitions'] = null; // TODO: Gecachte Wettbwerbe und Klassen korrekt anzeigen.
 
 		if (!isset($_SESSION['competitions'])) {
 			// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
@@ -65,16 +62,14 @@
 				'solo' => $soloCompetitions
 			];
 		} else {
-			// Gecachte Wettbewerbe laden falls vorhanden
-			/** @var Competition[] $teamCompetitions */
+			// Gecachte Wettbewerbe laden (deserialisieren)
 			$teamCompetitions = $_SESSION['competitions']['team'];
-
-			/** @var Competition[] $soloCompetitions */
 			$soloCompetitions = $_SESSION['competitions']['solo'];
 		}
 
 		$competitionSelected = !empty($_POST['competitions']);
 		$selectedCompetition = null;
+		$participantClassesNames = [];
 
 		// Selektierten Wettbewerb laden falls vorhanden
 		if ($competitionSelected) {
@@ -91,7 +86,6 @@
 
 			if ($selectedCompetition) {
 				$classParticipants = $selectedCompetition->getClassParticipants();
-				$participantClassesNames = [];
 
 				foreach ($classParticipants as $class) {
 					$participantClassesNames[] = $class['name'];
