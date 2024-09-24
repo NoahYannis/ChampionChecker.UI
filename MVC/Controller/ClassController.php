@@ -8,10 +8,12 @@ use RuntimeException;
 /**
  * @implements IController<ClassModel>
  */
-class ClassController implements IController {
+class ClassController implements IController
+{
     private string $apiUrl;
 
-    public function __construct() {
+    public function __construct()
+    {
         $config = require $_SERVER['DOCUMENT_ROOT'] . '/ChampionChecker.UI/config.php';
         $this->apiUrl = $config['api_url'];
     }
@@ -20,7 +22,8 @@ class ClassController implements IController {
      * @param int $id
      * @return ClassModel|null
      */
-    public function getById(int $id): ?ClassModel {
+    public function getById(int $id): ?ClassModel
+    {
         $data = $this->getApiData("/api/class/$id");
         if (isset($data['id'])) {
             return new ClassModel(
@@ -34,10 +37,34 @@ class ClassController implements IController {
         return null;
     }
 
+
+    public function getByName(string $name): ?ClassModel
+    {
+        $allClasses = $this->getApiData("/api/class");
+
+        if (empty($allClasses)) {
+            return null;
+        }
+
+        foreach ($allClasses as $classData) {
+            if (isset($classData['name']) && $classData['name'] === $name) {
+                return new ClassModel(
+                    id: $classData['id'],
+                    name: $classData['name'],
+                    students: $classData['students'] ?? [],
+                    pointsAchieved: $classData['pointsAchieved'] ?? 0,
+                    classTeacherId: $classData['classTeacherId'] ?? null
+                );
+            }
+        }
+    }
+
+
     /**
      * @return ClassModel[]
      */
-    public function getAll(): array {
+    public function getAll(): array
+    {
         $data = $this->getApiData('/api/class');
         foreach ($data as $item) {
             $classes[] = new ClassModel(
@@ -55,7 +82,8 @@ class ClassController implements IController {
      * @param ClassModel $model
      * @return void
      */
-    public function create(object $model): void {
+    public function create(object $model): void
+    {
         if (!$model instanceof ClassModel) {
             throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
         }
@@ -74,7 +102,8 @@ class ClassController implements IController {
      * @param ClassModel $model
      * @return void
      */
-    public function update(object $model): void {
+    public function update(object $model): void
+    {
         if (!$model instanceof ClassModel) {
             throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
         }
@@ -93,7 +122,8 @@ class ClassController implements IController {
      * @param int $id
      * @return void
      */
-    public function delete(int $id): void {
+    public function delete(int $id): void
+    {
         $this->sendApiRequest("/api/class/$id", 'DELETE');
     }
 
@@ -102,7 +132,8 @@ class ClassController implements IController {
      * @param string $endpoint
      * @return mixed
      */
-    public function getApiData(string $endpoint) {
+    public function getApiData(string $endpoint)
+    {
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -129,7 +160,8 @@ class ClassController implements IController {
      * @param array $data
      * @return void
      */
-    private function sendApiRequest(string $endpoint, string $method, array $data = []): void {
+    private function sendApiRequest(string $endpoint, string $method, array $data = []): void
+    {
         $curl = curl_init();
 
         curl_setopt_array($curl, [
