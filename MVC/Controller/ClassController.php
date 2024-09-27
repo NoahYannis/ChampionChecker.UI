@@ -10,12 +10,22 @@ use RuntimeException;
  */
 class ClassController implements IController
 {
+    private static ?ClassController $instance = null;
     private string $apiUrl;
+    private array $cachedClasses = [];
 
     public function __construct()
     {
         $config = require $_SERVER['DOCUMENT_ROOT'] . '/ChampionChecker.UI/config.php';
         $this->apiUrl = $config['api_url'];
+    }
+
+    public static function getInstance(): ClassController
+    {
+        if (self::$instance === null) {
+            self::$instance = new ClassController();
+        }
+        return self::$instance;
     }
 
     /**
@@ -24,15 +34,24 @@ class ClassController implements IController
      */
     public function getById(int $id): ?ClassModel
     {
+        if (isset($this->cachedClasses[$id])) {
+            return $this->cachedClasses[$id];
+        }
+
         $data = $this->getApiData("/api/class/$id");
+
         if (isset($data['id'])) {
-            return new ClassModel(
+            $classModel = new ClassModel(
                 id: $data['id'],
                 name: $data['name'],
                 students: $data['students'] ?? [],
                 pointsAchieved: $data['pointsAchieved'],
                 classTeacherId: $data['classTeacherId'] ?? null
             );
+
+            // Klasse im Cache speichern
+            $this->cachedClasses[$id] = $classModel;
+            return $classModel;
         }
         return null;
     }
@@ -40,6 +59,12 @@ class ClassController implements IController
 
     public function getByName(string $name): ?ClassModel
     {
+        foreach ($this->cachedClasses as $classModel) {
+            if ($classModel->getName() === $name) {
+                return $classModel; // Gecachte Klasse zurückgeben
+            }
+        }
+
         $allClasses = $this->getApiData("/api/class");
 
         if (empty($allClasses)) {
@@ -65,17 +90,28 @@ class ClassController implements IController
      */
     public function getAll(): array
     {
+        // Überprüfen, ob die Klassen bereits im Cache sind
+        if (!empty($this->cachedClasses)) {
+            return $this->cachedClasses;
+        }
+
         $data = $this->getApiData('/api/class');
+        $classes = []; 
+
         foreach ($data as $item) {
-            $classes[] = new ClassModel(
+            $classModel = new ClassModel(
                 id: $item['id'],
                 name: $item['name'],
                 students: $item['students'] ?? [],
                 pointsAchieved: $item['pointsAchieved'],
                 classTeacherId: $item['classTeacherId'] ?? null
             );
+            $classes[] = $classModel;
+
+            // Klasse im Cache speichern
+            $this->cachedClasses[$item['id']] = $classModel;
         }
-        return $classes ?? [];
+        return $classes;
     }
 
     /**

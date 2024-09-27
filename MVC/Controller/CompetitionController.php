@@ -10,6 +10,9 @@ use DateTime;
  * @implements IController<Competition>
  */
 class CompetitionController implements IController {
+
+    private static ?CompetitionController $instance = null;
+    private array $cachedCompetitions = []; 
     private string $apiUrl;
 
     public function __construct() {
@@ -17,14 +20,28 @@ class CompetitionController implements IController {
         $this->apiUrl = $config['api_url'];
     }
 
+
+    public static function getInstance(): CompetitionController {
+        if (self::$instance === null) {
+            self::$instance = new CompetitionController();
+        }
+        return self::$instance;
+    }
+
     /**
      * @param int $id
      * @return Competition|null
      */
     public function getById(int $id): ?Competition {
+
+        if (isset($this->cachedCompetitions[$id])) {
+            return $this->cachedCompetitions[$id];
+        }
+
         $data = $this->getApiData("/api/competition/$id");
+
         if (isset($data['id'])) {
-            return new Competition(
+            $competition = new Competition(
                 id: $data['id'],
                 name: $data['name'],
                 classParticipants: $data['classParticipants'] ?? [],
@@ -33,7 +50,12 @@ class CompetitionController implements IController {
                 refereeId: $data['refereeId'],
                 referee: $data['referee'],
             );
+
+            $this->cachedCompetitions[$id] = $competition;
+
+            return $competition;
         }
+        
         return null;
     }
 
@@ -41,9 +63,16 @@ class CompetitionController implements IController {
      * @return Competition[]
      */
     public function getAll(): array {
+
+        if (!empty($this->cachedCompetitions)) {
+            return $this->cachedCompetitions;
+        }
+
         $data = $this->getApiData('/api/competition');
+        $competitions = []; 
+
         foreach ($data as $item) {
-            $competitions[] = new Competition(
+            $competition = new Competition(
                 id: $item['id'],
                 name: $item['name'],
                 classParticipants: $item['classParticipants'] ?? [],
@@ -54,8 +83,12 @@ class CompetitionController implements IController {
                 refereeId: $item['refereeId'],
                 referee: $item['referee'],
             );
+
+            $this->cachedCompetitions[$item['id']] = $competition;
+            $competitions[] = $competition;
         }
-        return $competitions ?? [];
+
+        return $competitions;
     }
 
     /**

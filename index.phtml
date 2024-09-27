@@ -5,8 +5,8 @@
 	<link rel="stylesheet/less" type="text/css" href="styles/styles.less" />
 	<script src="https://cdn.jsdelivr.net/npm/less"></script>
 	<meta charset="utf-8">
-	<meta name="description" content="Endergebnis Tischtennis">
-	<title>Klassenpunkte Eintragen</title>
+	<meta name="description" content="Klassenpunkte eintragen">
+	<title>Klassenpunkte eintragen</title>
 </head>
 
 <body>
@@ -19,46 +19,54 @@
 		<?php
 		require_once __DIR__ . '/MVC/Model/Competition.php';
 		require_once __DIR__ . '/MVC/Model/ClassModel.php';
+		require_once __DIR__ . '/MVC/Model/CompetitionResult.php';
 		require_once __DIR__ . '/MVC/Controller/IController.php';
 		require_once __DIR__ . '/MVC/Controller/ClassController.php';
 		require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
+		require_once __DIR__ . '/MVC/Controller/CompetitionResultController.php';
+
+		use MVC\Model\CompetitionResult;
 
 		use MVC\Controller\CompetitionController;
+		use MVC\Controller\CompetitionResultController;
+		use MVC\Controller\ClassController;
 
 		session_start();
 
-		/**
-		 * Überprüft, ob eine bestimmte Option im POST-Request ausgewählt wurde.
-		 *
-		 * @param string $postVar Der Name des POST-Parameters, der überprüft werden soll.
-		 * @param string $option Der Wert der Option, die überprüft wird.
-		 * @return string Gibt 'selected' zurück, wenn die Option ausgewählt ist, andernfalls einen leeren String.
-		 */		function isOptionSelected($postVar, $option)
-		{
-			return isset($_POST[$postVar]) && $_POST[$postVar] == $option ? 'selected' : '';
-		}
+		$selectedCompetition = $_SESSION['selectedCompetition'] ?? null;
+		$selectedClass = $_SESSION['selectedClass'] ?? null;
 
-		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-			if (isset($_POST['competitions'])) {
-				$selectedCompetition = $_POST['competitions'];
+		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($selectedCompetition)) {
 
-				// Wenn sich der Wettbewerb ändert, Klasse auf null setzen
-				if (!isset($_SESSION['selectedCompetition']) || $_SESSION['selectedCompetition'] !== $selectedCompetition) {
-					unset($_POST['classes']); // Klasse zurücksetzen
-					$_SESSION['selectedCompetition'] = $selectedCompetition; // Wettbewerb speichern
-				}
+			// Wenn sich der Wettbewerb ändert, die selektierte Klasse zurücksetzen.
+			if (isset($_POST['competitions']) && $_POST['competitions'] !== $selectedCompetition->getName()) {
+				unset($_POST['classes']); // Klasse zurücksetzen
 			}
 
-			if (isset($_POST['classes'])) {
-				$_SESSION['selectedClass'] = $_POST['classes'];
+			// Die Klasse wurde zum ersten Mal gesetzt oder geändert. Klassen-Objekt neu laden.
+			if (isset($_POST['classes']) && (!isset($selectedClass) || $selectedClass->getName() !== $_POST['classes'])) {
+				$classController = ClassController::getInstance();
+				$_SESSION['selectedClass'] = $selectedClass = $classController->getByName($_POST['classes']);
+			}
+			
+			// Wenn der Absenden-Button gedrückt wurde, das Wettbewerbsergebnis an die API schicken.
+			if (!empty($_POST['points']) && isset($selectedClass)){
+
+				$compResult = new CompetitionResult(null, $_POST['points'],  $selectedCompetition->getId(), $selectedClass->getId(), null);
+				$compResController = new CompetitionResultController();
+				$compResController->create($compResult);
+
+				$_SESSION['selectedClass'] = null;
+				$_SESSION['selectedCompetition'] = null;
+				header("Location: " . $_SERVER['REQUEST_URI']); // Redirect, um ernutes Absenden zu verhindern
+				exit();
 			}
 		}
-
-		$selectedClass = isset($_SESSION['selectedClass']) ? $_SESSION['selectedClass'] : '';
 
 		if (!isset($_SESSION['competitions'])) {
+
 			// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
-			$competitionController = new CompetitionController();
+			$competitionController = CompetitionController::getInstance();
 			$competitionModels = $competitionController->getAll();
 
 			$teamCompetitions = [];
@@ -94,12 +102,14 @@
 
 			foreach ($allCompetitions as $comp) {
 				if ($comp->getName() === $selectedCompName) {
+
 					$selectedCompetition = $comp;
-					$_POST['selectedCompetition'] = $selectedCompetition;
+					$_SESSION['selectedCompetition'] = $selectedCompetition;
 					break;
 				}
 			}
 
+			// Klassen des selektierten Wettbewerbs laden
 			if ($selectedCompetition) {
 				$classParticipants = $selectedCompetition->getClassParticipants();
 
@@ -110,13 +120,13 @@
 		}
 
 		$classSelected = !empty($_POST['classes']);
+
 		if ($classSelected) {
 			foreach ($classParticipants as $class) {
 				if ($class['name'] === $_POST['classes']) {
-					$selectedClass = $class;
-					var_dump($_POST['classes']);
-					$_POST['selectedClass'] = $selectedClass;
-					break;
+					$classController = ClassController::getInstance();
+					$_SESSION['selectedClass'] = $classController->getByName($_POST['classes']);
+					break; // Selektierte Klasse in Sitzung speichern
 				}
 			}
 		}
