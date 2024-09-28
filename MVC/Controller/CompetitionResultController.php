@@ -141,28 +141,35 @@ class CompetitionResultController implements IController
      */
     private function sendApiRequest(string $endpoint, string $method, array $data = []): void
     {
-        $curl = curl_init();
+        try {
 
-        curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => 1,
-            CURLOPT_URL => $this->apiUrl . $endpoint,
-            CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_POSTFIELDS => json_encode($data),
-            CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json'
-            ],
-            CURLOPT_USERAGENT => 'PHP API Request'
-        ]);
-
-        $response = curl_exec($curl);
-        if (curl_errno($curl)) {
-            throw new RuntimeException('cURL error: ' . curl_error($curl));
-        }
-        curl_close($curl);
-
-        $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        if ($statusCode >= 400) {
-            throw new RuntimeException("API request failed with status code $statusCode.");
+            $curl = curl_init();
+    
+            curl_setopt_array($curl, [
+                CURLOPT_RETURNTRANSFER => 1,
+                CURLOPT_URL => $this->apiUrl . $endpoint,
+                CURLOPT_CUSTOMREQUEST => $method,
+                CURLOPT_POSTFIELDS => json_encode($data),
+                CURLOPT_HTTPHEADER => [
+                    'Content-Type: application/json'
+                ],
+                CURLOPT_USERAGENT => 'PHP API Request'
+            ]);
+    
+            $response = curl_exec($curl);
+            if (curl_errno($curl)) {
+                throw new RuntimeException('cURL error: ' . curl_error($curl));
+            }
+    
+            $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            curl_close($curl);
+    
+            if ($statusCode >= 400) {
+                throw new RuntimeException("API request failed with status code $statusCode. Response: $response");
+            }
+        } catch (RuntimeException $e) {
+            echo 'Ein Fehler ist aufgetreten: ' . $e->getMessage();
         }
     }
+    
 }
