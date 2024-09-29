@@ -1,0 +1,51 @@
+.competition-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+  text-align: center;
+  border: 3px solid #000;
+}
+
+.competition-table thead tr {
+  background-color: #f8d294;
+  color: black;
+  text-align: left;
+  font-weight: bold;
+}
+
+.competition-table th,
+.competition-table td {
+  padding: 12px 15px;
+  border: 1px solid #000;
+}
+
+.competition-table tbody tr {
+  border-bottom: 1px solid #dddddd;
+}
+
+.competition-table tbody tr:nth-child(1) {
+    background-color: gold; 
+}
+
+.competition-table tbody tr:nth-child(2) {
+    background-color: silver; 
+}
+
+.competition-table tbody tr:nth-child(3) {
+    background-color: #cd7f32;
+}
+
+.competition-table tbody tr:nth-child(n+4) {
+    background-color: #ffffff;
+}
+
+
+.competition-table tbody tr:last-of-type {
+  border-bottom: 2px solid #009879;
+}
+
+.competition-table tbody tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
