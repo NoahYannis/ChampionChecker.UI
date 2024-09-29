@@ -31,11 +31,15 @@ require_once __DIR__ . '/MVC/Controller/CompetitionResultController.php';
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
-
+use MVC\Model\CompetitionResult;
 
 session_start();
 
-function loadCompetitionResults($cacheDuration = 300)
+/**
+* @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
+* @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
+*/
+function loadCompetitionResults($cacheDuration = 300): array
 {
     // Gecachte Daten für die Dauer des Cache zurückgeben.
     if (isset($_SESSION['competitionResults']) && isset($_SESSION['competitionResultsTimestamp'])) {
@@ -56,7 +60,7 @@ function loadCompetitionResults($cacheDuration = 300)
 }
 
 
-function getCompetitionName($competitionId)
+function getCompetitionName($competitionId): string
 {
     if (isset($_SESSION['competitions']) && isset($_SESSION['competitions'][$competitionId])) {
         return $_SESSION['competitions'][$competitionId];
@@ -69,7 +73,7 @@ function getCompetitionName($competitionId)
     return $compName;
 }
 
-function getClassName($classId)
+function getClassName($classId): string
 {
     if (isset($_SESSION['classes']) && isset($_SESSION['classes'][$classId])) {
         return $_SESSION['classes'][$classId];
@@ -115,7 +119,7 @@ $competitionResults = loadCompetitionResults();
 
 <body>
     <header>
-        <h1>Turnierübersicht</h1>
+        <h1>Ergebnisübersicht</h1>
     </header>
 
     <p>Es wurden X von Y Wettbewerben ausgewertet.</p>
