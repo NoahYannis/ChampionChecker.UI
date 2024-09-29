@@ -29,37 +29,80 @@ require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
 require_once __DIR__ . '/MVC/Controller/CompetitionResultController.php';
 
 use MVC\Controller\CompetitionResultController;
+use MVC\Controller\CompetitionController;
+use MVC\Controller\ClassController;
+
 
 session_start();
 
-function loadCompetitionResults()
+function loadCompetitionResults($cacheDuration = 300)
 {
+    // Gecachte Daten für die Dauer des Cache zurückgeben.
+    if (isset($_SESSION['competitionResults']) && isset($_SESSION['competitionResultsTimestamp'])) {
+        if ((time() - $_SESSION['competitionResultsTimestamp']) < $cacheDuration) {
+            return $_SESSION['competitionResults'];
+        }
+    }
+
+    // Daten aus der DB laden und im Cache speichern
     $competitionResultController = new CompetitionResultController();
     $competitionResults = $competitionResultController->getAll();
+
+    // Ergebnisse und Zeitstempel in der Session speichern
+    $_SESSION['competitionResults'] = $competitionResults;
+    $_SESSION['competitionResultsTimestamp'] = time();
+
     return $competitionResults;
 }
 
 
-// TODO: Aus CompetitionResult-Ids die Namen der Wettbewerbe und Klassen laden + deren Gesamtpunktzahl berechnen
+function getCompetitionName($competitionId)
+{
+    if (isset($_SESSION['competitions']) && isset($_SESSION['competitions'][$competitionId])) {
+        return $_SESSION['competitions'][$competitionId];
+    }
+
+    $competitionController = new CompetitionController();
+    $competition = $competitionController->getById($competitionId);
+    $compName = $competition->getName();
+    $_SESSION['competitions'][$competitionId] = $compName;
+    return $compName;
+}
+
+function getClassName($classId)
+{
+    if (isset($_SESSION['classes']) && isset($_SESSION['classes'][$classId])) {
+        return $_SESSION['classes'][$classId];
+    }
+
+    $classController = new ClassController();
+    $class = $classController->getById($classId);
+    $className = $class->getName();
+    $_SESSION['classes'][$classId] = $className;
+    return $className;
+}
+
+
+// TODO: Gesamtpunktzahl der Klassen berechnen
 function printCompetitionResult($competitionResults)
 {
+    echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
+
     echo "<table class='competition-table'>";
     echo "<thead>";
     echo "<tr>";
-    echo "<th>Competition ID</th>";
-    echo "<th>Class ID</th>";
-    // echo "<th>Student ID</th>";
-    echo "<th>Points</th>";
+    echo "<th>Wettbewerb</th>";
+    echo "<th>Klasse</th>";
+    echo "<th>Punkte</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
 
     foreach ($competitionResults as $result) {
         echo "<tr>";
+        echo "<td>" . getCompetitionName($result->getCompetitionId()) . "</td>";
+        echo "<td>" . getClassName($result->getClassId()) . "</td>";
         echo "<td>{$result->getPointsAchieved()}</td>";
-        echo "<td>{$result->getCompetitionId()}</td>";
-        echo "<td>{$result->getClassId()}</td>";
-        // echo "<td>" . ($result->getStudentId() === null ? 'N/A' : $result->getStudentId()) . "</td>";
         echo "</tr>";
     }
 
