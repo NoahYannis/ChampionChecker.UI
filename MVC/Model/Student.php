@@ -21,7 +21,6 @@ class Student {
         string $lastName,
         bool $isMale = false,
         int $classId,
-        ClassModel $class,
         ?array $competitions = [],
         ?array $competitionResults = []
     ) {
@@ -30,7 +29,6 @@ class Student {
         $this->lastName = $lastName;
         $this->isMale = $isMale;
         $this->classId = $classId;
-        $this->class = $class;
         $this->competitions = $competitions;
         $this->competitionResults = $competitionResults;
     }

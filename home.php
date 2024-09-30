@@ -26,6 +26,8 @@ use MVC\Model\CompetitionResult;
 
 session_start();
 
+$classController = new ClassController();
+
 /**
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
  * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
@@ -45,20 +47,6 @@ function loadCompetitionResults($cacheDuration = 300): array
     $_SESSION['competitionResultsTimestamp'] = time();
 
     return $competitionResults;
-}
-
-
-function getClassName($classId): string
-{
-    if (isset($_SESSION['classes']) && isset($_SESSION['classes'][$classId])) {
-        return $_SESSION['classes'][$classId];
-    }
-
-    $classController = new ClassController();
-    $class = $classController->getById($classId);
-    $className = $class->getName();
-    $_SESSION['classes'][$classId] = $className;
-    return $className;
 }
 
 function aggregatePointsByClass($competitionResults)
@@ -83,6 +71,8 @@ function aggregatePointsByClass($competitionResults)
 
 function printCompetitionResult($competitionResults)
 {
+    global $classController;
+
     echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
 
     // Gesamtpunkte pro Klasse berechnen
@@ -99,7 +89,7 @@ function printCompetitionResult($competitionResults)
 
     foreach ($pointsByClass as $classId => $totalPoints) {
         echo "<tr>";
-        echo "<td>" . getClassName($classId) . "</td>";
+        echo "<td>" . $classController->getClassName($classId) . "</td>";
         echo "<td>{$totalPoints}</td>";
         echo "</tr>";
     }

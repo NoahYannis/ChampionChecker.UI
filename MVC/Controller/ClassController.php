@@ -56,6 +56,18 @@ class ClassController implements IController
         return null;
     }
 
+    public function getClassName($classId): string
+    {
+        if (isset($_SESSION['classes']) && isset($_SESSION['classes'][$classId])) {
+            return $_SESSION['classes'][$classId];
+        }
+
+        $class = $this->getById($classId);
+        $className = $class->getName();
+        $_SESSION['classes'][$classId] = $className;
+        return $className;
+    }
+
 
     public function getByName(string $name): ?ClassModel
     {
@@ -96,7 +108,7 @@ class ClassController implements IController
         }
 
         $data = $this->getApiData('/api/class');
-        $classes = []; 
+        $classes = [];
 
         foreach ($data as $item) {
             $classModel = new ClassModel(

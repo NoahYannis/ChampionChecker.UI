@@ -29,6 +29,8 @@ use MVC\Model\CompetitionResult;
 
 session_start();
 
+$classController = new ClassController();
+
 /**
 * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
 * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
@@ -67,22 +69,10 @@ function getCompetitionName($competitionId): string
     return $compName;
 }
 
-function getClassName($classId): string
-{
-    if (isset($_SESSION['classes']) && isset($_SESSION['classes'][$classId])) {
-        return $_SESSION['classes'][$classId];
-    }
-
-    $classController = new ClassController();
-    $class = $classController->getById($classId);
-    $className = $class->getName();
-    $_SESSION['classes'][$classId] = $className;
-    return $className;
-}
-
-
 function printCompetitionResult($competitionResults)
 {
+    global $classController;
+
     echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
 
     echo "<table class='results-table'>";
@@ -98,7 +88,7 @@ function printCompetitionResult($competitionResults)
     foreach ($competitionResults as $result) {
         echo "<tr>";
         echo "<td>" . getCompetitionName($result->getCompetitionId()) . "</td>";
-        echo "<td>" . getClassName($result->getClassId()) . "</td>";
+        echo "<td>" . $classController->getClassName($result->getClassId()) . "</td>";
         echo "<td>{$result->getPointsAchieved()}</td>";
         echo "</tr>";
     }
