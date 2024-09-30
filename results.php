@@ -85,7 +85,7 @@ function printCompetitionResult($competitionResults)
 {
     echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
 
-    echo "<table class='competition-table'>";
+    echo "<table class='results-table'>";
     echo "<thead>";
     echo "<tr>";
     echo "<th>Wettbewerb</th>";

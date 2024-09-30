@@ -88,7 +88,7 @@ function printCompetitionResult($competitionResults)
     // Gesamtpunkte pro Klasse berechnen
     $pointsByClass = aggregatePointsByClass($competitionResults);
 
-    echo "<table class='competition-table'>";
+    echo "<table class='competition-table'>"; 
     echo "<thead>";
     echo "<tr>";
     echo "<th>Klasse</th>";
