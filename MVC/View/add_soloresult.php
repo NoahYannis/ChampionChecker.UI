@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="description" content="Endergebnis">
-        <title>Tischtennis Turnier Endergebnis</title>
+        <title>Ergebnis eintragen</title>
         
     </head>
 
