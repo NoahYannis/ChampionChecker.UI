@@ -11,16 +11,7 @@
 </head>
 
 <?php
-
-
-
-require_once __DIR__ . '/MVC/Model/Competition.php';
-require_once __DIR__ . '/MVC/Model/ClassModel.php';
-require_once __DIR__ . '/MVC/Model/CompetitionResult.php';
-require_once __DIR__ . '/MVC/Controller/IController.php';
-require_once __DIR__ . '/MVC/Controller/ClassController.php';
-require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
-require_once __DIR__ . '/MVC/Controller/CompetitionResultController.php';
+require 'vendor/autoload.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\CompetitionController;

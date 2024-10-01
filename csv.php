@@ -27,12 +27,7 @@
 </html>
 
 <?php
-
-require_once __DIR__ . '/MVC/Model/Student.php';
-require_once __DIR__ . '/MVC/Model/ClassModel.php';
-require_once __DIR__ . '/MVC/Controller/IController.php';
-require_once __DIR__ . '/MVC/Controller/ClassController.php';
-
+require 'vendor/autoload.php';
 
 use MVC\Model\Student;
 use MVC\Controller\ClassController;

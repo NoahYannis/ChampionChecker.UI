@@ -17,16 +17,9 @@
 	<main class="main-content">
 
 		<?php
-		require_once __DIR__ . '/MVC/Model/Competition.php';
-		require_once __DIR__ . '/MVC/Model/ClassModel.php';
-		require_once __DIR__ . '/MVC/Model/CompetitionResult.php';
-		require_once __DIR__ . '/MVC/Controller/IController.php';
-		require_once __DIR__ . '/MVC/Controller/ClassController.php';
-		require_once __DIR__ . '/MVC/Controller/CompetitionController.php';
-		require_once __DIR__ . '/MVC/Controller/CompetitionResultController.php';
+		require 'vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 
 		use MVC\Model\CompetitionResult;
-
 		use MVC\Controller\CompetitionController;
 		use MVC\Controller\CompetitionResultController;
 		use MVC\Controller\ClassController;
@@ -179,7 +172,7 @@
 		<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
 	</main>
 
-	<footer/>
+	<footer />
 
 	<script>
 		function submitForm() {
@@ -195,7 +188,7 @@
 			}
 
 			const pointsInput = document.querySelector('input[name="points"]');
-			const pointsValue = parseInt(pointsInput.value, 10); 
+			const pointsValue = parseInt(pointsInput.value, 10);
 
 			if (pointsInput.value === '' || pointsValue < 0 || pointsValue > 100) {
 				alert('Bitte geben Sie eine gültige Punktzahl zwischen 0 und 100 ein.');
