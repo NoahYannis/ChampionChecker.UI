@@ -27,7 +27,7 @@
 </html>
 
 <?php
-require 'vendor/autoload.php';
+require '../../vendor/autoload.php';
 
 use MVC\Model\Student;
 use MVC\Controller\ClassController;
@@ -92,7 +92,7 @@ function printStudents($students)
     echo "</table>";
 }
 
-$students = createStudentsFromCSV('EFI22aKlassenliste.csv');
+$students = createStudentsFromCSV('../../EFI22aKlassenliste.csv');
 printStudents($students);
 
 ?>

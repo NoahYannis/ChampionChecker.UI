@@ -2,7 +2,7 @@
 <html lang="de">
 
 <head>
-	<link rel="stylesheet/less" type="text/css" href="styles/styles.less" />
+	<link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
 	<script src="https://cdn.jsdelivr.net/npm/less"></script>
 	<meta charset="utf-8">
 	<meta name="description" content="Klassenpunkte eintragen">
@@ -17,7 +17,7 @@
 	<main class="main-content">
 
 		<?php
-		require 'vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
+		require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 
 		use MVC\Model\CompetitionResult;
 		use MVC\Controller\CompetitionController;
