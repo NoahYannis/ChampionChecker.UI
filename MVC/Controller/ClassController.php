@@ -20,10 +20,10 @@ class ClassController implements IController
         $this->apiUrl = $config['api_url'];
     }
 
-    public static function getInstance(): ClassController
+    public static function getInstance()
     {
         if (self::$instance === null) {
-            self::$instance = new ClassController();
+            self::$instance = new self();
         }
         return self::$instance;
     }
@@ -58,14 +58,39 @@ class ClassController implements IController
 
     public function getClassName($classId): string
     {
-        if (isset($_SESSION['classes']) && isset($_SESSION['classes'][$classId])) {
-            return $_SESSION['classes'][$classId];
+        if (isset($_SESSION['classes'])) {
+            foreach ($_SESSION['classes'] as $class) {
+                if ($class->getId() === $classId) {
+                    return $class->getName();
+                }
+            }
         }
 
         $class = $this->getById($classId);
         $className = $class->getName();
         $_SESSION['classes'][$classId] = $className;
         return $className;
+    }
+
+    function getAllClassNames(): array
+    {
+        global $classController;
+
+        if (isset($_SESSION['classNames'])) {
+            return $_SESSION['classNames'];
+        }
+
+        $classes = $classController->getAll();
+        $classNames = [];
+
+        foreach ($classes as $class) {
+            $classNames[] = $class->getName();
+        }
+
+        $_SESSION['classes'] = $classes;
+        $_SESSION['classNames'] = $classNames;
+
+        return $classNames;
     }
 
 
