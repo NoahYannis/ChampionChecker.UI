@@ -6,10 +6,19 @@ require '../../vendor/autoload.php';
 
 use MVC\Model\Student;
 use MVC\Controller\ClassController;
+use MVC\Controller\StudentController;
 
 session_start();
 
 $classController = ClassController::getInstance();
+$studentController = StudentController::getInstance();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit']) && isset($_SESSION['students'])) {
+
+    foreach ($_SESSION['students'] as $student) {
+        $studentController->create($student);
+    }
+}
 
 
 /**
@@ -49,6 +58,8 @@ function createStudentsFromCSV($csvFile)
         throw new Exception("No students found in file: $csvFile");
     }
 
+    $_SESSION['students'] = $students;
+
     return $students;
 }
 
@@ -80,10 +91,6 @@ function printStudents($students)
     echo "</table>";
 }
 
-
-function createStudent($student) {
-   // TODO: StudentController erstellen
-}
 
 $students = createStudentsFromCSV('../../EFI22aKlassenliste.csv');
 printStudents($students);
@@ -120,17 +127,17 @@ printStudents($students);
         <div class="styled-select">
             <select name="classes" id="classes" onchange="this.form.submit()" <?= empty($_SESSION["classNames"]) ? 'disabled' : '' ?>>
                 <option value="default">Klasse auswählen:</option>
-                <?php foreach ($classControler->getAllClassNames() as $classNames): ?>
+                <?php foreach ($classController->getAllClassNames() as $classNames): ?>
                     <option value="<?= htmlspecialchars($classNames) ?>"
                         <?= isset($_POST['classes']) && $_POST['classes'] == $classNames ? 'selected' : '' ?>>
                         <?= htmlspecialchars($classNames) ?>
                     </option>
                 <?php endforeach; ?>
             </select>
+            <button type="submit" name="submit" value="Abschicken">Abschicken</button>
         </div>
     </form>
 
-    <button type="submit" name="submit" value="Abschicken">Abschicken</button>
 </body>
 
 </html>
