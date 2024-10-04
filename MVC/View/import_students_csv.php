@@ -31,6 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit']) && isset($_
  */
 function createStudentsFromCSV($csvFile)
 {
+    global $classController;
+
     $students = [];
     $file = fopen($csvFile, 'r');
 
@@ -51,7 +53,7 @@ function createStudentsFromCSV($csvFile)
             firstName: $line[1],
             lastName: $line[0],
             isMale: $line[2] === 'männlich',
-            classId: 9 // $line[3]
+            classId: $classController->getIdFromName($line[3])
         );
     }
 

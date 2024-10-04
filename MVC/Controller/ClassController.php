@@ -56,6 +56,23 @@ class ClassController implements IController
         return null;
     }
 
+    public function getIdFromName($className): int
+    {
+        $className = strtoupper($className); 
+
+        if (isset($_SESSION['classes'])) {
+            foreach ($_SESSION['classes'] as $class) {
+            if (strtoupper($class->getName()) === $className) {
+                    return $class->getId();
+                }
+            }
+        }
+
+        $class = $this->getByName($className);
+        $classId = $class->getId();
+        return $classId;
+    }
+
     public function getClassName($classId): string
     {
         if (isset($_SESSION['classes'])) {
