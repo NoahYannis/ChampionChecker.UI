@@ -55,6 +55,11 @@ function getCompetitionName($competitionId): string
 
     $competitionController = new CompetitionController();
     $competition = $competitionController->getById($competitionId);
+
+    if ($competition === null) {
+        return "???";
+    }
+
     $compName = $competition->getName();
     $_SESSION['competitions'][$competitionId] = $compName;
     return $compName;

@@ -69,6 +69,11 @@ class ClassController implements IController
         }
 
         $class = $this->getByName($className);
+
+        if ($class === null) {
+            return -1;
+        }
+        
         $classId = $class->getId();
         return $classId;
     }
@@ -84,6 +89,11 @@ class ClassController implements IController
         }
 
         $class = $this->getById($classId);
+
+        if ($class === null) {
+            return "???";
+        }
+
         $className = $class->getName();
         return $className;
     }
@@ -137,6 +147,8 @@ class ClassController implements IController
                 );
             }
         }
+
+        return null; // Es wurde keine Klasse mit dem Namen gefunden
     }
 
 
