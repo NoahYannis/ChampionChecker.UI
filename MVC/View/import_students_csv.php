@@ -11,6 +11,8 @@ use MVC\Controller\StudentController;
 session_start();
 
 $classController = ClassController::getInstance();
+$allClassNames = $_SESSION["classNames"] ?? $classController->getAllClassNames();
+
 $studentController = StudentController::getInstance();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit']) && isset($_SESSION['students'])) {
@@ -36,6 +38,7 @@ function createStudentsFromCSV($csvFile)
         throw new Exception("Could not open file: $csvFile");
     }
 
+    // Kopfzeile überspringen
     fgetcsv($file, 0, ";");
 
     while (($line = fgetcsv($file, 0, ";")) !== FALSE) {
@@ -125,9 +128,9 @@ printStudents($students);
 <body>
     <form method="POST" action="">
         <div class="styled-select">
-            <select name="classes" id="classes" onchange="this.form.submit()" <?= empty($_SESSION["classNames"]) ? 'disabled' : '' ?>>
+            <select name="classes" id="classes" onchange="this.form.submit()" <?= empty($allClassNames) ? 'disabled' : '' ?>>
                 <option value="default">Klasse auswählen:</option>
-                <?php foreach ($classController->getAllClassNames() as $classNames): ?>
+                <?php foreach ($allClassNames as $classNames): ?>
                     <option value="<?= htmlspecialchars($classNames) ?>"
                         <?= isset($_POST['classes']) && $_POST['classes'] == $classNames ? 'selected' : '' ?>>
                         <?= htmlspecialchars($classNames) ?>

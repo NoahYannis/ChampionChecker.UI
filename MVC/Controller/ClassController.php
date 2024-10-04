@@ -68,11 +68,10 @@ class ClassController implements IController
 
         $class = $this->getById($classId);
         $className = $class->getName();
-        $_SESSION['classes'][$classId] = $className;
         return $className;
     }
 
-    function getAllClassNames(): array
+    public function getAllClassNames(): array
     {
         global $classController;
 
@@ -96,9 +95,11 @@ class ClassController implements IController
 
     public function getByName(string $name): ?ClassModel
     {
-        foreach ($this->cachedClasses as $classModel) {
-            if ($classModel->getName() === $name) {
-                return $classModel; // Gecachte Klasse zurückgeben
+        if (isset($_SESSION['classes'])) {
+            foreach ($_SESSION['classes'] as $class) {
+                if ($class->getName() === $name) {
+                    return $class; 
+                }
             }
         }
 

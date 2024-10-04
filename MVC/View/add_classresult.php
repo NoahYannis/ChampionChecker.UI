@@ -144,7 +144,7 @@
 
 					<!-- Gruppe für Einzeln -->
 					<optgroup label="Einzel">
-						<?php foreach ($soloCompetitions as $comp): ?>
+ 						<?php foreach ($soloCompetitions as $comp): ?>
 							<option value="<?= htmlspecialchars($comp->getName()) ?>"
 								<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
 								<?= htmlspecialchars($comp->getName()) ?>
