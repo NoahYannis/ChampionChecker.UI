@@ -52,7 +52,7 @@
 				$_SESSION['selectedClass'] = null;
 				$_SESSION['selectedCompetition'] = null;
 				$_POST['points'] = null;
-				header("Location: " . $_SERVER['REQUEST_URI']); // Redirect, um ernutes Absenden zu verhindern
+				header("Location: " . $_SERVER['REQUEST_URI']); // Redirect, um erneutes Absenden zu verhindern
 				exit();
 			}
 		}

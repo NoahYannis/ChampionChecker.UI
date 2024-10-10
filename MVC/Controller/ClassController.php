@@ -58,11 +58,11 @@ class ClassController implements IController
 
     public function getIdFromName($className): int
     {
-        $className = strtoupper($className); 
+        $className = strtoupper($className);
 
         if (isset($_SESSION['classes'])) {
             foreach ($_SESSION['classes'] as $class) {
-            if (strtoupper($class->getName()) === $className) {
+                if (strtoupper(trim($class->getName())) === strtoupper(trim($className))) {
                     return $class->getId();
                 }
             }
@@ -73,7 +73,7 @@ class ClassController implements IController
         if ($class === null) {
             return -1;
         }
-        
+
         $classId = $class->getId();
         return $classId;
     }
@@ -125,7 +125,7 @@ class ClassController implements IController
         if (isset($_SESSION['classes'])) {
             foreach ($_SESSION['classes'] as $class) {
                 if ($class->getName() === $name) {
-                    return $class; 
+                    return $class;
                 }
             }
         }
