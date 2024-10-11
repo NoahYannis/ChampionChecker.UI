@@ -17,14 +17,16 @@ use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $json = file_get_contents('php://input');
 
-    if (empty($json)) {
+    // Enthält den POST-Request Body.
+    $postData = file_get_contents('php://input');
+
+    if (empty($postData)) {
         header("Location: " . $_SERVER['REQUEST_URI']);
         exit; 
     }
 
-    $studentsData = json_decode($json, true);
+    $studentsData = json_decode($postData, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
         header("Location: " . $_SERVER['REQUEST_URI']);
@@ -33,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     session_start();
     $classController = ClassController::getInstance();
-    $allClassNames = $_SESSION["classNames"] ?? $classController->getAllClassNames();
     $studentController = StudentController::getInstance();
 
    foreach ($studentsData as $data) {
@@ -48,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $studentController->create($student);
     }
 }
-
 ?>
 
 <body>
@@ -66,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         let students = [];
 
-
         fileInput.addEventListener('change', function() {
             // Importieren-Button aktivieren, wenn Datei ausgewählt.
             submitButton.disabled = fileInput.files.length == 0 || students.length == 0;
@@ -83,8 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             const reader = new FileReader();
             reader.onload = function(e) {
-                const fileContent = e.target.result; // FileReader, der das onload-Event ausgelöst hat.
-                const students = parseCSV(fileContent);
+                const fileContent = e.target.result; // e.target = FileReader, der das onload-Event ausgelöst hat.
+                students = parseCSV(fileContent);
                 displayPreview(students);
             };
 
@@ -101,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         lastName,
                         firstName,
                         className,
-                        isMale: isMale === 'männlich'
+                        isMale: isMale.toLowerCase() === 'männlich'
                     });
                 }
             }
@@ -128,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Alle Zeilen bis auf Kopfzeile durchgehen.
             students.forEach(student => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${student.firstName}</td><td>${student.lastName}</td><td>${student.isMale ? 'Männlich' : 'Weiblich'}</td><arguments<td>${student.className}</td>`;
+                row.innerHTML = `<td>${student.firstName}</td><td>${student.lastName}</td><td>${student.isMale ? 'Männlich' : 'Weiblich'}</td><td>${student.className}</td>`;
                 table.appendChild(row);
             });
 

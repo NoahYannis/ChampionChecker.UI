@@ -122,9 +122,11 @@ class ClassController implements IController
 
     public function getByName(string $name): ?ClassModel
     {
+        $name = strtoupper(trim($name));
+
         if (isset($_SESSION['classes'])) {
             foreach ($_SESSION['classes'] as $class) {
-                if ($class->getName() === $name) {
+                if (strtoupper(trim($class->getName())) === $name) {
                     return $class;
                 }
             }
@@ -137,7 +139,7 @@ class ClassController implements IController
         }
 
         foreach ($allClasses as $classData) {
-            if (isset($classData['name']) && $classData['name'] === $name) {
+            if (isset($classData['name']) && strtoupper(trim($classData['name'])) === $name) {
                 return new ClassModel(
                     id: $classData['id'],
                     name: $classData['name'],
