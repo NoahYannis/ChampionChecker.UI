@@ -14,13 +14,8 @@ class ClassController implements IController
     private string $apiUrl;
     private array $cachedClasses = [];
 
-    public function __construct($apiUrl = null)
+    public function __construct()
     {
-        if ($apiUrl !== null) {
-            $this->apiUrl = $apiUrl;
-            return; // Für Unit Tests apiUrl setzen, damit config.php nicht benötigt wird
-        }
-
         $config = require $_SERVER['DOCUMENT_ROOT'] . '/ChampionChecker.UI/config.php';
         $this->apiUrl = $config['api_url'];
     }

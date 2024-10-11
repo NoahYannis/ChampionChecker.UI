@@ -12,9 +12,8 @@ class ClassControllerTests extends TestCase
 
     protected function setUp(): void
     {
-
-        $this->classController = $this->getMockBuilder(ClassController::class) // Clas-Controller Mock erstellen
-            ->setConstructorArgs(['apiUrl']) // String übergeben, sodass config.php nicht benötigt wird
+        $this->classController = $this->getMockBuilder(ClassController::class) // Class-Controller Mock erstellen
+            ->disableOriginalConstructor() // Nicht aufrufen, da config.php in Tests nicht verfügbar ist
             ->onlyMethods(['getApiData', 'sendApiRequest']) // Zu mockende Methoden
             ->getMock();
 
@@ -26,7 +25,6 @@ class ClassControllerTests extends TestCase
                 'pointsAchieved' => 10,
                 'classTeacherId' => null
             ]);
-
 
         $this->classController->method('sendApiRequest')
             ->willReturnCallback(function () {});
