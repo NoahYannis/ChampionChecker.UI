@@ -101,28 +101,6 @@ class ClassController implements IController
         return $className;
     }
 
-    public function getAllClassNames(): array
-    {
-        global $classController;
-
-        if (isset($_SESSION['classNames'])) {
-            return $_SESSION['classNames'];
-        }
-
-        $classes = $classController->getAll();
-        $classNames = [];
-
-        foreach ($classes as $class) {
-            $classNames[] = $class->getName();
-        }
-
-        $_SESSION['classes'] = $classes;
-        $_SESSION['classNames'] = $classNames;
-
-        return $classNames;
-    }
-
-
     public function getByName(string $name): ?ClassModel
     {
         $name = strtoupper(trim($name));
