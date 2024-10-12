@@ -31,8 +31,7 @@ class ClassController implements IController
     /**
      * @param int $id
      * @return ClassModel|null
-     */
-    public function getById(int $id): ?ClassModel
+     */ public function getById(int $id): ?ClassModel
     {
         if (isset($this->cachedClasses[$id])) {
             return $this->cachedClasses[$id];
@@ -40,21 +39,27 @@ class ClassController implements IController
 
         $data = $this->getApiData("/api/class/$id");
 
-        if (isset($data['id'])) {
+        if (empty($data)) {
+            return null;
+        }
+
+        if (isset($data[0]['id'])) {
             $classModel = new ClassModel(
-                id: $data['id'],
-                name: $data['name'],
-                students: $data['students'] ?? [],
-                pointsAchieved: $data['pointsAchieved'],
-                classTeacherId: $data['classTeacherId'] ?? null
+                id: $data[0]['id'],
+                name: $data[0]['name'],
+                students: $data[0]['students'] ?? [],
+                pointsAchieved: $data[0]['pointsAchieved'],
+                classTeacherId: $data[0]['classTeacherId'] ?? null
             );
 
             // Klasse im Cache speichern
             $this->cachedClasses[$id] = $classModel;
             return $classModel;
         }
+
         return null;
     }
+
 
     public function getIdFromName($className): int
     {

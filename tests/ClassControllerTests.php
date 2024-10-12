@@ -19,20 +19,30 @@ class ClassControllerTests extends TestCase
 
         $this->classController->method('getApiData')
             ->willReturn([
-                'id' => 1,
-                'name' => 'EFI22A',
-                'students' => [],
-                'pointsAchieved' => 10,
-                'classTeacherId' => null
+                [
+                    'id' => 1,
+                    'name' => 'EFI22A',
+                    'students' => [],
+                    'pointsAchieved' => 10,
+                    'classTeacherId' => null
+                ]
             ]);
 
         $this->classController->method('sendApiRequest')
             ->willReturnCallback(function () {});
     }
 
-    public function testGetById()
+    public function test_GetById()
     {
         $classModel = $this->classController->getById(1);
+        $this->assertInstanceOf(ClassModel::class, $classModel);
+        $this->assertEquals(1, $classModel->getId());
+        $this->assertEquals('EFI22A', $classModel->getName());
+    }
+
+    public function test_getByName()
+    {
+        $classModel = $this->classController->getByName('efi22a');
         $this->assertInstanceOf(ClassModel::class, $classModel);
         $this->assertEquals(1, $classModel->getId());
         $this->assertEquals('EFI22A', $classModel->getName());
