@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
+    <link rel="stylesheet" type="text/css" href="../../styles/import_students_csv.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
     <title>CSV-Import</title>
 </head>
@@ -23,26 +24,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($postData)) {
         header("Location: " . $_SERVER['REQUEST_URI']);
-        exit; 
+        exit;
     }
 
     $studentsData = json_decode($postData, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
         header("Location: " . $_SERVER['REQUEST_URI']);
-        exit; 
+        exit;
     }
 
     session_start();
     $classController = ClassController::getInstance();
     $studentController = StudentController::getInstance();
 
-   foreach ($studentsData as $data) {
+    foreach ($studentsData as $data) {
         $student = new Student(
             id: null,
             firstName: $data['firstName'],
-            lastName: $data['lastName'],   
-            isMale: $data['isMale'] == true, 
+            lastName: $data['lastName'],
+            isMale: $data['isMale'] == true,
             classId: $classController->getIdFromName($data['className'])
         );
 
@@ -52,12 +53,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <body>
-    <form id="uploadForm" action="" method="POST">
-        <label for="file">CSV-Datei auswählen:</label>
-        <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
-        <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">Importieren</button>
+    <form class="uploadForm" id="uploadForm" action="" method="POST">
+        <fieldset>
+            <legend>Schüler importieren </legend>
+            <div class="import-header">
+                <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
+            </div>
+            <div class="student-preview" id="studentPreview"></div> <!-- Import-Vorschau -->
+            <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">Importieren</button>
+        </fieldset>
     </form>
-    <div id="studentPreview"></div> <!-- Import-Vorschau -->
 
     <script>
         // Schüler-Vorschau dynamisch nach Auswahl einer CSV-Datei anzeigen (JavaScript nötig).

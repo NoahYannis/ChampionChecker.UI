@@ -1,0 +1,113 @@
+form.uploadForm {
+  height: 80%;
+  width: 60%;
+  margin: 0 auto; /* zentrieren */
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+fieldset {
+  border: 6px solid #f8d294;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.import-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 50 auto;
+  width: 100%;
+  text-align: center;
+  gap: 10px;
+}
+
+legend {
+  font-size: clamp(2rem, 2.5vw, 3rem);
+  font-weight: bold;
+  color: #f8d294;
+  margin-left: 50px;
+  -webkit-text-stroke: 0.75px black;
+}
+
+input {
+  display: flex;
+  gap: 10px;
+  font-size: clamp(1rem, 1vw, 2rem);
+  margin: 20px auto;
+  width: 60%;
+  text-align-last: center;
+  justify-content: center;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input:hover {
+  border-color: #f8d294;
+}
+
+abbr {
+  margin: 0;
+  padding: 0;
+  text-decoration: underline;
+  justify-content: center;
+  text-align: center;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.student-preview {
+  text-align: center;
+  margin: 0 auto;
+  width: 100%;
+  text-align: center;
+  padding: 10px;
+}
+
+table {
+  width: 80%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  margin: 0 auto;
+
+  th {
+    background-color: #f8d294;
+    color: black;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+  }
+
+  td {
+    padding: 10px;
+    border: 2px solid #ccc;
+    text-align: center;
+  }
+}
+
+#submitButton {
+  justify-content: center;
+  border-radius: 8px;
+  background-color: #f8d294;
+  width: clamp(100px, 20vw, 200px);
+  padding: 8px;
+  align-items: center;
+  font-weight: bold;
+  font-size: clamp(1rem, 1vw, 2rem);
+  margin: 0 auto 20px auto;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+
+  &:hover:not(:disabled) {
+    cursor: pointer;
+    transform: translateY(2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    background-color: #d8b77a;
+  }
+}
