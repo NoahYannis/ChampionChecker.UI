@@ -57,7 +57,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <fieldset>
             <legend>Schüler importieren </legend>
             <div class="import-header">
-                <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
+                <label id="upload-label" for="fileToUpload" class="custom-file-upload">
+                    Bitte wählen Sie eine CSV-Datei aus:
+                    <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
+                </label>
             </div>
             <div class="student-preview" id="studentPreview"></div> <!-- Import-Vorschau -->
             <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">Importieren</button>
@@ -84,6 +87,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!file) {
                 return;
             }
+
+            // Namen der ausgewählten Datei anzeigen im File-Input.
+            document.getElementById('upload-label').innerText = file.name;
 
             const reader = new FileReader();
             reader.onload = function(e) {
