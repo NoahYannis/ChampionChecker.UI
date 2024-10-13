@@ -26,8 +26,8 @@
 
 		session_start();
 
-		$selectedCompetition = $_SESSION['selectedCompetition'] ?? null;
-		$selectedClass = $_SESSION['selectedClass'] ?? null;
+		$selectedCompetition = $_SESSION['classresult_selectedCompetition'] ?? null;
+		$selectedClass = $_SESSION['classresult_selectedClass'] ?? null;
 
 		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($selectedCompetition)) {
 
@@ -39,7 +39,7 @@
 			// Die Klasse wurde zum ersten Mal gesetzt oder geändert. Klassen-Objekt neu laden.
 			if (isset($_POST['classes']) && (!isset($selectedClass) || $selectedClass->getName() !== $_POST['classes'])) {
 				$classController = ClassController::getInstance();
-				$_SESSION['selectedClass'] = $selectedClass = $classController->getByName($_POST['classes']);
+				$_SESSION['classresult_selectedCompetition'] = $selectedClass = $classController->getByName($_POST['classes']);
 			}
 
 			// Wenn der Absenden-Button gedrückt wurde, das Wettbewerbsergebnis an die API schicken.
@@ -49,15 +49,15 @@
 				$compResController = new CompetitionResultController();
 				$compResController->create($compResult);
 
-				$_SESSION['selectedClass'] = null;
-				$_SESSION['selectedCompetition'] = null;
+				$_SESSION['classresult_selectedClass'] = null;
+				$_SESSION['classresult_selectedCompetition'] = null;
 				$_POST['points'] = null;
 				header("Location: " . $_SERVER['REQUEST_URI']); // Redirect, um erneutes Absenden zu verhindern
 				exit();
 			}
 		}
 
-		if (!isset($_SESSION['competitions'])) {
+		if (!isset($_SESSION['classresult_competitions'])) {
 
 			// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
 			$competitionController = CompetitionController::getInstance();
@@ -75,14 +75,14 @@
 			}
 
 			// Wettbewerbe cachen
-			$_SESSION['competitions'] = [
+			$_SESSION['classresult_competitions'] = [
 				'team' => $teamCompetitions,
 				'solo' => $soloCompetitions
 			];
 		} else {
 			// Gecachte Wettbewerbe laden
-			$teamCompetitions = $_SESSION['competitions']['team'];
-			$soloCompetitions = $_SESSION['competitions']['solo'];
+			$teamCompetitions = $_SESSION['classresult_competitions']['team'];
+			$soloCompetitions = $_SESSION['classresult_competitions']['solo'];
 		}
 
 		$competitionSelected = !empty($_POST['competitions']);
@@ -98,7 +98,7 @@
 				if ($comp->getName() === $selectedCompName) {
 
 					$selectedCompetition = $comp;
-					$_SESSION['selectedCompetition'] = $selectedCompetition;
+					$_SESSION['classresult_selectedCompetition'] = $selectedCompetition;
 					break;
 				}
 			}
@@ -119,7 +119,7 @@
 			foreach ($classParticipants as $class) {
 				if ($class['name'] === $_POST['classes']) {
 					$classController = ClassController::getInstance();
-					$_SESSION['selectedClass'] = $classController->getByName($_POST['classes']);
+					$_SESSION['classresult_selectedClass'] = $classController->getByName($_POST['classes']);
 					break; // Selektierte Klasse in Sitzung speichern
 				}
 			}

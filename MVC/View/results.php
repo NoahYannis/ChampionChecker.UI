@@ -29,9 +29,9 @@ $classController = new ClassController();
 function loadCompetitionResults($cacheDuration = 300): array
 {
     // Gecachte Daten für die Dauer des Cache zurückgeben.
-    if (isset($_SESSION['competitionResults']) && isset($_SESSION['competitionResultsTimestamp'])) {
-        if ((time() - $_SESSION['competitionResultsTimestamp']) < $cacheDuration) {
-            return $_SESSION['competitionResults'];
+    if (isset($_SESSION['results_competitionResults']) && isset($_SESSION['results_competitionResultsTimestamp'])) {
+        if ((time() - $_SESSION['results_competitionResultsTimestamp']) < $cacheDuration) {
+            return $_SESSION['results_competitionResults'];
         }
     }
 
@@ -40,8 +40,8 @@ function loadCompetitionResults($cacheDuration = 300): array
     $competitionResults = $competitionResultController->getAll();
 
     // Ergebnisse und Zeitstempel in der Session speichern
-    $_SESSION['competitionResults'] = $competitionResults;
-    $_SESSION['competitionResultsTimestamp'] = time();
+    $_SESSION['results_competitionResults'] = $competitionResults;
+    $_SESSION['results_competitionResultsTimestamp'] = time();
 
     return $competitionResults;
 }
@@ -49,8 +49,8 @@ function loadCompetitionResults($cacheDuration = 300): array
 
 function getCompetitionName($competitionId): string
 {
-    if (isset($_SESSION['competitions']) && isset($_SESSION['competitions'][$competitionId])) {
-        return $_SESSION['competitions'][$competitionId];
+    if (isset($_SESSION['results_competitions']) && isset($_SESSION['results_competitions'][$competitionId])) {
+        return $_SESSION['results_competitions'][$competitionId];
     }
 
     $competitionController = new CompetitionController();
@@ -61,7 +61,7 @@ function getCompetitionName($competitionId): string
     }
 
     $compName = $competition->getName();
-    $_SESSION['competitions'][$competitionId] = $compName;
+    $_SESSION['results_competitions'][$competitionId] = $compName;
     return $compName;
 }
 
