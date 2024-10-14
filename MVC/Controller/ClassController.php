@@ -141,8 +141,8 @@ class ClassController implements IController
     public function getAll(): array
     {
         // Überprüfen, ob die Klassen bereits im Cache sind
-        if (!empty($this->cachedClasses)) {
-            return $this->cachedClasses;
+        if (!empty($_SESSION['classes'])) {
+            return $_SESSION['classes'];
         }
 
         $data = $this->getApiData('/api/class');
@@ -182,6 +182,10 @@ class ClassController implements IController
         ];
 
         $this->sendApiRequest('/api/class', 'POST', $data);
+
+        if (isset($_SESSION['classes'])) {
+            $_SESSION['classes'][] = $model;
+        }
     }
 
     /**
@@ -202,6 +206,15 @@ class ClassController implements IController
         ];
 
         $this->sendApiRequest("/api/class/{$model->getId()}", 'PUT', $data);
+
+        if (isset($_SESSION['classes'])) {
+            foreach ($_SESSION['classes'] as $key => $class) {
+                if ($class->getId() === $model->getId()) {
+                    $_SESSION['classes'][$key] = $model;
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -211,6 +224,15 @@ class ClassController implements IController
     public function delete(int $id): void
     {
         $this->sendApiRequest("/api/class/$id", 'DELETE');
+
+        if (isset($_SESSION['classes'])) {
+            foreach ($_SESSION['classes'] as $key => $class) {
+                if ($class->getId() === $id) {
+                    unset($_SESSION['classes'][$key]);
+                    break;
+                }
+            }
+        }
     }
 
 
