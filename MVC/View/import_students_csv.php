@@ -58,7 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <legend>Schüler importieren </legend>
             <div class="import-header">
                 <label id="upload-label" for="fileToUpload" class="custom-file-upload">
-                    Bitte wählen Sie eine CSV-Datei aus:
+                    CSV-Datei auswählen:
                     <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
                 </label>
             </div>
