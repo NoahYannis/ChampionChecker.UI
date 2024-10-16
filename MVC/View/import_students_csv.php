@@ -88,6 +88,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 return;
             }
 
+            if (!file.name.endsWith('.csv')) {
+                alert('Bitte wählen Sie eine CSV-Datei aus.');
+                return;
+            }
+
             // Namen der ausgewählten Datei anzeigen im File-Input.
             document.getElementById('upload-label').innerText = file.name;
 
