@@ -29,17 +29,42 @@
     justify-content: center;
     flex-grow: 1;
     text-align: center;
-  
+
     li {
       list-style: none;
       margin-right: 25px;
   
       a {
+        position: relative; 
         font-size: 1.2rem;
-        font-weight: bold;
         text-decoration: none;
+        font-weight: 500;
         color: black;
         padding: 10px 15px;
+        transition: color 0.3s ease;
+        transition: text-shadow 0.3s ease;
+  
+        &:hover {
+          font-weight: bold;
+        }
+  
+        /* Unterstrich für Animation. Wird beim Hovern sichtbar skaliert */
+        &::after {
+          content: '';
+          position: absolute;
+          left: 0;
+          bottom: 0;
+          width: 100%;
+          height: 2px;
+          background-color: #a4a4; 
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.3s ease; 
+        }
+  
+        &:hover::after {
+          transform: scaleX(1); 
+        }
       }
     }
   }
