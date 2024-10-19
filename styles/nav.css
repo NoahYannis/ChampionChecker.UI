@@ -1,27 +1,18 @@
 .nav-bar {
   padding-inline: 15px;
   background-color: #f8d294;
-  height: clamp(50px, 10vh, 100px);
+  height: 10vh;
   display: flex;
   width: 100%;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .nav-logo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  margin-inline: 20px;
-  font-weight: 700;
-  color: #fff;
-  height: 50%;
+  margin-left: 20px;
 
   img {
-    width: auto;
-    height: 75px;
-    display: block;
+      height: 10vh;
+      padding: 10px;
+      display: block;
   }
 }
 
@@ -30,33 +21,33 @@
   flex-grow: 1;
   justify-content: center;
   align-items: center;
-}
 
-ul {
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: center;
-  flex-grow: 1;
-  text-align: center;
-
-  li {
-    list-style: none;
-    margin-right: 25px;
-
-    a {
-      font-size: 1.2rem;
-      font-weight: bold;
-      text-decoration: none;
-      color: black;
-      padding: 10px 15px;
+  ul {
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    text-align: center;
+  
+    li {
+      list-style: none;
+      margin-right: 25px;
+  
+      a {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: black;
+        padding: 10px 15px;
+      }
     }
   }
 }
 
 .profile {
-  height: 65px;
-  width: 65px;
+  height: 10vh;
+  width: 10vh;
   overflow: hidden;
   border-radius: 50%;
   display: flex;
@@ -67,9 +58,53 @@ ul {
 
   img {
     height: 100%;
-    width: auto;
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: cover;
+    border-radius: 16px;
+    padding: 10px;
+  }
+}
+
+.profile-menu {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 200px;
+  padding: 0;
+  border-radius: 8px;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+
+    li {
+      padding: 10px 15px;
+      font-size: 1rem;
+      width: 100%;
+      color: #333;
+      cursor: pointer;
+      border-bottom: 1px solid #ddd;
+
+      a {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-decoration: none;
+        color: black;
+        padding: 10px 15px;
+      }
+
+      &:hover {
+        background-color: #f0f0f0;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
   }
 }

@@ -28,8 +28,37 @@
         <div class="profile" id="profile">
             <img src="../../profile.webp" alt="Profilbild" />
         </div>
+
+        <div class="profile-menu" id="profile-menu" style="display: none;">
+            <ul>
+                <li><a href="#">Registrieren</a></li>
+                <li><a href="#">Anmelden</a></li>
+                <li><a href="#">Einstellungen</a></li>
+            </ul>
+        </div>
     </nav>
 </body>
 
+<script>
+    const profilePic = document.getElementById('profile');
+    const profileMenu = document.getElementById('profile-menu');    
+
+    profilePic.addEventListener('click', function(event) {
+        if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
+            profileMenu.style.display = 'none';
+            return;
+        }
+        profileMenu.style.display = 'block';
+        profileMenu.style.left = `${event.pageX - 200}px`; // Für mehr Platz etwas nach links verschieben
+        profileMenu.style.top = `${event.pageY + 30}px`; 
+    });
+
+    // Click-Event ebenfalls auf document für Klicks außerhalb des Profilbildes
+    document.addEventListener('click', function(event) {
+        if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
+            profileMenu.style.display = 'none';
+        }
+    });
+</script>
 
 </html>
