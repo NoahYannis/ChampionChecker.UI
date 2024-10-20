@@ -12,10 +12,15 @@
 
 <body>
     <nav class="nav-bar">
-        <div class="nav-logo">
-            <a href="home.php">
-                <img src="../../logo.png" alt="ChampionChecker Logo" />
-            </a>
+        <div class="hamburger-logo-group">
+            <label class="hamburger-menu">
+                <input type="checkbox" />
+            </label>
+            <div class="nav-logo">
+                <a href="home.php">
+                    <img src="../../logo.png" alt="ChampionChecker Logo" />
+                </a>
+            </div>
         </div>
         <div class="nav-items">
             <ul>
@@ -41,7 +46,7 @@
 
 <script>
     const profilePic = document.getElementById('profile');
-    const profileMenu = document.getElementById('profile-menu');    
+    const profileMenu = document.getElementById('profile-menu');
 
     profilePic.addEventListener('click', function(event) {
         if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
@@ -50,7 +55,7 @@
         }
         profileMenu.style.display = 'block';
         profileMenu.style.left = `${event.pageX - 200}px`; // Für mehr Platz etwas nach links verschieben
-        profileMenu.style.top = `${event.pageY + 30}px`; 
+        profileMenu.style.top = `${event.pageY + 30}px`;
     });
 
     // Click-Event ebenfalls auf document für Klicks außerhalb des Profilbildes
