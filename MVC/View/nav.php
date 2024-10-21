@@ -11,10 +11,20 @@
 </head>
 
 <body>
+    <aside class="sidebar">
+        <div class="nav-items">
+            <ul>
+                <li><a href="results.php">Ergebnisse</a></li>
+                <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
+                <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
+                <li><a href="import_students_csv.php">Schüler-CSV-Import</a></li>
+            </ul>
+        </div>
+    </aside>
     <nav class="nav-bar">
         <div class="hamburger-logo-group">
             <label class="hamburger-menu">
-                <input type="checkbox" />
+                <input type="checkbox" id="hamburger-input" />
             </label>
             <div class="nav-logo">
                 <a href="home.php">
@@ -47,6 +57,17 @@
 <script>
     const profilePic = document.getElementById('profile');
     const profileMenu = document.getElementById('profile-menu');
+    const hamburgerInput = document.getElementById('hamburger-input');
+    const sideBar = document.querySelector('.sidebar');
+
+    // Sidebar bei Klick auf Hamburger-Icon toggeln
+    hamburgerInput.addEventListener('change', function() {
+        if (this.checked) {
+            sideBar.style.left = '0';
+        } else {
+            sideBar.style.left = '-250px';
+        }
+    });
 
     profilePic.addEventListener('click', function(event) {
         if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
