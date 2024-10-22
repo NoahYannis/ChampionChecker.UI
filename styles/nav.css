@@ -170,7 +170,6 @@
   width: var(--bar-width);
   z-index: 10;
   cursor: pointer;
-  margin-right: auto;
 
   input {
     appearance: none;
@@ -224,15 +223,15 @@
   height: 100vh;
   background-color: var(--primary-color);
   position: fixed;
-  top: 0;
   left: -250px;
   transition: left 0.3s ease;
 }
 
-
 /* Bei kleineren Bildschirmen das Hamburger-Menü anzeigen */
 @media (max-width: 800px) {
-  .nav-items {
+
+  /* Nur Nav-Items im Hamburger-Menü anzeigen */
+  .nav-items:not(.sidebar .nav-items) {
     display: none;
   }
 
@@ -240,17 +239,23 @@
     display: flex;
   }
 
-  .sidebar {
-    display: block;
-    position: fixed;
+  .sidebar ul {
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    margin-top: 15vh;
+
+    li a {
+      font-weight: bold;
+      font-size: clamp(1rem, 5vw, 1.3rem);
+      padding: 10px;
+      text-align: left; 
+    }
   }
 }
 
 @media (min-width: 801px) {
-  .hamburger-menu {
-    display: none;
-  }
-
+  .hamburger-menu,
   .sidebar {
     display: none;
   }
