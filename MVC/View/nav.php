@@ -34,10 +34,10 @@
         </div>
         <div class="nav-items">
             <ul>
-                <li><a href="results.php">Ergebnisse</a></li>
-                <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                <li><a href="import_students_csv.php">Schüler-CSV-Import</a></li>
+                <li><a href="results.php" data-text="Ergebnisse">Ergebnisse</a></li>
+                <li><a href="add_classresult.php" data-text="Klassenergebnis hinzufügen">Klassenergebnis hinzufügen</a></li>
+                <li><a href="add_soloresult.php" data-text="Soloergebnis hinzufügen">Soloergebnis hinzufügen</a></li>
+                <li><a href="import_students_csv.php" data-text="Schüler-CSV-Import">Schüler-CSV-Import</a></li>
             </ul>
         </div>
         <div class="profile" id="profile">
