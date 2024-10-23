@@ -10,122 +10,117 @@
 </head>
 
 <body>
+	<?php
+	require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
+	session_start();
+
+	include 'nav.php';
+
+	use MVC\Model\CompetitionResult;
+	use MVC\Controller\CompetitionController;
+	use MVC\Controller\CompetitionResultController;
+	use MVC\Controller\ClassController;
+
+	$selectedCompetition = $_SESSION['classresult_selectedCompetition'] ?? null;
+	$selectedClass = $_SESSION['classresult_selectedClass'] ?? null;
+
+	if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($selectedCompetition)) {
+		// Wenn sich der Wettbewerb ändert, die selektierte Klasse zurücksetzen.
+		if (isset($_POST['competitions']) && $_POST['competitions'] !== $selectedCompetition->getName()) {
+			unset($_POST['classes']); // Klasse zurücksetzen
+		}
+
+		// Die Klasse wurde zum ersten Mal gesetzt oder geändert. Klassen-Objekt neu laden.
+		if (isset($_POST['classes']) && (!isset($selectedClass) || $selectedClass->getName() !== $_POST['classes'])) {
+			$classController = ClassController::getInstance();
+			$_SESSION['classresult_selectedCompetition'] = $selectedClass = $classController->getByName($_POST['classes']);
+		}
+
+		// Wenn der Absenden-Button gedrückt wurde, das Wettbewerbsergebnis an die API schicken.
+		if (!empty($_POST['points']) && isset($selectedClass)) {
+			$compResult = new CompetitionResult(null, $_POST['points'],  $selectedCompetition->getId(), $selectedClass->getId(), null);
+			$compResController = new CompetitionResultController();
+			$compResController->create($compResult);
+
+			$_SESSION['classresult_selectedClass'] = null;
+			$_SESSION['classresult_selectedCompetition'] = null;
+			$_POST['points'] = null;
+			header("Location: " . $_SERVER['REQUEST_URI']); // Redirect, um erneutes Absenden zu verhindern
+			exit();
+		}
+	}
+
+	if (!isset($_SESSION['classresult_competitions'])) {
+		// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
+		$competitionController = CompetitionController::getInstance();
+		$competitionModels = $competitionController->getAll();
+
+		$teamCompetitions = [];
+		$soloCompetitions = [];
+
+		foreach ($competitionModels as $comp) {
+			if ($comp->getIsTeam()) {
+				$teamCompetitions[] = $comp;
+			} else {
+				$soloCompetitions[] = $comp;
+			}
+		}
+
+		// Wettbewerbe cachen
+		$_SESSION['classresult_competitions'] = [
+			'team' => $teamCompetitions,
+			'solo' => $soloCompetitions
+		];
+	} else {
+		// Gecachte Wettbewerbe laden
+		$teamCompetitions = $_SESSION['classresult_competitions']['team'];
+		$soloCompetitions = $_SESSION['classresult_competitions']['solo'];
+	}
+
+	$competitionSelected = !empty($_POST['competitions']);
+	$participantClassesNames = [];
+
+	// Selektierten Wettbewerb laden falls vorhanden
+	if ($competitionSelected) {
+		$selectedCompName = $_POST['competitions'];
+		$allCompetitions = array_merge($teamCompetitions, $soloCompetitions);
+
+		foreach ($allCompetitions as $comp) {
+			if ($comp->getName() === $selectedCompName) {
+				$selectedCompetition = $comp;
+				$_SESSION['classresult_selectedCompetition'] = $selectedCompetition;
+				break;
+			}
+		}
+
+		// Klassen des selektierten Wettbewerbs laden
+		if ($selectedCompetition) {
+			$classParticipants = $selectedCompetition->getClassParticipants();
+
+			foreach ($classParticipants as $class) {
+				$participantClassesNames[] = $class['name'];
+			}
+		}
+	}
+
+	$classSelected = !empty($_POST['classes']);
+
+	if ($classSelected) {
+		foreach ($classParticipants as $class) {
+			if ($class['name'] === $_POST['classes']) {
+				$classController = ClassController::getInstance();
+				$_SESSION['classresult_selectedClass'] = $classController->getByName($_POST['classes']);
+				break; // Selektierte Klasse in Sitzung speichern
+			}
+		}
+	}
+	?>
+
 	<header>
 		<h1>Klassenpunkte</h1>
 	</header>
 
 	<main class="main-content">
-
-		<?php
-		require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
-
-		use MVC\Model\CompetitionResult;
-		use MVC\Controller\CompetitionController;
-		use MVC\Controller\CompetitionResultController;
-		use MVC\Controller\ClassController;
-
-		session_start();
-
-		$selectedCompetition = $_SESSION['classresult_selectedCompetition'] ?? null;
-		$selectedClass = $_SESSION['classresult_selectedClass'] ?? null;
-
-		if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($selectedCompetition)) {
-
-			// Wenn sich der Wettbewerb ändert, die selektierte Klasse zurücksetzen.
-			if (isset($_POST['competitions']) && $_POST['competitions'] !== $selectedCompetition->getName()) {
-				unset($_POST['classes']); // Klasse zurücksetzen
-			}
-
-			// Die Klasse wurde zum ersten Mal gesetzt oder geändert. Klassen-Objekt neu laden.
-			if (isset($_POST['classes']) && (!isset($selectedClass) || $selectedClass->getName() !== $_POST['classes'])) {
-				$classController = ClassController::getInstance();
-				$_SESSION['classresult_selectedCompetition'] = $selectedClass = $classController->getByName($_POST['classes']);
-			}
-
-			// Wenn der Absenden-Button gedrückt wurde, das Wettbewerbsergebnis an die API schicken.
-			if (!empty($_POST['points']) && isset($selectedClass)) {
-
-				$compResult = new CompetitionResult(null, $_POST['points'],  $selectedCompetition->getId(), $selectedClass->getId(), null);
-				$compResController = new CompetitionResultController();
-				$compResController->create($compResult);
-
-				$_SESSION['classresult_selectedClass'] = null;
-				$_SESSION['classresult_selectedCompetition'] = null;
-				$_POST['points'] = null;
-				header("Location: " . $_SERVER['REQUEST_URI']); // Redirect, um erneutes Absenden zu verhindern
-				exit();
-			}
-		}
-
-		if (!isset($_SESSION['classresult_competitions'])) {
-
-			// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
-			$competitionController = CompetitionController::getInstance();
-			$competitionModels = $competitionController->getAll();
-
-			$teamCompetitions = [];
-			$soloCompetitions = [];
-
-			foreach ($competitionModels as $comp) {
-				if ($comp->getIsTeam()) {
-					$teamCompetitions[] = $comp;
-				} else {
-					$soloCompetitions[] = $comp;
-				}
-			}
-
-			// Wettbewerbe cachen
-			$_SESSION['classresult_competitions'] = [
-				'team' => $teamCompetitions,
-				'solo' => $soloCompetitions
-			];
-		} else {
-			// Gecachte Wettbewerbe laden
-			$teamCompetitions = $_SESSION['classresult_competitions']['team'];
-			$soloCompetitions = $_SESSION['classresult_competitions']['solo'];
-		}
-
-		$competitionSelected = !empty($_POST['competitions']);
-		$participantClassesNames = [];
-
-		// Selektierten Wettbewerb laden falls vorhanden
-		if ($competitionSelected) {
-
-			$selectedCompName = $_POST['competitions'];
-			$allCompetitions = array_merge($teamCompetitions, $soloCompetitions);
-
-			foreach ($allCompetitions as $comp) {
-				if ($comp->getName() === $selectedCompName) {
-
-					$selectedCompetition = $comp;
-					$_SESSION['classresult_selectedCompetition'] = $selectedCompetition;
-					break;
-				}
-			}
-
-			// Klassen des selektierten Wettbewerbs laden
-			if ($selectedCompetition) {
-				$classParticipants = $selectedCompetition->getClassParticipants();
-
-				foreach ($classParticipants as $class) {
-					$participantClassesNames[] = $class['name'];
-				}
-			}
-		}
-
-		$classSelected = !empty($_POST['classes']);
-
-		if ($classSelected) {
-			foreach ($classParticipants as $class) {
-				if ($class['name'] === $_POST['classes']) {
-					$classController = ClassController::getInstance();
-					$_SESSION['classresult_selectedClass'] = $classController->getByName($_POST['classes']);
-					break; // Selektierte Klasse in Sitzung speichern
-				}
-			}
-		}
-		?>
-
 		<form method="POST" action="">
 			<div class="styled-select">
 				<!-- Wettbewerbs-Auswahl -->
@@ -176,7 +171,6 @@
 
 	<script>
 		function submitForm() {
-
 			if (document.querySelector('select[name="competitions"]').value === 'default') {
 				alert('Bitte wählen Sie einen Wettbewerb aus.');
 				return;

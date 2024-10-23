@@ -1,5 +1,6 @@
 <?php
 require '../../vendor/autoload.php';
+include 'nav.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\ClassController;

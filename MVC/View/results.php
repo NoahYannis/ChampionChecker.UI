@@ -1,17 +1,6 @@
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less"  />
-    <link rel="stylesheet" type="text/css" href="../../styles/home.css" />
-    <script src="https://cdn.jsdelivr.net/npm/less"></script>
-</head>
-
 <?php
 require '../../vendor/autoload.php';
+include 'nav.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\CompetitionController;
@@ -23,9 +12,9 @@ session_start();
 $classController = new ClassController();
 
 /**
-* @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
-* @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
-*/
+ * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
+ * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
+ */
 function loadCompetitionResults($cacheDuration = 300): array
 {
     // Gecachte Daten für die Dauer des Cache zurückgeben.
@@ -98,11 +87,23 @@ $competitionResults = loadCompetitionResults();
 
 <!-- TODO: Filtern, mehr Infos anzeigen -->
 
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
+    <link rel="stylesheet" type="text/css" href="../../styles/home.css" />
+    <script src="https://cdn.jsdelivr.net/npm/less"></script>
+</head>
+
 <body>
     <header>
         <h1>Ergebnisübersicht</h1>
     </header>
-    
+
     <!-- Tabelle mit Klassenpunktzahlen -->
     <section>
         <?php printCompetitionResult($competitionResults); ?>

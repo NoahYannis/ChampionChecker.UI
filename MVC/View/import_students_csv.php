@@ -12,6 +12,7 @@
 
 <?php
 require '../../vendor/autoload.php';
+include 'nav.php';
 
 use MVC\Model\Student;
 use MVC\Controller\ClassController;
