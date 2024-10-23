@@ -58,6 +58,7 @@
     const profilePic = document.getElementById('profile');
     const profileMenu = document.getElementById('profile-menu');
     const hamburgerInput = document.getElementById('hamburger-input');
+    const hamburgerMenu = document.querySelector('.hamburger-menu');
     const sideBar = document.querySelector('.sidebar');
 
     // Sidebar bei Klick auf Hamburger-Icon toggeln
@@ -84,7 +85,14 @@
         if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
             profileMenu.style.display = 'none';
         }
+
+        // Hamburger-Menü ausblenden, wenn außerhalb geklickt wird
+        if (!hamburgerMenu.contains(event.target)) {
+            sideBar.style.left = '-250px';
+            hamburgerInput.checked = false;
+        }
     });
 </script>
+
 
 </html>
