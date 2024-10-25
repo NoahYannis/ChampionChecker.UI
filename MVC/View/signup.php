@@ -42,8 +42,10 @@ include 'nav.php'; ?>
         </div>
 
         <div class="button-container">
-            <button>Login</button>
-            <button>Login mit Moodle</button>
+            <button>Login E-Mail</button>
+            <button class="moodle-login">
+                <img src="../../moodle-logo.svg" alt="Moodle Logo">
+            </button>
         </div>
     </div>
 </body>

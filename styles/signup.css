@@ -23,7 +23,6 @@ body {
 .register-form {
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 fieldset {
@@ -117,7 +116,7 @@ input[type="submit"] {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 80%;
+  width: 60%;
 }
 
 button {
@@ -137,6 +136,17 @@ button {
   &:hover {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     background-color: #d8b77a;
+  }
+}
+
+.moodle-login {
+  max-height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 10px;
+  img {
+    max-height: 4rem;
   }
 }
 
@@ -166,5 +176,18 @@ button {
 
   button {
     min-width: 40%;
+    font-size: 1.2rem;
+  }
+
+  .button-container {
+    width: 30%;
+  }
+  .moodle-login {
+    max-height: 60px;
+    font-size: 1.2rem;
+
+    img {
+      max-height: 5rem;
+    }
   }
 }
