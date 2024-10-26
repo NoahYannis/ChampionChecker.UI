@@ -47,7 +47,7 @@
         <div class="profile-menu" id="profile-menu" style="display: none;">
             <ul>
                 <li><a href="signup.php">Registrieren</a></li>
-                <li><a href="#">Anmelden</a></li>
+                <li><a href="login.php">Anmelden</a></li>
                 <li><a href="#">Einstellungen</a></li>
             </ul>
         </div>
