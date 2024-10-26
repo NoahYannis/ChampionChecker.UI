@@ -149,6 +149,8 @@ button {
 .btn-register {
   padding: 10px 20px;
   border-radius: 8px;
+  border: 3px solid var(--primary-color);
+  background-color: transparent;
 }
 
 .moodle-login {
