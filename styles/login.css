@@ -61,7 +61,7 @@ input[type="password"] {
 }
 
 input[type="password"] {
-  margin-bottom: 20px;
+  margin-bottom: 0;
 }
 
 input[type="submit"] {
@@ -77,12 +77,24 @@ input[type="submit"] {
   margin: 5% auto;
   cursor: pointer;
   transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.3s;
+  border: 1px solid black;
 
   &:hover {
     transform: translateY(2px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     background-color: #d8b77a;
   }
+}
+
+.forgot-password {
+  display: inline-block;
+  background-color: transparent;
+  font-size: 0.8rem;
+  color: #007bff;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  margin: 5px 0 20px 5px;
 }
 
 .divider-container {
