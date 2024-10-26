@@ -66,16 +66,20 @@ table {
   margin: 0 auto;
 
   th {
+    position: sticky;
+    top: 0;
     background-color: #f8d294;
     color: black;
     padding: 10px;
     font-weight: bold;
+    z-index: 1;
   }
 
   td {
     padding: 10px;
     border: 2px solid #ccc;
     text-align: center;
+    z-index: 0;
   }
 }
 

@@ -240,6 +240,7 @@
   position: fixed;
   left: -250px;
   transition: left 0.3s ease;
+  z-index: 2;
 }
 
 /* Bei kleineren Bildschirmen das Hamburger-Menü anzeigen */
