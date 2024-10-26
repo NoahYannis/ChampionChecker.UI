@@ -14,8 +14,9 @@ fieldset {
 }
 
 legend {
-  font-size: clamp(2rem, 2.5vw, 3rem);
+  font-size: clamp(1.7rem, 2.5vw, 3rem);
   font-weight: bold;
+  white-space: nowrap;
   color: #f8d294;
   -webkit-text-stroke: 0.75px black;
 }
