@@ -70,6 +70,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button class="btn-register">Registrieren</button>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            var registerButton = document.querySelector('.btn-register');
+            registerButton.addEventListener('click', function() {
+                window.location.href = 'signup.php';
+            });
+        });
+    </script>
 </body>
 
 

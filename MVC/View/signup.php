@@ -76,14 +76,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="button-container">
-            <button>Login E-Mail</button>
+            <button id="login-email">Login E-Mail</button>
             <button class="moodle-login">
                 <img src="../../moodle-logo.svg" alt="Moodle Logo">
             </button>
         </div>
     </div>
-</body>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var emailButton = document.getElementById('login-email');
+            emailButton.addEventListener('click', function() {
+                window.location.href = 'login.php';
+            });
+
+            var moodleButton = document.querySelector('.moodle-login');
+            moodleButton.addEventListener('click', function() {
+                window.location.href = 'login.php';
+            });
+        });
+    </script>
+</body>
 
 
 </html>
