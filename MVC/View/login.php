@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="button-container">
                     <input type="submit" value="Login">
-                    <button class="moodle-login">
+                    <button class="moodle-login" onclick="window.location.href = 'login.php'">
                         <img src="../../moodle-logo.svg" alt="Moodle Logo">
                     </button>
                 </div>
@@ -67,19 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div>
-            <button class="btn-register">Registrieren</button>
+            <button class="btn-register" onclick="window.location.href = 'signup.php'">Registrieren</button>
         </div>
     </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            var registerButton = document.querySelector('.btn-register');
-            registerButton.addEventListener('click', function() {
-                window.location.href = 'signup.php';
-            });
-        });
-    </script>
 </body>
 
 
