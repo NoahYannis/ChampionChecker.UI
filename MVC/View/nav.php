@@ -1,3 +1,7 @@
+<?php
+$isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
+?>
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -46,9 +50,13 @@
 
         <div class="profile-menu" id="profile-menu" style="display: none;">
             <ul>
-                <li><a href="signup.php">Registrieren</a></li>
-                <li><a href="login.php">Anmelden</a></li>
-                <li><a href="#">Einstellungen</a></li>
+                <?php if ($isAuthenticated): ?>
+                    <li><a href="#" onclick="logout()">Ausloggen</a></li>
+                    <li><a href="settings.php">Einstellungen</a></li>
+                <?php else: ?>
+                    <li><a href="signup.php">Registrieren</a></li>
+                    <li><a href="login.php">Anmelden</a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </nav>
@@ -92,6 +100,14 @@
             hamburgerInput.checked = false;
         }
     });
+
+    function logout() {
+        fetch('../../logout.php', {
+                method: 'POST'
+            })
+            .then(() => window.location.href = 'home.php')
+            .catch(error => console.error('Fehler:', error));
+    }
 </script>
 
 

@@ -1,18 +1,5 @@
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
-    <link rel="stylesheet" type="text/css" href="../../styles/import_students_csv.css" />
-    <script src="https://cdn.jsdelivr.net/npm/less"></script>
-    <title>CSV-Import</title>
-</head>
-
 <?php
 require '../../vendor/autoload.php';
-include 'nav.php';
 
 use MVC\Model\Student;
 use MVC\Controller\ClassController;
@@ -51,7 +38,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $studentController->create($student);
     }
 }
+
+include 'nav.php';
 ?>
+
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
+    <link rel="stylesheet" type="text/css" href="../../styles/import_students_csv.css" />
+    <script src="https://cdn.jsdelivr.net/npm/less"></script>
+    <title>CSV-Import</title>
+</head>
 
 <body>
     <form class="uploadForm" id="uploadForm" action="" method="POST">

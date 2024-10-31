@@ -1,20 +1,7 @@
-<!DOCTYPE html>
-<html lang="de">
-
-<head>
-	<link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
-	<script src="https://cdn.jsdelivr.net/npm/less"></script>
-	<meta charset="utf-8">
-	<meta name="description" content="Klassenpunkte eintragen">
-	<title>Klassenpunkte eintragen</title>
-</head>
-
-<body>
 	<?php
+
 	require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 	session_start();
-
-	include 'nav.php';
 
 	use MVC\Model\CompetitionResult;
 	use MVC\Controller\CompetitionController;
@@ -114,84 +101,99 @@
 			}
 		}
 	}
+
+	include 'nav.php';
 	?>
 
-	<header>
-		<h1>Klassenpunkte</h1>
-	</header>
+	<!DOCTYPE html>
+	<html lang="de">
 
-	<main class="main-content">
-		<form method="POST" action="">
-			<div class="styled-select">
-				<!-- Wettbewerbs-Auswahl -->
-				<select name="competitions" id="competitions" onchange="this.form.submit()">
-					<option selected disabled value="default">Wettbewerb auswählen:</option>
+	<head>
+		<link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
+		<script src="https://cdn.jsdelivr.net/npm/less"></script>
+		<meta charset="utf-8">
+		<meta name="description" content="Klassenpunkte eintragen">
+		<title>Klassenpunkte eintragen</title>
+	</head>
 
-					<!-- Gruppe für Mannschaft -->
-					<optgroup label="Mannschaft">
-						<?php foreach ($teamCompetitions as $comp): ?>
-							<option value="<?= htmlspecialchars($comp->getName()) ?>"
-								<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-								<?= htmlspecialchars($comp->getName()) ?>
+	<body>
+
+		<header>
+			<h1>Klassenpunkte</h1>
+		</header>
+
+		<main class="main-content">
+			<form method="POST" action="">
+				<div class="styled-select">
+					<!-- Wettbewerbs-Auswahl -->
+					<select name="competitions" id="competitions" onchange="this.form.submit()">
+						<option selected disabled value="default">Wettbewerb auswählen:</option>
+
+						<!-- Gruppe für Mannschaft -->
+						<optgroup label="Mannschaft">
+							<?php foreach ($teamCompetitions as $comp): ?>
+								<option value="<?= htmlspecialchars($comp->getName()) ?>"
+									<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
+									<?= htmlspecialchars($comp->getName()) ?>
+								</option>
+							<?php endforeach; ?>
+						</optgroup>
+
+						<!-- Gruppe für Einzeln -->
+						<optgroup label="Einzel">
+							<?php foreach ($soloCompetitions as $comp): ?>
+								<option value="<?= htmlspecialchars($comp->getName()) ?>"
+									<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
+									<?= htmlspecialchars($comp->getName()) ?>
+								</option>
+							<?php endforeach; ?>
+						</optgroup>
+					</select>
+				</div>
+
+				<div class="styled-select">
+					<!-- Klassen-Auswahl -->
+					<select name="classes" id="classes" onchange="this.form.submit()" <?= empty($participantClassesNames) ? 'disabled' : '' ?>>
+						<option value="default">Klasse auswählen:</option>
+						<?php foreach ($participantClassesNames as $participantClassName): ?>
+							<option value="<?= htmlspecialchars($participantClassName) ?>"
+								<?= isset($_POST['classes']) && $_POST['classes'] == $participantClassName ? 'selected' : '' ?>>
+								<?= htmlspecialchars($participantClassName) ?>
 							</option>
 						<?php endforeach; ?>
-					</optgroup>
+					</select>
+				</div>
+				<input name="points" placeholder="Punktzahl eingeben:" type="number" required minlength="1" maxlength="2" />
+			</form>
 
-					<!-- Gruppe für Einzeln -->
-					<optgroup label="Einzel">
-						<?php foreach ($soloCompetitions as $comp): ?>
-							<option value="<?= htmlspecialchars($comp->getName()) ?>"
-								<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-								<?= htmlspecialchars($comp->getName()) ?>
-							</option>
-						<?php endforeach; ?>
-					</optgroup>
-				</select>
-			</div>
+			<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
+		</main>
 
-			<div class="styled-select">
-				<!-- Klassen-Auswahl -->
-				<select name="classes" id="classes" onchange="this.form.submit()" <?= empty($participantClassesNames) ? 'disabled' : '' ?>>
-					<option value="default">Klasse auswählen:</option>
-					<?php foreach ($participantClassesNames as $participantClassName): ?>
-						<option value="<?= htmlspecialchars($participantClassName) ?>"
-							<?= isset($_POST['classes']) && $_POST['classes'] == $participantClassName ? 'selected' : '' ?>>
-							<?= htmlspecialchars($participantClassName) ?>
-						</option>
-					<?php endforeach; ?>
-				</select>
-			</div>
-			<input name="points" placeholder="Punktzahl eingeben:" type="number" required minlength="1" maxlength="2" />
-		</form>
+		<footer />
 
-		<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
-	</main>
+		<script>
+			function submitForm() {
+				if (document.querySelector('select[name="competitions"]').value === 'default') {
+					alert('Bitte wählen Sie einen Wettbewerb aus.');
+					return;
+				}
 
-	<footer />
+				if (document.querySelector('select[name="classes"]').value === 'default') {
+					alert('Bitte wählen Sie eine Klasse aus.');
+					return;
+				}
 
-	<script>
-		function submitForm() {
-			if (document.querySelector('select[name="competitions"]').value === 'default') {
-				alert('Bitte wählen Sie einen Wettbewerb aus.');
-				return;
+				const pointsInput = document.querySelector('input[name="points"]');
+				const pointsValue = parseInt(pointsInput.value, 10);
+
+				if (pointsInput.value === '' || pointsValue < 0 || pointsValue > 100) {
+					alert('Bitte geben Sie eine gültige Punktzahl zwischen 0 und 100 ein.');
+					return;
+				}
+
+				document.querySelector('form').submit();
 			}
+		</script>
+	</body>
 
-			if (document.querySelector('select[name="classes"]').value === 'default') {
-				alert('Bitte wählen Sie eine Klasse aus.');
-				return;
-			}
-
-			const pointsInput = document.querySelector('input[name="points"]');
-			const pointsValue = parseInt(pointsInput.value, 10);
-
-			if (pointsInput.value === '' || pointsValue < 0 || pointsValue > 100) {
-				alert('Bitte geben Sie eine gültige Punktzahl zwischen 0 und 100 ein.');
-				return;
-			}
-
-			document.querySelector('form').submit();
-		}
-	</script>
-</body>
-
-</html>
+	</html>

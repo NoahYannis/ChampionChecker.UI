@@ -1,12 +1,12 @@
 <?php
 require '../../vendor/autoload.php';
+session_start();
 include 'nav.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\ClassController;
 use MVC\Model\CompetitionResult;
 
-session_start();
 
 $classController = new ClassController();
 

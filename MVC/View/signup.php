@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="de">
 
 <?php
 require '../../vendor/autoload.php';
@@ -7,17 +5,14 @@ require '../../vendor/autoload.php';
 use MVC\Controller\UserController;
 use MVC\Model\User;
 
-include 'nav.php';
-
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+    
     // Alle Felder sind zwar required, was jedoch in den Dev-Tools manuell entfernt werden kann. Daher explizit nochmal prüfen.
     if (empty($_POST['firstname']) || empty($_POST['lastname']) || empty($_POST['email']) || empty($_POST['password'])) {
         echo "<script>alert('Bitte füllen Sie alle Felder aus.');</script>";
         exit;
     }
-
+    
     $userController = UserController::getInstance();
     $user = new User(
         firstName: $_POST['firstname'],
@@ -25,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         email: $_POST['email'],
         password: $_POST['password']
     );
-
+    
     try {
         $success = $userController->register($user);
         if ($success) {
@@ -37,7 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>alert('Fehler bei der Registrierung: {$e->getMessage()}');</script>";
     }
 }
+
+include 'nav.php';
 ?>
+
+<!DOCTYPE html>
+<html lang="de">
 
 <head>
     <meta charset="UTF-8">

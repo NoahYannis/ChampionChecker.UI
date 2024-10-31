@@ -1,13 +1,12 @@
 <?php
 require '../../vendor/autoload.php';
+session_start();
 include 'nav.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
 use MVC\Model\CompetitionResult;
-
-session_start();
 
 $classController = new ClassController();
 
@@ -58,7 +57,9 @@ function printCompetitionResult($competitionResults)
 {
     global $classController;
 
-    echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
+    if(isset($_SESSION['competitionResultsTimestamp'])) {
+        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
+    }
 
     echo "<table class='results-table'>";
     echo "<thead>";
