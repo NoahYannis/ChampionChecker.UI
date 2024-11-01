@@ -171,5 +171,4 @@ class CompetitionResultController implements IController
             echo 'Ein Fehler ist aufgetreten: ' . $e->getMessage();
         }
     }
-    
 }

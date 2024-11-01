@@ -22,10 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     );
     
     try {
-        $success = $userController->register($user);
-        if ($success) {
-            // Erstmal nur zur Login-Seite weiterleiten, später direkt einloggen
-            header("Location: login.php");
+        $sucess = $userController->register($user);
+        if ($sucess) {
+            header("Location: home.php");
             exit;
         }
     } catch (Exception $e) {

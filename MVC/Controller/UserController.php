@@ -55,7 +55,13 @@ class UserController
         try {
             $apiResult = $this->sendApiRequest('/api/auth/register', 'POST', $data);
             $statusCode = $apiResult['statusCode'];
-            return $statusCode < 400;
+
+            // Bei erfolgreicher Registrierung direkt einloggen
+            if ($statusCode < 400) {
+                $sucess = $this->login($user->getEmail(),  $user->getPassword());
+            }
+
+            return $statusCode < 400 && $sucess;
         } catch (Exception $e) {
             echo "<script>alert('Fehler bei der Registrierung: {$e->getMessage()}');</script>";
             return false;
