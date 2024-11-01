@@ -1,6 +1,11 @@
 <?php
 require '../../vendor/autoload.php';
 
+if(!isset($_COOKIE['ChampionCheckerCookie'])) {
+    header("Location: login.php");
+    exit();
+}
+
 use MVC\Model\Student;
 use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;

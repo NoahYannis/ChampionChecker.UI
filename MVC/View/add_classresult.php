@@ -1,12 +1,18 @@
 	<?php
 
 	require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
-	session_start();
 
 	use MVC\Model\CompetitionResult;
 	use MVC\Controller\CompetitionController;
 	use MVC\Controller\CompetitionResultController;
 	use MVC\Controller\ClassController;
+
+	session_start();
+
+	if(!isset($_COOKIE['ChampionCheckerCookie'])) {
+		header("Location: login.php");
+		exit();
+	}
 
 	$selectedCompetition = $_SESSION['classresult_selectedCompetition'] ?? null;
 	$selectedClass = $_SESSION['classresult_selectedClass'] ?? null;

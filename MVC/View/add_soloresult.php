@@ -1,7 +1,15 @@
 <!DOCTYPE html>
 <html>
 
-<?php include 'nav.php'; ?>
+<?php 
+
+if(!isset($_COOKIE['ChampionCheckerCookie'])) {
+    header("Location: login.php");
+    exit();
+}
+
+include 'nav.php';
+?>
 
 <head>
     <meta charset="utf-8">
