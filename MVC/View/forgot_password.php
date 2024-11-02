@@ -3,20 +3,29 @@
 
 <?php
 require '../../vendor/autoload.php';
-include 'nav.php'; ?>
+include 'nav.php';
+
+use MVC\Controller\UserController;
+
+if(isset($_POST['email'])) {
+    $userController = UserController::getInstance();
+    $success = $userController->forgotPassword($_POST['email']);
+}
+
+?>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
-    <link rel="stylesheet" type="text/css" href="../../styles/reset_password.css" />
+    <link rel="stylesheet" type="text/css" href="../../styles/forgot_password.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
     <title>Passwort zurücksetzen</title>
 </head>
 
 <body>
     <div class="main-content">
-        <form class="reset-password-form" method="post">
+        <form class="forgot-password-form" method="post">
             <fieldset>
                 <legend>Passwort zurücksetzen</legend>
 

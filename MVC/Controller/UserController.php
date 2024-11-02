@@ -68,6 +68,23 @@ class UserController
         }
     }
 
+    public function forgotPassword(string $email): bool
+    {
+        $data = [
+            'email' => $email,
+            'clientUri' => 'https://' . $_SERVER['HTTP_HOST'] . '/ChampionChecker.UI/MVC/View/forgot_password.php'
+        ];
+
+        try {
+            $apiResult = $this->sendApiRequest('/api/auth/forgot-password', 'POST', $data);
+            $statusCode = $apiResult['statusCode'];
+            return $statusCode < 400;
+        } catch (Exception $e) {
+            echo "<script>alert('Fehler beim Zurücksetzen des Passworts: {$e->getMessage()}');</script>";
+            return false;
+        }
+    }
+
 
 
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
