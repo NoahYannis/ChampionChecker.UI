@@ -85,6 +85,24 @@ class UserController
         }
     }
 
+    public function resetPassword(string $email, string $token, string $newPassword): bool
+    {
+        $data = [
+            'userMail' => $email,
+            'resetToken' => $token,
+            'newPassword' => $newPassword
+        ];
+
+        try {
+            $apiResult = $this->sendApiRequest('/api/auth/reset-password', 'POST', $data);
+            $statusCode = $apiResult['statusCode'];
+            return $statusCode < 400;
+        } catch (Exception $e) {
+            echo "<script>alert('Fehler beim Zurücksetzen des Passworts: {$e->getMessage()}');</script>";
+            return false;
+        }
+    }
+
 
 
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
