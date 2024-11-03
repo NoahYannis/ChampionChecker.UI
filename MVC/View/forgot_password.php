@@ -6,7 +6,7 @@ require '../../vendor/autoload.php';
 
 use MVC\Controller\UserController;
 
-$passwordResetEmailSent = false;
+$passwordResetEmailClicked = false;
 $token = null;
 $email = null;
 
@@ -15,7 +15,7 @@ $token = $_GET['token'] ?? null;
 $email = $_GET['email'] ?? null;
 
 if ($token && $email) {
-    $passwordResetEmailSent = true;
+    $passwordResetEmailClicked = true;
 }
 
 if (isset($_POST['newPassword']) && $token && $email) {
@@ -28,12 +28,15 @@ if (isset($_POST['newPassword']) && $token && $email) {
     }
 }
 
-if (isset($_POST['email']) && !$passwordResetEmailSent) {
+if (isset($_POST['email']) && !$passwordResetEmailClicked) {
     $userController = UserController::getInstance();
-    $passwordResetEmailSent = $userController->forgotPassword($_POST['email']);
+    $requestResetEmailSuccess = $userController->forgotPassword($_POST['email']);
 
-    if ($passwordResetEmailSent === false) {
-        header("Location: forgot_password.php");
+    if($requestResetEmailSuccess) {
+        echo "<script>alert('Eine E-Mail zum Zurücksetzen des Passworts wurde an " . htmlspecialchars($_POST['email'], ENT_QUOTES) . " gesendet.');</script>";
+    }
+    else {
+        echo "<script>alert('Fehler beim Zurücksetzen des Passworts.');</script>";
         exit();
     }
 }
@@ -56,7 +59,7 @@ include 'nav.php';
             <fieldset>
                 <legend>Passwort zurücksetzen</legend>
 
-                <?php if ($passwordResetEmailSent): ?>
+                <?php if ($passwordResetEmailClicked): ?>
                     <label for="newPassword">Neues Passwort:</label>
                     <input type="password" id="newPassword" name="newPassword" required>
                     <!-- Versteckte Felder für token und email -->
