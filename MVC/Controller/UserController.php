@@ -124,16 +124,13 @@ class UserController
         ]);
 
         $response = curl_exec($curl);
+
         if (curl_errno($curl)) {
             throw new RuntimeException('cURL error: ' . curl_error($curl));
         }
 
         curl_close($curl);
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        if ($statusCode >= 400) {
-            throw new RuntimeException("API request failed with status code $statusCode.");
-        }
 
         // Cookies aus den Headern extrahieren und setzen
         preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);

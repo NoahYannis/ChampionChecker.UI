@@ -4,24 +4,22 @@ require '../../vendor/autoload.php';
 use MVC\Controller\UserController;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
+
     // Alle Felder sind zwar required, was jedoch in den Dev-Tools manuell entfernt werden kann. Daher explizit nochmal prüfen.
     if (empty($_POST['email']) || empty($_POST['password'])) {
         echo "<script>alert('Bitte füllen Sie alle Felder aus.');</script>";
         exit;
     }
-    
+
     $userController = UserController::getInstance();
-    
-    try {
-        $success = $userController->login($_POST['email'], $_POST['password']);
-        if ($success) {
-            echo "<script>alert('Login erfolgreich.');</script>";
-            header("Location: home.php");
-            exit;
-        }
-    } catch (Exception $e) {
-        echo "<script>alert('Fehler beim Login: {$e->getMessage()}');</script>";
+
+    $success = $userController->login($_POST['email'], $_POST['password']);
+    if ($success) {
+        echo "<script>alert('Login erfolgreich.');</script>";
+        header("Location: home.php");
+        exit;
+    } else {
+        echo "<script>alert('Login fehlgeschlagen.');</script>";
     }
 }
 
@@ -48,10 +46,10 @@ include 'nav.php';
                 <legend>Login</legend>
 
                 <label for="email">E-Mail:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" autocomplete="email" id="email" name="email" required>
 
                 <label for="password">Passwort:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" autocomplete="current-password id=" password" name="password" required>
                 <a href="forgot_password.php" class="forgot-password">Passwort vergessen?</a>
 
                 <div class="button-container">

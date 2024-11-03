@@ -37,7 +37,6 @@ if (isset($_POST['email']) && !$passwordResetEmailClicked) {
     }
     else {
         echo "<script>alert('Fehler beim Zurücksetzen des Passworts.');</script>";
-        exit();
     }
 }
 
@@ -67,7 +66,7 @@ include 'nav.php';
                     <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
                 <?php else: ?>
                     <label for="email">E-Mail:</label>
-                    <input type="email" id="email" name="email" required>
+                    <input type="email" autocomplete="email" id="email" name="email" required>
                 <?php endif; ?>
 
                 <div class="button-container">
