@@ -129,7 +129,7 @@
 		</header>
 
 		<main class="main-content">
-			<form method="POST" action="">
+			<form method="POST" style="display: flex; flex-direction: column;" action="">
 				<div class="styled-select">
 					<!-- Wettbewerbs-Auswahl -->
 					<select name="competitions" id="competitions" onchange="this.form.submit()">
