@@ -2,9 +2,12 @@ name: ChampionChecker.UI
 services:
   xampp:
     container_name: xampp
-    image: tomsik68/xampp:8
+    image: championchecker.ui/xampp
+    build:
+      context: . 
+      dockerfile: dockerfile
+      args:
+        GITHUB_PAT: ${GITHUB_PAT} # GitHub Personal Access Token, wird aus lokaler .env-Datei gelesen
     ports:
       - "8080:80"
       - "8081:443"
-    volumes:
-      - /c/xampp/htdocs/ChampionChecker.UI:/opt/lampp/htdocs/ChampionChecker.UI
