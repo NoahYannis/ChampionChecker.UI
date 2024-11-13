@@ -5,7 +5,6 @@
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   margin: 0;
 }
 
@@ -15,7 +14,6 @@ body {
   justify-content: center;
   align-items: center;
   width: 90%;
-  max-height: 88vh;
   flex-grow: 1;
   padding: 10px;
 }
@@ -170,7 +168,6 @@ button {
   input[type="submit"] {
     font-size: 1.2rem;
     border: 1px solid black;
-    padding-block: 10px;
   }
 
   .moodle-login {

@@ -121,7 +121,7 @@ table {
 
 @media (width < 768px) {
   form.uploadForm {
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     justify-content: center;
   }
 
@@ -149,10 +149,8 @@ table {
 
 @media (width > 768px) {
   form.uploadForm {
-    margin-block: 3rem;
+    margin-block: 2rem;
   }
-
-
 
   table {
     width: 80%;
