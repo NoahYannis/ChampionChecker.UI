@@ -1,0 +1,11 @@
+name: ChampionChecker.UI
+services:
+  xampp:
+    container_name: xampp-debug
+    image: championchecker.ui/xampp
+    build:
+      context: . 
+      dockerfile: dockerfile.debug
+    ports:
+      - "9000:80"
+      - "9001:443"
