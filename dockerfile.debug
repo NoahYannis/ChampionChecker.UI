@@ -5,5 +5,5 @@ WORKDIR /opt/lampp/htdocs/ChampionChecker.UI
 # Aktuelle Änderungen in den Container kopieren
 COPY . .  
 
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 80
+EXPOSE 443

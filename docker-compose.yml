@@ -9,5 +9,5 @@ services:
       args:
         GITHUB_PAT: ${GITHUB_PAT} # GitHub Personal Access Token, wird aus lokaler .env-Datei gelesen
     ports:
-      - "8080:80"
-      - "8081:443"
+      - "80:80"
+      - "443:443"

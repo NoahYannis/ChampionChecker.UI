@@ -11,5 +11,5 @@ ARG GITHUB_PAT
 # wird aus einer lokalen .env Datei gelesen, die auf der selben Ebene wie das Dockerfile liegt.
 RUN git clone https://$GITHUB_PAT@github.com/NoahYannis/ChampionChecker.UI.git .
 
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 80
+EXPOSE 443

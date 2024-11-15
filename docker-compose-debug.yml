@@ -7,5 +7,5 @@ services:
       context: . 
       dockerfile: dockerfile.debug
     ports:
-      - "9000:80"
-      - "9001:443"
+      - "80:80"
+      - "443:443"
