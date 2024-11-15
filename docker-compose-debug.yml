@@ -4,8 +4,11 @@ services:
     container_name: xampp-debug
     image: championchecker.ui/xampp
     build:
-      context: . 
+      context: .
       dockerfile: dockerfile.debug
     ports:
       - "80:80"
       - "443:443"
+    volumes: # Bind Mount zwischen Projektverzeichnis und Container, damit Änderungen sofort sichtbar sind
+      - .:/opt/lampp/htdocs/ChampionChecker.UI 
+

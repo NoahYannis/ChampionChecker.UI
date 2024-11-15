@@ -1,9 +1,7 @@
 FROM tomsik68/xampp:8
 
+# Arbeitsverzeichnis im Container setzen
 WORKDIR /opt/lampp/htdocs/ChampionChecker.UI
-
-# Aktuelle Änderungen in den Container kopieren
-COPY . .  
 
 EXPOSE 80
 EXPOSE 443
