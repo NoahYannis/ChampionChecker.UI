@@ -120,6 +120,17 @@
 		<meta charset="utf-8">
 		<meta name="description" content="Klassenpunkte eintragen">
 		<title>Klassenpunkte eintragen</title>
+        <script type="text/javascript" language="JavaScript">
+            function inputNumericValidate(){
+                const e = event || window.event;
+                const key = e.keyCode || e.which;
+                if (((key<=48)||(key>=57)) &&
+                    (key!==8)&&(key!==46)&&(key!==37)&&(key!==39)){
+                    if (e.preventDefault) e.preventDefault();
+                    e.returnValue = false;
+                }
+            }
+        </script>
 	</head>
 
 	<body>
@@ -169,7 +180,9 @@
 						<?php endforeach; ?>
 					</select>
 				</div>
-				<input name="points" placeholder="Punktzahl eingeben:" type="number" required minlength="1" maxlength="2" />
+				<input name="points" placeholder="Punktzahl eingeben:" type="text"
+                       required minlength="1" maxlength="2" pattern="[0-9]{1,2}" min="0"
+                       inputmode="numeric" onKeyDown="inputNumericValidate()"/>
 			</form>
 
 			<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
