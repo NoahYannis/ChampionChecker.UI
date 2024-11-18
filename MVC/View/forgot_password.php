@@ -32,10 +32,9 @@ if (isset($_POST['email']) && !$passwordResetEmailClicked) {
     $userController = UserController::getInstance();
     $requestResetEmailSuccess = $userController->forgotPassword($_POST['email']);
 
-    if($requestResetEmailSuccess) {
+    if ($requestResetEmailSuccess) {
         echo "<script>alert('Eine E-Mail zum Zurücksetzen des Passworts wurde an " . htmlspecialchars($_POST['email'], ENT_QUOTES) . " gesendet.');</script>";
-    }
-    else {
+    } else {
         echo "<script>alert('Fehler beim Zurücksetzen des Passworts.');</script>";
     }
 }
@@ -76,5 +75,33 @@ include 'nav.php';
         </form>
     </div>
 </body>
+
+<script>
+    document.querySelector('.forgot-password-form').addEventListener('submit', function(event) {
+        const newPassword = document.getElementById('newPassword');
+        const email = document.getElementById('email');
+
+        if (newPassword) {
+            const password = newPassword.value.trim();
+
+            if (password.length < 8 || // Mindestlänge 8 Zeichen
+                !/[A-Z]/.test(password) || // Mindestens ein Großbuchstabe
+                !/[a-z]/.test(password) || // Mindestens ein Kleinbuchstabe
+                !/[0-9]/.test(password) || // Mindestens eine Zahl
+                !/[^A-Za-z0-9]/.test(password)) { // Mindestens ein Sonderzeichen
+                alert('Das Passwort muss mindestens 8 Zeichen lang sein und Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
+                event.preventDefault();
+                return;
+            }
+        }
+
+        // E-Mail-Validierung
+        if (email && !email.checkValidity()) {
+            alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+            event.preventDefault();
+            return;
+        }
+    });
+</script>
 
 </html>
