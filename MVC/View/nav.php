@@ -9,6 +9,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Navigation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/nav.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
@@ -51,11 +52,27 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         <div class="profile-menu" id="profile-menu" style="display: none;">
             <ul>
                 <?php if ($isAuthenticated): ?>
-                    <li><a href="#" onclick="logout()">Ausloggen</a></li>
-                    <li><a href="settings.php">Einstellungen</a></li>
+                <li>
+                    <a href="#" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Ausloggen
+                    </a>
+                </li>
+                <li>
+                    <a href="settings.php">
+                        <i class="fas fa-cog"></i> Einstellungen
+                    </a>
+                </li>
                 <?php else: ?>
-                    <li><a href="signup.php">Registrieren</a></li>
-                    <li><a href="login.php">Anmelden</a></li>
+                <li>
+                    <a href="signup.php">
+                        <i class="fas fa-user-plus"></i> Registrieren
+                    </a>
+                </li>
+                <li>
+                    <a href="login.php">
+                        <i class="fas fa-sign-in-alt"></i> Anmelden
+                    </a>
+                </li>
                 <?php endif; ?>
             </ul>
         </div>
