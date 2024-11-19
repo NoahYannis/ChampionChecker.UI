@@ -14,15 +14,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $userController = UserController::getInstance();
     $user = new User(
-        firstName: $_POST['firstname'],
+        firstName: $_POST['firstname'], 
         lastName: $_POST['lastname'],
         email: $_POST['email'],
         password: $_POST['password']
     );
 
-    $sucess = $userController->register($user);
-    if ($sucess) {
-        header("Location: home.php");
+    $success = $userController->register($user);
+    if ($success) {
+        $firstName = htmlspecialchars($_POST['firstname'], ENT_QUOTES, 'UTF-8');
+        $lastName = htmlspecialchars($_POST['lastname'], ENT_QUOTES, 'UTF-8');
+        echo "<script>
+            alert('Willkommen, $firstName $lastName! Ihre Registrierung war erfolgreich.');
+            window.location.href = 'home.php';
+        </script>";
         exit;
     } else {
         echo "<script>alert('Fehler bei der Registrierung.');</script>";
@@ -111,7 +116,7 @@ include 'nav.php';
             !/[0-9]/.test(password) || // Zahlen
             !/[^A-Za-z0-9]/.test(password)) // Sonderzeichen
         {
-            alert('Das Passwort muss mindestens 8 Zeichen lang sein und Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
+            alert('Das Passwort muss mindestens 8 Zeichen lang sein sowie Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
             event.preventDefault();
         }
     });
