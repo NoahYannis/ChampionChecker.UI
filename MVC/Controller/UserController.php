@@ -48,7 +48,7 @@ class UserController
         }
     }
 
-    public function register(User $user): bool
+    public function register(User $user): array
     {
         $data = [
             'firstName' => $user->getFirstName(),
@@ -59,17 +59,23 @@ class UserController
 
         try {
             $apiResult = $this->sendApiRequest('/api/auth/register', 'POST', $data);
-            $statusCode = $apiResult['statusCode'];
+            $registerSuccess = $apiResult['statusCode'] < 400;
 
             // Bei erfolgreicher Registrierung direkt einloggen
-            if ($statusCode < 400) {
-                $sucess = $this->login($user->getEmail(),  $user->getPassword());
+            if ($registerSuccess) {
+                $loginResult = $this->login($user->getEmail(),  $user->getPassword());
+                $registerSuccess = $registerSuccess && ($loginResult['success'] ?? false);
             }
-
-            return $statusCode < 400 && $sucess;
+            
+            return [
+                'success' => $registerSuccess,
+                'response' => $apiResult['response']
+            ];
         } catch (Exception $e) {
-            echo "<script>alert('Fehler bei der Registrierung: {$e->getMessage()}');</script>";
-            return false;
+            return [
+                'success' => false,
+                'error' => 'Fehler bei der Registrierung: ' . $e->getMessage()
+            ];
         }
     }
 

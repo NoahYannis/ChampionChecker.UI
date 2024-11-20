@@ -20,17 +20,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         password: $_POST['password']
     );
 
-    $success = $userController->register($user);
-    if ($success) {
-        $firstName = htmlspecialchars($_POST['firstname'], ENT_QUOTES, 'UTF-8');
-        $lastName = htmlspecialchars($_POST['lastname'], ENT_QUOTES, 'UTF-8');
+    $registerResult = $userController->register($user);
+
+    if ($registerResult['success'] === true) {
+        $userName = addslashes($_POST['firstname'] . ' ' . $_POST['lastname']);
         echo "<script>
-            alert('Willkommen, $firstName $lastName! Ihre Registrierung war erfolgreich.');
+            alert('Willkommen, $userName. Ihre Registrierung war erfolgreich.');
             window.location.href = 'home.php';
         </script>";
         exit;
     } else {
-        echo "<script>alert('Fehler bei der Registrierung.');</script>";
+        $errorDescription = $registerResult['response']['errors'][0]['description'] ?? 'Unbekannter Fehler';
+        $errorDescription = addslashes($errorDescription); // Sonderzeichen escapen
+        echo "<script>alert('$errorDescription');</script>";
     }
 }
 
@@ -86,40 +88,42 @@ include 'nav.php';
 </body>
 
 <script>
-    // Register-Validierung
-    document.querySelector('.register-form').addEventListener('submit', function(event) {
+// Register-Validierung
+document.querySelector('.register-form').addEventListener('submit', function(event) {
 
-        // Vorname und Nachname prüfen
-        const lastname = document.getElementById('lastname').value.trim();
-        const firstname = document.getElementById('firstname').value.trim();
+    // Vorname und Nachname prüfen
+    const lastname = document.getElementById('lastname').value.trim();
+    const firstname = document.getElementById('firstname').value.trim();
 
-        if (!/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(firstname) ||
-            !/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(lastname)) {
-            alert('Vor- und Nachname dürfen nur Buchstaben und Bindestriche enthalten.');
-            event.preventDefault();
-            return;
-        }
+    if (!/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(firstname) ||
+        !/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(lastname)) {
+        alert('Vor- und Nachname dürfen nur Buchstaben und Bindestriche enthalten.');
+        event.preventDefault();
+        return;
+    }
 
-        // E-Mail prüfen
-        const email = document.getElementById('email').value.trim();
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-            alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
-            event.preventDefault();
-            return;
-        }
+    // E-Mail prüfen
+    const email = document.getElementById('email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+        event.preventDefault();
+        return;
+    }
 
-        // Passwort prüfen => gültiges Passwort enthält mindestens 8 Zeichen, Groß- + Kleinbuchstaben, Zahlen und Sonderzeichen
-        const password = document.getElementById('password').value.trim();
-        if (password.length < 8 ||
-            !/[A-Z]/.test(password) || // Großbuchstaben
-            !/[a-z]/.test(password) || // Kleinbuchstaben
-            !/[0-9]/.test(password) || // Zahlen
-            !/[^A-Za-z0-9]/.test(password)) // Sonderzeichen
-        {
-            alert('Das Passwort muss mindestens 8 Zeichen lang sein sowie Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
-            event.preventDefault();
-        }
-    });
+    // Passwort prüfen => gültiges Passwort enthält mindestens 8 Zeichen, Groß- + Kleinbuchstaben, Zahlen und Sonderzeichen
+    const password = document.getElementById('password').value.trim();
+    if (password.length < 8 ||
+        !/[A-Z]/.test(password) || // Großbuchstaben
+        !/[a-z]/.test(password) || // Kleinbuchstaben
+        !/[0-9]/.test(password) || // Zahlen
+        !/[^A-Za-z0-9]/.test(password)) // Sonderzeichen
+    {
+        alert(
+            'Das Passwort muss mindestens 8 Zeichen lang sein sowie Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.'
+            );
+        event.preventDefault();
+    }
+});
 </script>
 
 </html>
