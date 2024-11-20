@@ -33,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorDescription = $registerResult['response']['errors'][0]['description'] ?? 'Unbekannter Fehler';
         $errorDescription = addslashes($errorDescription); // Sonderzeichen escapen
         echo "<script>alert('$errorDescription');</script>";
+        echo "<script>window.location.href = 'signup.php'</script>"; // Redirect, damit das Formular bei F5 nicht erneut abgeschickt wird
     }
 }
 

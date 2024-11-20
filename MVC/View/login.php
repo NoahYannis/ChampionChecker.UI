@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errorDescription = $loginResult['response']['errors'][0]['description'] ?? '';
         $errorDescription = addslashes($errorDescription); // Sonderzeichen escapen
         echo "<script>alert('$errorDescription');</script>";
+        echo "<script>window.location.href = 'login.php'</script>"; // Redirect, damit das Formular bei F5 nicht erneut abgeschickt wird
     }
 }
 

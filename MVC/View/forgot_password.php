@@ -47,6 +47,7 @@ if (isset($_POST['email']) && !$passwordResetEmailClicked) {
         $error = $requestResetEmailSuccess['response']['errors'][0]['description'] ?? '';
         $error = addslashes($error); // Sonderzeichen escapen
         echo "<script>alert('$error');</script>";
+        echo "<script>window.location.href = 'forgot_password.php'</script>"; // Redirect, damit das Formular bei F5 nicht erneut abgeschickt wird
     }
 }
 
