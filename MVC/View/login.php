@@ -12,16 +12,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $userController = UserController::getInstance();
-    $success = $userController->login($_POST['email'], $_POST['password']);
-    
-    if ($success) {
-        echo "<script>
-            alert('Willkommen. Ihr Login war erfolgreich.');
+    $loginResult = $userController->login($_POST['email'], $_POST['password']);
+
+    if ($loginResult['success'] === true) {
+        $userName = addslashes($loginResult['response'] ?? ''); 
+            echo "<script>
+            alert('Willkommen, $userName. Ihr Login war erfolgreich.');
             window.location.href = 'home.php';
         </script>";
         exit;
-    } else {
-        echo "<script>alert('Login fehlgeschlagen.');</script>";
+    } else {    
+        $errorDescription = $loginResult['response']['errors'][0]['description'] ?? '';
+        $errorDescription = addslashes($errorDescription); // Sonderzeichen escapen
+        echo "<script>alert('$errorDescription');</script>";
     }
 }
 
@@ -51,7 +54,7 @@ include 'nav.php';
                 <input type="email" autocomplete="email" id="email" name="email" required>
 
                 <label for="password">Passwort:</label>
-                <input type="password" autocomplete="current-password id="password" name="password" required>
+                <input type="password" autocomplete="current-password id=" password" name="password" required>
                 <a href="forgot_password.php" class="forgot-password">Passwort vergessen?</a>
 
                 <div class="button-container">

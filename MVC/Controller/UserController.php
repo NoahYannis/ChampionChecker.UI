@@ -26,7 +26,7 @@ class UserController
     }
 
 
-    public function login(string $email, string $password): bool
+    public function login(string $email, string $password): array
     {
         $data = [
             'email' => $email,
@@ -36,10 +36,15 @@ class UserController
         try {
             $apiResult = $this->sendApiRequest('/api/auth/login', 'POST', $data);
             $statusCode = $apiResult['statusCode'];
-            return $statusCode < 400;
+            return [
+                'success' => $statusCode < 400,
+                'response' => $apiResult['response']
+            ];
         } catch (Exception $e) {
-            echo "<script>alert('Fehler beim Login: {$e->getMessage()}');</script>";
-            return false;
+            return [
+                'success' => false,
+                'error' => 'Fehler beim Login: ' . $e->getMessage()
+            ];
         }
     }
 
@@ -103,8 +108,6 @@ class UserController
         }
     }
 
-
-
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
     {
         $curl = curl_init($this->apiUrl . $endpoint);
@@ -129,11 +132,16 @@ class UserController
             throw new RuntimeException('cURL error: ' . curl_error($curl));
         }
 
+        $headerSize = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+        $header = substr($response, 0, $headerSize);
+        $body = substr($response, $headerSize);
+
         curl_close($curl);
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $responseBody = json_decode($body, true);
 
         // Cookies aus den Headern extrahieren und setzen
-        preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $response, $matches);
+        preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $header, $matches);
         foreach ($matches[1] as $cookieStr) {
             [$cookieName, $cookieValue] = explode('=', trim($cookieStr), 2);
             setcookie($cookieName, $cookieValue, [
@@ -148,7 +156,10 @@ class UserController
 
         return [
             'statusCode' => $statusCode,
-            'response' => $response,
+            'response' => $responseBody,
+             // Bei erfolgreicher Anfrage enthält der Body den Nutzernamen,
+             // bei Fehlern die Fehlermeldung, die über response['errors'][0]['description']
+             // abgerufen werden kann
         ];
     }
 }
