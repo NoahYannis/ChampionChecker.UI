@@ -79,7 +79,7 @@ class UserController
         }
     }
 
-    public function forgotPassword(string $email): bool
+    public function forgotPassword(string $email): array
     {
         $data = [
             'email' => $email,
@@ -89,14 +89,20 @@ class UserController
         try {
             $apiResult = $this->sendApiRequest('/api/auth/forgot-password', 'POST', $data);
             $statusCode = $apiResult['statusCode'];
-            return $statusCode < 400;
+            return [
+                'success' => $statusCode < 400,
+                'response' => $apiResult['response']
+            ];
         } catch (Exception $e) {
-            echo "<script>alert('Fehler beim Zurücksetzen des Passworts: {$e->getMessage()}');</script>";
-            return false;
+            return [
+                'success' => false,
+                'error' => 'Fehler beim Zurücksetzen des Passworts: ' . $e->getMessage()
+            ];
         }
     }
 
-    public function resetPassword(string $email, string $token, string $newPassword): bool
+
+    public function resetPassword(string $email, string $token, string $newPassword): array
     {
         $data = [
             'userMail' => $email,
@@ -107,10 +113,15 @@ class UserController
         try {
             $apiResult = $this->sendApiRequest('/api/auth/reset-password', 'POST', $data);
             $statusCode = $apiResult['statusCode'];
-            return $statusCode < 400;
+            return [
+                'success' => $statusCode < 400,
+                'response' => $apiResult['response']
+            ];        
         } catch (Exception $e) {
-            echo "<script>alert('Fehler beim Zurücksetzen des Passworts: {$e->getMessage()}');</script>";
-            return false;
+            return [
+                'success' => false,
+                'error' => 'Fehler beim Zurücksetzen des Passworts: ' . $e->getMessage()
+            ];
         }
     }
 

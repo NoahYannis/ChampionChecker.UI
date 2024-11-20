@@ -18,24 +18,35 @@ if ($token && $email) {
     $passwordResetEmailClicked = true;
 }
 
+// Eingabe des neuen Passworts (nach Klick auf Link in E-Mail)
 if (isset($_POST['newPassword']) && $token && $email) {
     $userController = UserController::getInstance();
     $passwordResetSuccessful = $userController->resetPassword($email, $token, $_POST['newPassword']);
 
-    if ($passwordResetSuccessful) {
-        header("Location: login.php");
-        exit();
+    if ($passwordResetSuccessful['success']) {
+        echo "<script>
+        alert('Ihr Passwort wurde erfolgreich geändert.');
+        window.location.href = 'login.php';
+        </script>";
+    }
+    else {
+        $error = $passwordResetSuccessful['response']['errors'][0]['description'] ?? '';
+        $error = addslashes($error); // Sonderzeichen escapen
+        echo "<script>alert('$error');</script>";
     }
 }
 
+// Eingabe der E-Mail, an die das Token geschickt wird
 if (isset($_POST['email']) && !$passwordResetEmailClicked) {
     $userController = UserController::getInstance();
     $requestResetEmailSuccess = $userController->forgotPassword($_POST['email']);
 
-    if ($requestResetEmailSuccess) {
+    if ($requestResetEmailSuccess['success']) {
         echo "<script>alert('Eine E-Mail zum Zurücksetzen des Passworts wurde an " . htmlspecialchars($_POST['email'], ENT_QUOTES) . " gesendet.');</script>";
     } else {
-        echo "<script>alert('Fehler beim Zurücksetzen des Passworts.');</script>";
+        $error = $requestResetEmailSuccess['response']['errors'][0]['description'] ?? '';
+        $error = addslashes($error); // Sonderzeichen escapen
+        echo "<script>alert('$error');</script>";
     }
 }
 
