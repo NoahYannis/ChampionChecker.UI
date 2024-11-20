@@ -119,9 +119,7 @@ document.querySelector('.register-form').addEventListener('submit', function(eve
         !/[0-9]/.test(password) || // Zahlen
         !/[^A-Za-z0-9]/.test(password)) // Sonderzeichen
     {
-        alert(
-            'Das Passwort muss mindestens 8 Zeichen lang sein sowie Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.'
-            );
+        alert('Das Passwort muss mindestens 8 Zeichen lang sein sowie Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
         event.preventDefault();
     }
 });
