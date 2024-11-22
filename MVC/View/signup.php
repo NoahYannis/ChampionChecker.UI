@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $userController = UserController::getInstance();
     $user = new User(
-        firstName: $_POST['firstname'], 
+        firstName: $_POST['firstname'],
         lastName: $_POST['lastname'],
         email: $_POST['email'],
         password: $_POST['password']
@@ -70,6 +70,9 @@ include 'nav.php';
                 <label for="password">Passwort:</label>
                 <input type="password" id="password" name="password" required>
 
+                <label for="repeat-password">Passwort wiederholen:</label>
+                <input type="password" id="repeat-password" name="repeat-password" required>
+
                 <input type="submit" value="Registrieren">
             </fieldset>
         </form>
@@ -89,40 +92,47 @@ include 'nav.php';
 </body>
 
 <script>
-// Register-Validierung
-document.querySelector('.register-form').addEventListener('submit', function(event) {
+    // Register-Validierung
+    document.querySelector('.register-form').addEventListener('submit', function(event) {
 
-    // Vorname und Nachname prüfen
-    const lastname = document.getElementById('lastname').value.trim();
-    const firstname = document.getElementById('firstname').value.trim();
+        // Vorname und Nachname prüfen
+        const lastname = document.getElementById('lastname').value.trim();
+        const firstname = document.getElementById('firstname').value.trim();
 
-    if (!/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(firstname) ||
-        !/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(lastname)) {
-        alert('Vor- und Nachname dürfen nur Buchstaben und Bindestriche enthalten.');
-        event.preventDefault();
-        return;
-    }
+        if (!/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(firstname) ||
+            !/^[\p{L}äöüÄÖÜß]+(-[\p{L}äöüÄÖÜß]+)*$/u.test(lastname)) {
+            alert('Vor- und Nachname dürfen nur Buchstaben und Bindestriche enthalten.');
+            event.preventDefault();
+            return;
+        }
 
-    // E-Mail prüfen
-    const email = document.getElementById('email').value.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
-        event.preventDefault();
-        return;
-    }
+        // E-Mail prüfen
+        const email = document.getElementById('email').value.trim();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert('Bitte geben Sie eine gültige E-Mail-Adresse ein.');
+            event.preventDefault();
+            return;
+        }
 
-    // Passwort prüfen => gültiges Passwort enthält mindestens 8 Zeichen, Groß- + Kleinbuchstaben, Zahlen und Sonderzeichen
-    const password = document.getElementById('password').value.trim();
-    if (password.length < 8 ||
-        !/[A-Z]/.test(password) || // Großbuchstaben
-        !/[a-z]/.test(password) || // Kleinbuchstaben
-        !/[0-9]/.test(password) || // Zahlen
-        !/[^A-Za-z0-9]/.test(password)) // Sonderzeichen
-    {
-        alert('Das Passwort muss mindestens 8 Zeichen lang sein sowie Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
-        event.preventDefault();
-    }
-});
+        // Passwort prüfen => gültiges Passwort enthält mindestens 8 Zeichen, Groß- + Kleinbuchstaben, Zahlen und Sonderzeichen
+        const password = document.getElementById('password').value.trim();
+        if (password.length < 8 ||
+            !/[A-Z]/.test(password) || // Großbuchstaben
+            !/[a-z]/.test(password) || // Kleinbuchstaben
+            !/[0-9]/.test(password) || // Zahlen
+            !/[^A-Za-z0-9]/.test(password)) // Sonderzeichen
+        {
+            alert('Das Passwort muss mindestens 8 Zeichen lang sein sowie Großbuchstaben, Kleinbuchstaben, Zahlen und Sonderzeichen enthalten.');
+            event.preventDefault();
+        }
+
+        const repeatPassword = document.getElementById('repeat-password').value.trim();
+
+        if (password !== repeatPassword) {
+            alert('Die Passwörter stimmen nicht überein.');
+            event.preventDefault();
+        }
+    });
 </script>
 
 </html>
