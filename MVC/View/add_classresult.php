@@ -9,7 +9,7 @@
 
 	session_start();
 
-	if(!isset($_COOKIE['ChampionCheckerCookie'])) {
+	if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 		header("Location: login.php");
 		exit();
 	}
@@ -120,17 +120,6 @@
 		<meta charset="utf-8">
 		<meta name="description" content="Klassenpunkte eintragen">
 		<title>Klassenpunkte eintragen</title>
-        <script type="text/javascript" language="JavaScript">
-            function inputNumericValidate(){
-                const e = event || window.event;
-                const key = e.keyCode || e.which;
-                if (((key<=48)||(key>=57)) &&
-                    (key!==8)&&(key!==46)&&(key!==37)&&(key!==39)){
-                    if (e.preventDefault) e.preventDefault();
-                    e.returnValue = false;
-                }
-            }
-        </script>
 	</head>
 
 	<body>
@@ -180,9 +169,9 @@
 						<?php endforeach; ?>
 					</select>
 				</div>
-				<input name="points" placeholder="Punktzahl eingeben:" type="text"
-                       required minlength="1" maxlength="2" pattern="[0-9]{1,2}" min="0"
-                       inputmode="numeric" onKeyDown="inputNumericValidate()"/>
+				<input name="points" placeholder="Punktzahl eingeben:" type="number"
+					required minlength="1" maxlength="2" min="0" max="99"
+					inputmode="numeric" oninput="validatePointInput(this)" />
 			</form>
 
 			<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
@@ -191,6 +180,30 @@
 		<footer />
 
 		<script>
+			const invalidChars = ['+', '-', 'E', 'e'];
+
+			function validatePointInput(input) {
+				let value = input.value;
+
+				// Input auf zwei Zahlen begrenzen.
+				if(value.length > 2) {
+					input.value = value.slice(0, 2);
+					return;
+				}
+
+				// Ungültige Zeichen entfernen.
+				if (invalidChars.some(char => value.includes(char))) {
+					input.value = value.slice(0, -1);
+					return;
+				}
+
+				// Wert darf nur zwischen 0 und 99 liegen.
+				if (value < 0 || value > 99 || value === '' || isNaN(value)) {
+					input.value = value.slice(0, -1); 
+					return;
+				}
+			}
+
 			function submitForm() {
 				if (document.querySelector('select[name="competitions"]').value === 'default') {
 					alert('Bitte wählen Sie einen Wettbewerb aus.');
