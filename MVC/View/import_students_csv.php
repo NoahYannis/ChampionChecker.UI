@@ -54,7 +54,7 @@ include 'nav.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
-    <link rel="stylesheet" type="text/css" href="../../styles/import_students_csv.css" />
+    <link rel="stylesheet" type="text/css" href="../../styles/import_csv.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
     <title>CSV-Import</title>
 </head>
@@ -69,7 +69,7 @@ include 'nav.php';
                     <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
                 </label>
             </div>
-            <div class="student-preview" id="studentPreview"></div> <!-- Import-Vorschau -->
+            <div class="import-preview" id="studentPreview"></div> <!-- Import-Vorschau -->
             <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">Importieren</button>
         </fieldset>
     </form>
