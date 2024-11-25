@@ -12,6 +12,8 @@ class Teacher
         private string $firstName,
         private string $lastName,
         private string $shortCode,
+        private ?int $classId,
+        private ?ClassModel $class = null,
         private ?string $additionalInfo = null
     ) {}
 
@@ -65,6 +67,26 @@ class Teacher
             throw new InvalidArgumentException('Short code must be between 1 and 4 characters.');
         }
         $this->shortCode = $shortCode;
+    }
+
+    public function getClassId(): ?int
+    {
+        return $this->classId;
+    }
+
+    public function setClassId(?int $classId): void
+    {
+        $this->classId = $classId;
+    }
+
+    public function getClass(): ?ClassModel
+    {
+        return $this->class;
+    }
+
+    public function setClass(?ClassModel $class): void
+    {
+        $this->class = $class;
     }
 
     public function getAdditionalInfo(): ?string

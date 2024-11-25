@@ -34,7 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             id: null, // wird von API gesetzt
             firstName: $data['firstName'],
             lastName: $data['lastName'],
-            shortCode: $data['shortCode']
+            shortCode: $data['shortCode'],
+            classId: null,
+            class: null,
         );
 
         // $teacherController->create($teacher);
