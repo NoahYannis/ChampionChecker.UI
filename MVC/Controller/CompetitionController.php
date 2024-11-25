@@ -88,6 +88,7 @@ class CompetitionController implements IController {
             $competitions[] = $competition;
         }
 
+        // Wettbewerbe Sortieren
         return $competitions;
     }
 
