@@ -218,8 +218,8 @@
 				const pointsInput = document.querySelector('input[name="points"]');
 				const pointsValue = parseInt(pointsInput.value, 10);
 
-				if (pointsInput.value === '' || pointsValue < 0 || pointsValue > 100) {
-					alert('Bitte geben Sie eine gültige Punktzahl zwischen 0 und 100 ein.');
+				if (pointsInput.value === '' || pointsValue < 0 || pointsValue > 99) {
+					alert('Bitte geben Sie eine gültige Punktzahl zwischen 0 und 99 ein.');
 					return;
 				}
 

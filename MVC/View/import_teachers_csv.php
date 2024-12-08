@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     session_start();
-    // $teacherController = TeacherController::getInstance();
+    $teacherController = TeacherController::getInstance();
 
     foreach ($teachersData as $data) {
         $teacher = new Teacher(
@@ -37,9 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             shortCode: $data['shortCode'],
             classId: null,
             class: null,
+            additionalInfo: null
         );
 
-        // $teacherController->create($teacher);
+        $teacherController->create($teacher);
     }
 }
 
@@ -116,12 +117,12 @@ include 'nav.php';
             const lines = data.split('\n').slice(1); // Kopfzeile entfernen.
 
             for (const line of lines) {
-                const [lastName, firstName, abbreviation] = line.split(';');
-                if (lastName && firstName && abbreviation) {
+                const [lastName, firstName, shortCode] = line.split(';').map(item => item.trim());
+                if (lastName && firstName && shortCode) {
                     teachers.push({
                         lastName,
                         firstName,
-                        abbreviation
+                        shortCode
                     });
                 }
             }
@@ -148,7 +149,7 @@ include 'nav.php';
             // Alle Zeilen bis auf Kopfzeile durchgehen.
             teachers.forEach(teacher => {
                 const row = document.createElement('tr');
-                row.innerHTML = `<td>${teacher.firstName}</td><td>${teacher.lastName}</td><td>${teacher.abbreviation}</td>`;
+                row.innerHTML = `<td>${teacher.firstName}</td><td>${teacher.lastName}</td><td>${teacher.shortCode}</td>`;
                 table.appendChild(row);
             });
 
