@@ -12,7 +12,6 @@ class Teacher
         private string $firstName,
         private string $lastName,
         private string $shortCode,
-        private ?int $classId,
         private ?ClassModel $class = null,
         private ?string $additionalInfo = null
     ) {}
@@ -69,16 +68,7 @@ class Teacher
         $this->shortCode = $shortCode;
     }
 
-    public function getClassId(): ?int
-    {
-        return $this->classId;
-    }
-
-    public function setClassId(?int $classId): void
-    {
-        $this->classId = $classId;
-    }
-
+    
     public function getClass(): ?ClassModel
     {
         return $this->class;

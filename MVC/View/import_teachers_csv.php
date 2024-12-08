@@ -35,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             firstName: $data['firstName'],
             lastName: $data['lastName'],
             shortCode: $data['shortCode'],
-            classId: null,
             class: null,
             additionalInfo: null
         );

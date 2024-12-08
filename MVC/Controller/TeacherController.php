@@ -46,7 +46,6 @@ class TeacherController implements IController
                 firstName: $data['firstName'],
                 lastName: $data['lastName'],
                 shortCode: $data['shortCode'],
-                classId: $data['classId'] ?? null,
                 additionalInfo: $data['additionalInfo'] ?? null
             );
 
@@ -77,7 +76,6 @@ class TeacherController implements IController
                 firstName: $item['firstName'],
                 lastName: $item['lastName'],
                 shortCode: $item['shortCode'],
-                classId: $item['classId'] ?? null,
                 additionalInfo: $item['additionalInfo'] ?? null
             );
             $teachers[] = $teacher;
@@ -102,7 +100,6 @@ class TeacherController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'shortCode' => $model->getShortCode(),
-            'classId' => $model->getClassId(),
             'additionalInfo' => $model->getAdditionalInfo()
         ];
 
@@ -127,7 +124,6 @@ class TeacherController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'shortCode' => $model->getShortCode(),
-            'classId' => $model->getClassId(),
             'additionalInfo' => $model->getAdditionalInfo() ?? ""
         ];
 
