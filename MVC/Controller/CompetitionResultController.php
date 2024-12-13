@@ -11,7 +11,7 @@ use RuntimeException;
  */
 class CompetitionResultController implements IController
 {
-    
+
     private string $apiUrl;
 
     public function __construct()
@@ -60,9 +60,9 @@ class CompetitionResultController implements IController
 
     /**
      * @param CompetitionResult $model
-     * @return void
+     * @return array
      */
-    public function create(object $model): void
+    public function create(object $model): array
     {
         if (!$model instanceof CompetitionResult) {
             throw new \InvalidArgumentException('Model must be an instance of CompetitionResult.');
@@ -75,7 +75,8 @@ class CompetitionResultController implements IController
             'studentId' => $model->getStudentId()
         ];
 
-        $this->sendApiRequest('/api/competitionresult', 'POST', $data);
+        $createResult = $this->sendApiRequest('/api/competitionresult', 'POST', $data);
+        return $createResult;
     }
 
     /**
@@ -137,38 +138,44 @@ class CompetitionResultController implements IController
      * @param string $endpoint
      * @param string $method
      * @param array $data
-     * @return void
+     * @return array
      */
-    private function sendApiRequest(string $endpoint, string $method, array $data = []): void
+    private function sendApiRequest(string $endpoint, string $method, array $data = []): array
     {
-        try {
+        $curl = curl_init();
 
-            $curl = curl_init();
-    
-            curl_setopt_array($curl, [
-                CURLOPT_RETURNTRANSFER => 1,
-                CURLOPT_URL => $this->apiUrl . $endpoint,
-                CURLOPT_CUSTOMREQUEST => $method,
-                CURLOPT_POSTFIELDS => json_encode($data),
-                CURLOPT_HTTPHEADER => [
-                    'Content-Type: application/json'
-                ],
-                CURLOPT_USERAGENT => 'PHP API Request'
-            ]);
-    
-            $response = curl_exec($curl);
-            if (curl_errno($curl)) {
-                throw new RuntimeException('cURL error: ' . curl_error($curl));
-            }
-    
-            $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
-            curl_close($curl);
-    
-            if ($statusCode >= 400) {
-                throw new RuntimeException("API request failed with status code $statusCode. Response: $response");
-            }
-        } catch (RuntimeException $e) {
-            echo 'Ein Fehler ist aufgetreten: ' . $e->getMessage();
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_URL => $this->apiUrl . $endpoint,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json'
+            ],
+            CURLOPT_USERAGENT => 'PHP API Request'
+        ]);
+
+        $response = curl_exec($curl);
+        if (curl_errno($curl)) {
+            return [
+                'success' => false,
+                'error' => 'cURL error: ' . curl_error($curl)
+            ];
         }
+
+        $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
+        if ($statusCode >= 400) {
+            return [
+                'success' => false,
+                'error' => "API request failed with status code $statusCode. Response: $response"
+            ];
+        }
+
+        return [
+            'success' => true,
+            'error' => null
+        ];
     }
 }

@@ -10,38 +10,62 @@ use MVC\Model\Student;
 use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
 
+session_start();
+
+$response = [
+    'success' => true,
+    'message' => ''
+];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Enthält den POST-Request Body.
+    // Enthält den POST-Request Body in JSON-Form.
     $postData = file_get_contents('php://input');
 
     if (empty($postData)) {
-        header("Location: " . $_SERVER['REQUEST_URI']);
+        $response['success'] = false;
+        $response['message'] = 'Leere Anfrage erhalten.';
+        echo json_encode($response);
         exit;
     }
 
     $studentsData = json_decode($postData, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-        header("Location: " . $_SERVER['REQUEST_URI']);
+        $response['success'] = false;
+        $response['message'] = 'Ungültiges JSON erhalten.';
+        echo json_encode($response);
         exit;
     }
 
-    session_start();
     $classController = ClassController::getInstance();
     $studentController = StudentController::getInstance();
+    $importSuccess = true;
 
     foreach ($studentsData as $data) {
         $student = new Student(
             id: null,
-            firstName: $data['firstName'],
-            lastName: $data['lastName'],
-            isMale: $data['isMale'] == true,
-            classId: $classController->getIdFromName($data['className'])
+            firstName: trim($data['firstName']),
+            lastName: trim($data['lastName']),
+            isMale: filter_var($data['isMale'], FILTER_VALIDATE_BOOLEAN),
+            classId: $classController->getIdFromName(trim($data['className']))
         );
 
-        $studentController->create($student);
+        $result = $studentController->create($student);
+        if (!$result['success']) {
+            $importSuccess = false;
+            $response['success'] = false;
+            $response['message'] = "Fehler beim Importieren: " . ($result['error'] ?? 'Unbekannter Fehler');
+            break;
+        }
     }
+
+    if ($importSuccess) {
+        $response['message'] = 'Schüler erfolgreich importiert.';
+    }
+
+    echo json_encode($response);
+    exit;
 }
 
 include 'nav.php';
@@ -81,11 +105,13 @@ include 'nav.php';
         </fieldset>
     </form>
 
+    <div id="resultMessage"></div>
 
     <script>
         const fileInput = document.getElementById('fileToUpload');
         const submitButton = document.getElementById('submitButton');
         const fileName = document.getElementById('fileName');
+        const resultMessage = document.getElementById('resultMessage');
 
         let students = [];
 
@@ -179,8 +205,13 @@ include 'nav.php';
                     },
                     body: studentsJSON
                 })
+                .then(response => response.json())
+                .then(data => {
+                    resultMessage.innerHTML = `<p style="color: ${data.success ? 'green' : 'red'};">${data.message}</p>`;
+                })
                 .catch(error => {
                     console.error('Fehler:', error);
+                    resultMessage.innerHTML = `<p style="color: red;">Fehler beim Importieren der Schüler.</p>`;
                 });
         }
     </script>

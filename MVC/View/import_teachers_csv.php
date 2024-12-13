@@ -67,7 +67,7 @@ include 'nav.php';
                     <abbr title="Format der CSV-Datei:
                         1. Erste Zeile: Kopfzeile mit den Spaltennamen.
                         2. Reihenfolge der Spalten: Nachname;Vorname;Kürzel.
-                           Beispiel: Mustermann;Max;MS
+                           Beispiel: Mustermann;Max;MM
                         3. Datensätze werden durch ein Semikolon (;) getrennt.">
                         CSV
                     </abbr>-Datei auswählen:

@@ -116,9 +116,9 @@ class StudentController implements IController
 
     /**
      * @param Student $model
-     * @return void
+     * @return array
      */
-    public function create(object $model): void
+    public function create(object $model): array
     {
         $data = [
             'firstName' => $model->getFirstName(),
@@ -129,7 +129,8 @@ class StudentController implements IController
             'competitionResults' => $model->getCompetitionResults()
         ];
 
-        $this->sendApiRequest('/api/student', 'POST', $data);
+        $createResult = $this->sendApiRequest('/api/student', 'POST', $data);
+        return $createResult;
     }
 
     /**
@@ -189,9 +190,9 @@ class StudentController implements IController
      * @param string $endpoint
      * @param string $method
      * @param array $data
-     * @return void
+     * @return array
      */
-    private function sendApiRequest(string $endpoint, string $method, array $data = []): void
+    protected function sendApiRequest(string $endpoint, string $method, array $data = []): array
     {
         $curl = curl_init();
 
@@ -208,13 +209,31 @@ class StudentController implements IController
 
         $response = curl_exec($curl);
         if (curl_errno($curl)) {
-            throw new RuntimeException('cURL error: ' . curl_error($curl));
+            return [
+                'success' => false,
+                'error' => 'cURL error: ' . curl_error($curl)
+            ];
         }
-        curl_close($curl);
 
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
         if ($statusCode >= 400) {
-            throw new RuntimeException("API request failed with status code $statusCode.");
+            // JSON-Antwort der API parsen
+            $responseData = json_decode($response, true);
+
+            // Fehlermeldung extrahieren
+            $errorMessage = isset($responseData['errors'][0]['description']) ? $responseData['errors'][0]['description'] : 'Unbekannter Fehler';
+
+            return [
+                'success' => false,
+                'error' => $errorMessage
+            ];
         }
+
+        return [
+            'success' => true,
+            'error' => null
+        ];
     }
 }

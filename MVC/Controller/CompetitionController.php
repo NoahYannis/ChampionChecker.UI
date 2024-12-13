@@ -94,9 +94,9 @@ class CompetitionController implements IController {
 
     /**
      * @param Competition $model
-     * @return void
+     * @return array
      */
-    public function create(object $model): void {
+    public function create(object $model): array {
         if (!$model instanceof Competition) {
             throw new \InvalidArgumentException('Model must be an instance of Competition.');
         }
@@ -110,7 +110,8 @@ class CompetitionController implements IController {
             'referee' => $model->getReferee()
         ];
 
-        $this->sendApiRequest('/api/competition', 'POST', $data);
+        $createResult = $this->sendApiRequest('/api/competition', 'POST', $data);
+        return $createResult;
     }
 
     /**
@@ -172,11 +173,12 @@ class CompetitionController implements IController {
      * @param string $endpoint
      * @param string $method
      * @param array $data
-     * @return void
+     * @return array
      */
-    private function sendApiRequest(string $endpoint, string $method, array $data = []): void {
+    private function sendApiRequest(string $endpoint, string $method, array $data = []): array
+    {
         $curl = curl_init();
-
+    
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => $this->apiUrl . $endpoint,
@@ -187,16 +189,28 @@ class CompetitionController implements IController {
             ],
             CURLOPT_USERAGENT => 'PHP API Request'
         ]);
-
+    
         $response = curl_exec($curl);
         if (curl_errno($curl)) {
-            throw new RuntimeException('cURL error: ' . curl_error($curl));
+            return [
+                'success' => false,
+                'error' => 'cURL error: ' . curl_error($curl)
+            ];
         }
-        curl_close($curl);
-
+    
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+    
         if ($statusCode >= 400) {
-            throw new RuntimeException("API request failed with status code $statusCode.");
+            return [
+                'success' => false,
+                'error' => "API request failed with status code $statusCode.: $response"
+            ];
         }
+    
+        return [
+            'success' => true,
+            'error' => null
+        ];
     }
 }

@@ -166,9 +166,9 @@ class ClassController implements IController
 
     /**
      * @param ClassModel $model
-     * @return void
+     * @return array
      */
-    public function create(object $model): void
+    public function create(object $model): array
     {
         if (!$model instanceof ClassModel) {
             throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
@@ -181,11 +181,13 @@ class ClassController implements IController
             'classTeacherId' => $model->getClassTeacherId()
         ];
 
-        $this->sendApiRequest('/api/class', 'POST', $data);
+        $createResult = $this->sendApiRequest('/api/class', 'POST', $data);
 
-        if (isset($_SESSION['classes'])) {
+        if ($createResult['success'] === true && isset($_SESSION['classes'])) {
             $_SESSION['classes'][] = $model;
         }
+
+        return $createResult;
     }
 
     /**
@@ -266,12 +268,12 @@ class ClassController implements IController
      * @param string $endpoint
      * @param string $method
      * @param array $data
-     * @return void
+     * @return array
      */
-    protected function sendApiRequest(string $endpoint, string $method, array $data = []): void
+    protected function sendApiRequest(string $endpoint, string $method, array $data = []): array
     {
         $curl = curl_init();
-
+    
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => $this->apiUrl . $endpoint,
@@ -282,16 +284,28 @@ class ClassController implements IController
             ],
             CURLOPT_USERAGENT => 'PHP API Request'
         ]);
-
+    
         $response = curl_exec($curl);
         if (curl_errno($curl)) {
-            throw new RuntimeException('cURL error: ' . curl_error($curl));
+            return [
+                'success' => false,
+                'error' => 'cURL error: ' . curl_error($curl)
+            ];
         }
-        curl_close($curl);
-
+    
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+    
         if ($statusCode >= 400) {
-            throw new RuntimeException("API request failed with status code $statusCode.");
+            return [
+                'success' => false,
+                'error' => "API request failed with status code $statusCode.: $response"
+            ];
         }
+    
+        return [
+            'success' => true,
+            'error' => null
+        ];
     }
 }

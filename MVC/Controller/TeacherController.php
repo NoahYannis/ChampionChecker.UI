@@ -88,9 +88,9 @@ class TeacherController implements IController
 
     /**
      * @param Teacher $model
-     * @return void
+     * @return array
      */
-    public function create(object $model): void
+    public function create(object $model): array
     {
         if (!$model instanceof Teacher) {
             throw new \InvalidArgumentException('Model must be an instance of Teacher.');
@@ -103,11 +103,8 @@ class TeacherController implements IController
             'additionalInfo' => $model->getAdditionalInfo()
         ];
 
-        $this->sendApiRequest('/api/teacher', 'POST', $data);
-
-        if (isset($_SESSION['teachers'])) {
-            $_SESSION['teachers'][] = $model;
-        }
+        $createResult = $this->sendApiRequest('/api/teacher', 'POST', $data);
+        return $createResult;
     }
 
     /**
@@ -187,9 +184,9 @@ class TeacherController implements IController
      * @param string $endpoint
      * @param string $method
      * @param array $data
-     * @return void
+     * @return array
      */
-    protected function sendApiRequest(string $endpoint, string $method, array $data = []): void
+    protected function sendApiRequest(string $endpoint, string $method, array $data = []): array
     {
         $curl = curl_init();
 
@@ -206,13 +203,25 @@ class TeacherController implements IController
 
         $response = curl_exec($curl);
         if (curl_errno($curl)) {
-            throw new RuntimeException('cURL error: ' . curl_error($curl));
+            return [
+                'success' => false,
+                'error' => 'cURL error: ' . curl_error($curl)
+            ];
         }
-        curl_close($curl);
 
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        curl_close($curl);
+
         if ($statusCode >= 400) {
-            throw new RuntimeException("API request failed with status code $statusCode.");
+            return [
+                'success' => false,
+                'error' => "API request failed with status code $statusCode.: $response"
+            ];
         }
+
+        return [
+            'success' => true,
+            'error' => null
+        ];
     }
 }

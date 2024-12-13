@@ -21,9 +21,9 @@ interface IController {
 
     /**
      * @param T $model
-     * @return void
+     * @return bool
      */
-    public function create(object $model): void;
+    public function create(object $model): array;
 
     /**
      * @param T $model
