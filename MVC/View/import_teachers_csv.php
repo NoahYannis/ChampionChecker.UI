@@ -71,6 +71,7 @@ include 'nav.php';
                         3. Datensätze werden durch ein Semikolon (;) getrennt.">
                         CSV
                     </abbr>-Datei auswählen:
+                    <span id="fileName">Keine Datei ausgewählt</span>
                     <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewTeachers()">
                 </label>
             </div>
@@ -81,22 +82,21 @@ include 'nav.php';
         </fieldset>
     </form>
 
-
     <script>
-        // Lehrer-Vorschau dynamisch nach Auswahl einer CSV-Datei anzeigen (JavaScript nötig).
         const fileInput = document.getElementById('fileToUpload');
         const submitButton = document.getElementById('submitButton');
+        const fileName = document.getElementById('fileName');
 
         let teachers = [];
 
         fileInput.addEventListener('change', function() {
             // Importieren-Button aktivieren, wenn Datei ausgewählt.
             submitButton.disabled = fileInput.files.length == 0 || teachers.length == 0;
+            fileName.textContent = fileInput.files[0].name; // Dateiname anzeigen
         });
 
         function previewTeachers() {
             teachers = []; // Leeren, falls noch alte Daten vorhanden sind.
-            const fileInput = document.getElementById('fileToUpload');
             const file = fileInput.files[0];
 
             if (!file) {
@@ -107,9 +107,6 @@ include 'nav.php';
                 alert('Bitte wählen Sie eine CSV-Datei aus.');
                 return;
             }
-
-            // Namen der ausgewählten Datei anzeigen im File-Input.
-            document.getElementById('upload-label').innerText = file.name;
 
             const reader = new FileReader();
             reader.onload = function(e) {
@@ -144,8 +141,16 @@ include 'nav.php';
             previewDiv.innerHTML = '';
 
             if (teachers.length === 0) {
-                previewDiv.innerHTML = '<p>Keine Lehrer gefunden.</p>';
-                return;
+                previewDiv.innerHTML = `
+                <p style="text-align: center; margin: 0;">
+                    Keine Lehrer gefunden.<br>
+                    <strong>Format der CSV-Datei:</strong><br>
+                    1. Erste Zeile: Kopfzeile mit den Spaltennamen.<br>
+                    2. Reihenfolge der Spalten: <em>Nachname;Vorname;Kürzel</em>.<br>
+                    <strong>Beispiel:</strong> Mustermann;Max;MM<br>
+                    3. Trennzeichen: Semikolon ( ; )
+                </p>
+            `;                return;
             }
 
             // Tabelle erstellen und Lehrer-Daten anzeigen.

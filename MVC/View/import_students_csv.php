@@ -68,131 +68,123 @@ include 'nav.php';
                     <abbr title="Format der CSV-Datei:
                     1. Erste Zeile: Kopfzeile mit den Spaltennamen.
                     2. Reihenfolge der Spalten: Nachname;Vorname;Geschlecht;Klasse.
-                        Beispiel: Mustermann;Max;männlich;EFI22A
+                    Beispiel: Mustermann;Max;männlich;EFI22A
                     3. Trennzeichen: Semikolon ( ; )">
                         CSV
                     </abbr>-Datei auswählen:
+                    <span id="fileName">Keine Datei ausgewählt</span>
                     <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
                 </label>
             </div>
-            <div class="import-preview" id="studentPreview"></div> <!-- Import-Vorschau -->
-            <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">
-                Importieren
-            </button>
+            <div class="import-preview" id="studentPreview"></div>
+            <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">Importieren</button>
         </fieldset>
     </form>
-</body>
 
 
-
-<script>
-    // Schüler-Vorschau dynamisch nach Auswahl einer CSV-Datei anzeigen (JavaScript nötig).
-    const fileInput = document.getElementById('fileToUpload');
-    const submitButton = document.getElementById('submitButton');
-
-    let students = [];
-
-    fileInput.addEventListener('change', function() {
-        // Importieren-Button aktivieren, wenn Datei ausgewählt.
-        submitButton.disabled = fileInput.files.length == 0 || students.length == 0;
-    });
-
-    function previewStudents() {
-        students = []; // Leeren, falls noch alte Daten vorhanden sind.
+    <script>
         const fileInput = document.getElementById('fileToUpload');
-        const file = fileInput.files[0];
+        const submitButton = document.getElementById('submitButton');
+        const fileName = document.getElementById('fileName');
 
-        if (!file) {
-            return;
-        }
+        let students = [];
 
-        if (!file.name.endsWith('.csv')) {
-            alert('Bitte wählen Sie eine CSV-Datei aus.');
-            return;
-        }
-
-        // Namen der ausgewählten Datei anzeigen im File-Input.
-        document.getElementById('upload-label').innerText = file.name;
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const fileContent = e.target.result; // e.target = FileReader, der das onload-Event ausgelöst hat.
-            students = parseCSV(fileContent);
-            displayPreview(students);
-        };
-
-        reader.readAsText(file); // onload-Event wird ausgelöst, wenn das Lesen abgeschlossen ist.
-    }
-
-    function parseCSV(data) {
-        const lines = data.split('\n').slice(1); // Kopfzeile entfernen.
-
-        for (const line of lines) {
-            const [lastName, firstName, isMale, className] = line.split(';');
-            if (lastName && firstName && isMale && className) {
-                students.push({
-                    lastName,
-                    firstName,
-                    className,
-                    isMale: isMale.toLowerCase() === 'männlich'
-                });
-            }
-        }
-
-        submitButton.disabled = students.length == 0;
-        return students;
-    }
-
-    function displayPreview(students) {
-        const previewDiv = document.getElementById('studentPreview');
-        previewDiv.innerHTML = '';
-
-        if (students.length === 0) {
-            previewDiv.innerHTML = `
-             <p style="text-align: center; margin: 0;">
-            Keine Schüler gefunden.<br>
-            <strong>Format der CSV-Datei:</strong><br>
-            1. Erste Zeile: Kopfzeile mit den Spaltennamen.<br>
-            2. Reihenfolge der Spalten: <em>Nachname;Vorname;Geschlecht;Klasse</em>.<br>
-            <strong>Beispiel:</strong> Mustermann;Max;männlich;EFI22A<br>
-            3. Trennzeichen: Semikolon ( ; )
-            </p> `;
-            return;
-        }
-
-        // Tabelle erstellen und Schülerdaten anzeigen.
-        const table = document.createElement('table');
-        const header = document.createElement('tr');
-        header.innerHTML = '<th>Vorname</th><th>Nachname</th><th>Geschlecht</th><th>Klasse</th>';
-        table.appendChild(header);
-
-        // Alle Zeilen bis auf Kopfzeile durchgehen.
-        students.forEach(student => {
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${student.firstName}</td><td>${student.lastName}</td><td>${student.isMale ? 'Männlich' : 'Weiblich'}</td><td>${student.className}</td>`;
-            table.appendChild(row);
+        fileInput.addEventListener('change', function() {
+            // Importieren-Button aktivieren, wenn Datei ausgewählt.
+            submitButton.disabled = fileInput.files.length == 0 || students.length == 0;
+            fileName.textContent = fileInput.files[0].name; // Dateiname anzeigen
         });
 
-        previewDiv.appendChild(table);
-    }
+        function previewStudents() {
+            students = []; // Leeren, falls noch alte Daten vorhanden sind.
+            const file = fileInput.files[0];
 
+            if (!file) {
+                return;
+            }
 
-    // Postet die Schülerdaten, sodass PHP sie an die API weiterleiten kann.
-    function uploadStudents() {
-        const studentsJSON = JSON.stringify(students);
+            if (!file.name.endsWith('.csv')) {
+                alert('Bitte wählen Sie eine CSV-Datei aus.');
+                return;
+            }
 
-        fetch('import_students_csv.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: studentsJSON
-            })
-            .catch(error => {
-                console.error('Fehler:', error);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const fileContent = e.target.result; // e.target = FileReader, der das onload-Event ausgelöst hat.
+                students = parseCSV(fileContent);
+                displayPreview(students);
+            };
+
+            reader.readAsText(file); // onload-Event wird ausgelöst, wenn das Lesen abgeschlossen ist.
+        }
+
+        function parseCSV(data) {
+            const lines = data.split('\n').slice(1); // Kopfzeile entfernen.
+
+            for (const line of lines) {
+                const [lastName, firstName, isMale, className] = line.split(';');
+                if (lastName && firstName && isMale && className) {
+                    students.push({
+                        lastName,
+                        firstName,
+                        className,
+                        isMale: isMale.toLowerCase() === 'männlich'
+                    });
+                }
+            }
+
+            submitButton.disabled = students.length == 0;
+            return students;
+        }
+
+        function displayPreview(students) {
+            const previewDiv = document.getElementById('studentPreview');
+            previewDiv.innerHTML = '';
+
+            if (students.length === 0) {
+                previewDiv.innerHTML = `
+                <p style="text-align: center; margin: 0;">
+                    Keine Schüler gefunden.<br>
+                    <strong>Format der CSV-Datei:</strong><br>
+                    1. Erste Zeile: Kopfzeile mit den Spaltennamen.<br>
+                    2. Reihenfolge der Spalten: <em>Nachname;Vorname;Geschlecht;Klasse</em>.<br>
+                    <strong>Beispiel:</strong> Mustermann;Max;männlich;EFI22A<br>
+                    3. Trennzeichen: Semikolon ( ; )
+                </p>
+            `;
+                return;
+            }
+
+            const table = document.createElement('table');
+            const header = document.createElement('tr');
+            header.innerHTML = '<th>Vorname</th><th>Nachname</th><th>Geschlecht</th><th>Klasse</th>';
+            table.appendChild(header);
+
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${student.firstName}</td><td>${student.lastName}</td><td>${student.isMale ? 'Männlich' : 'Weiblich'}</td><td>${student.className}</td>`;
+                table.appendChild(row);
             });
-    }
-</script>
+
+            previewDiv.appendChild(table);
+        }
+
+        function uploadStudents() {
+            const studentsJSON = JSON.stringify(students);
+
+            fetch('import_students_csv.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: studentsJSON
+                })
+                .catch(error => {
+                    console.error('Fehler:', error);
+                });
+        }
+    </script>
+
 </body>
 
 </html>
