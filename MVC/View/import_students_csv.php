@@ -148,7 +148,15 @@ include 'nav.php';
         previewDiv.innerHTML = '';
 
         if (students.length === 0) {
-            previewDiv.innerHTML = '<p>Keine Schüler gefunden.</p>';
+            previewDiv.innerHTML = `
+             <p style="text-align: center; margin: 0;">
+            Keine Schüler gefunden.<br>
+            <strong>Format der CSV-Datei:</strong><br>
+            1. Erste Zeile: Kopfzeile mit den Spaltennamen.<br>
+            2. Reihenfolge der Spalten: <em>Nachname;Vorname;Geschlecht;Klasse</em>.<br>
+            <strong>Beispiel:</strong> Mustermann;Max;männlich;EFI22A<br>
+            3. Trennzeichen: Semikolon ( ; )
+            </p> `;
             return;
         }
 
