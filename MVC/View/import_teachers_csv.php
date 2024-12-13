@@ -61,17 +61,26 @@ include 'nav.php';
 <body>
     <form class="uploadForm" id="uploadForm" action="" method="POST">
         <fieldset>
-            <legend>Lehrer importieren </legend>
+            <legend>CSV-Import: Lehrer</legend>
             <div class="import-header">
                 <label id="upload-label" for="fileToUpload" class="custom-file-upload">
-                    CSV-Datei auswählen:
+                    <abbr title="Format der CSV-Datei:
+                        1. Erste Zeile: Kopfzeile mit den Spaltennamen.
+                        2. Reihenfolge der Spalten: Nachname;Vorname;Kürzel.
+                           Beispiel: Mustermann;Max;MS
+                        3. Datensätze werden durch ein Semikolon (;) getrennt.">
+                        CSV
+                    </abbr>-Datei auswählen:
                     <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewTeachers()">
                 </label>
             </div>
             <div class="import-preview" id="teacherPreview"></div> <!-- Import-Vorschau -->
-            <button id="submitButton" disabled onclick="event.preventDefault(); uploadTeachers();" name="submitButton">Importieren</button>
+            <button id="submitButton" disabled onclick="event.preventDefault(); uploadTeachers();" name="submitButton">
+                Importieren
+            </button>
         </fieldset>
     </form>
+
 
     <script>
         // Lehrer-Vorschau dynamisch nach Auswahl einer CSV-Datei anzeigen (JavaScript nötig).
