@@ -84,6 +84,7 @@ include 'nav.php';
 </head>
 
 <body>
+    <div class="resultMessage" id="resultMessage"></div>
     <form class="uploadForm" id="uploadForm" action="" method="POST">
         <fieldset>
             <legend>CSV-Import: Schüler</legend>
@@ -101,17 +102,20 @@ include 'nav.php';
                 </label>
             </div>
             <div class="import-preview" id="studentPreview"></div>
-            <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">Importieren</button>
+            <button id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">
+                Importieren
+                <div class="spinner" id="spinner"></div>
+            </button>
         </fieldset>
     </form>
 
-    <div id="resultMessage"></div>
 
     <script>
         const fileInput = document.getElementById('fileToUpload');
         const submitButton = document.getElementById('submitButton');
         const fileName = document.getElementById('fileName');
         const resultMessage = document.getElementById('resultMessage');
+        const spinner = document.getElementById('spinner');
 
         let students = [];
 
@@ -198,6 +202,10 @@ include 'nav.php';
         function uploadStudents() {
             const studentsJSON = JSON.stringify(students);
 
+            // Ladespinner anzeigen
+            resultMessage.innerHTML = '';
+            spinner.style.display = 'inline-block';
+
             fetch('import_students_csv.php', {
                     method: 'POST',
                     headers: {
@@ -207,11 +215,13 @@ include 'nav.php';
                 })
                 .then(response => response.json())
                 .then(data => {
-                    resultMessage.innerHTML = `<p style="color: ${data.success ? 'green' : 'red'};">${data.message}</p>`;
+                    spinner.style.display = 'none';
+                    resultMessage.innerHTML = `<p class="resultMessage ${data.success ? 'success' : 'error'}">${data.message}</p>`;
                 })
                 .catch(error => {
+                    spinner.style.display = 'none';
                     console.error('Fehler:', error);
-                    resultMessage.innerHTML = `<p style="color: red;">Fehler beim Importieren der Schüler.</p>`;
+                    resultMessage.innerHTML = `<p class="resultMessage";>Fehler beim Importieren der Schüler.</p>`;
                 });
         }
     </script>
