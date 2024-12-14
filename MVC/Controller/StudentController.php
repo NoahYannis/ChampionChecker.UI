@@ -219,12 +219,9 @@ class StudentController implements IController
         curl_close($curl);
 
         if ($statusCode >= 400) {
-            // JSON-Antwort der API parsen
             $responseData = json_decode($response, true);
-
-            // Fehlermeldung extrahieren
-            $errorMessage = isset($responseData['errors'][0]['description']) ? $responseData['errors'][0]['description'] : 'Unbekannter Fehler';
-
+            $errorMessage = $responseData['errors'][0]['description'] ?? 'Unbekannter Fehler';
+            
             return [
                 'success' => false,
                 'error' => $errorMessage

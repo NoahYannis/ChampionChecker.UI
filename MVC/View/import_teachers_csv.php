@@ -9,24 +9,35 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 use MVC\Model\Teacher;
 use MVC\Controller\TeacherController;
 
+session_start();
+
+$response = [
+    'success' => true,
+    'message' => ''
+];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Enthält den POST-Request Body.
     $postData = file_get_contents('php://input');
 
     if (empty($postData)) {
-        header("Location: " . $_SERVER['REQUEST_URI']);
+        $response['success'] = false;
+        $response['message'] = 'Leere Anfrage erhalten.';
+        echo json_encode($response);
         exit;
     }
 
     $teachersData = json_decode($postData, true);
+    $importSuccess = true;
 
     if (json_last_error() !== JSON_ERROR_NONE) {
-        header("Location: " . $_SERVER['REQUEST_URI']);
+        $response['success'] = false;
+        $response['message'] = 'Ungültiges JSON erhalten.';
+        echo json_encode($response);
         exit;
     }
 
-    session_start();
     $teacherController = TeacherController::getInstance();
 
     foreach ($teachersData as $data) {
@@ -39,8 +50,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             additionalInfo: null
         );
 
-        $teacherController->create($teacher);
+        $result = $teacherController->create($teacher);
+        if (!$result['success']) {
+            $importSuccess = false;
+            $response['success'] = false;
+            $response['message'] = "Fehler beim Importieren: " . ($result['error'] ?? 'Unbekannter Fehler');
+            break;
+        }
     }
+
+    if ($importSuccess) {
+        $response['message'] = 'Lehrer erfolgreich importiert.';
+    }
+
+    echo json_encode($response);
+    exit;
 }
 
 include 'nav.php';
@@ -59,6 +83,7 @@ include 'nav.php';
 </head>
 
 <body>
+    <div class="resultMessage" id="resultMessage"></div>
     <form class="uploadForm" id="uploadForm" action="" method="POST">
         <fieldset>
             <legend>CSV-Import: Lehrer</legend>
@@ -78,6 +103,7 @@ include 'nav.php';
             <div class="import-preview" id="teacherPreview"></div> <!-- Import-Vorschau -->
             <button id="submitButton" disabled onclick="event.preventDefault(); uploadTeachers();" name="submitButton">
                 Importieren
+                <div class="spinner" id="spinner"></div>
             </button>
         </fieldset>
     </form>
@@ -86,6 +112,7 @@ include 'nav.php';
         const fileInput = document.getElementById('fileToUpload');
         const submitButton = document.getElementById('submitButton');
         const fileName = document.getElementById('fileName');
+        const spinner = document.getElementById('spinner');
 
         let teachers = [];
 
@@ -150,7 +177,8 @@ include 'nav.php';
                     <strong>Beispiel:</strong> Mustermann;Max;MM<br>
                     3. Trennzeichen: Semikolon ( ; )
                 </p>
-            `;                return;
+            `;
+                return;
             }
 
             // Tabelle erstellen und Lehrer-Daten anzeigen.
@@ -173,6 +201,9 @@ include 'nav.php';
         function uploadTeachers() {
             const teachersJSON = JSON.stringify(teachers);
 
+            resultMessage.innerHTML = '';
+            spinner.style.display = 'inline-block';
+
             fetch('import_teachers_csv.php', {
                     method: 'POST',
                     headers: {
@@ -180,8 +211,15 @@ include 'nav.php';
                     },
                     body: teachersJSON
                 })
+                .then(response => response.json())
+                .then(data => {
+                    spinner.style.display = 'none';
+                    resultMessage.innerHTML = `<p class="resultMessage ${data.success ? 'success' : 'error'}">${data.message}</p>`;
+                })
                 .catch(error => {
+                    spinner.style.display = 'none';
                     console.error('Fehler:', error);
+                    resultMessage.innerHTML = `<p class="resultMessage error">Fehler beim Importieren der Lehrer.</p>`;
                 });
         }
     </script>

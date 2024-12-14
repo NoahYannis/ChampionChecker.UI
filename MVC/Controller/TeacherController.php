@@ -213,9 +213,21 @@ class TeacherController implements IController
         curl_close($curl);
 
         if ($statusCode >= 400) {
+            $responseData = json_decode($response, true);
+            $errorMessage = 'Unbekannter Fehler';
+
+            if (isset($responseData['errors']) && is_array($responseData['errors'])) {
+                foreach ($responseData['errors'] as $fieldErrors) {
+                    if (is_array($fieldErrors) && !empty($fieldErrors)) {
+                        $errorMessage = $fieldErrors[0];
+                        break;
+                    }
+                }
+            }
+
             return [
                 'success' => false,
-                'error' => "API request failed with status code $statusCode.: $response"
+                'error' => $errorMessage
             ];
         }
 
