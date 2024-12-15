@@ -26,12 +26,15 @@ include 'nav.php';
     <div class="main-content">
 
         <div class="add-teachers-mode">
-            <label for="toggleSwitch">CSV-Import</label>
+            <abbr title="Importieren Sie mehrere Lehrer auf einmal aus einer bestehenden CSV-Datei.">
+                <label for="toggleSwitch">CSV-Import</label>
+            </abbr>
             <label class="toggle">
                 <input type="checkbox" id="toggleSwitch" onclick="showForm()">
                 <span class="slider"></span>
             </label>
-            <label for="toggleSwitch">Manuell</label>
+            <abbr title="Fügen Sie Lehrer manuell hinzu, indem Sie das Formular ausfüllen und alle erforderlichen Informationen eingeben.">
+                <label for="toggleSwitch">Manuell</label>
         </div>
 
         <div id="form-container">

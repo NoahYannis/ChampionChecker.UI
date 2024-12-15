@@ -81,8 +81,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <label for="additional-info">Zusätzliche Informationen:</label>
                 <textarea id="additional-info" name="additional-info"></textarea>
 
-                <label for="participationToggle">Teilnahme:</label>
-                <label class="toggle">
+                <label for="participationToggle">Turnier-Teilnahme:</label>
+                <label class="toggle add-teacher-toggle">
                     <input type="checkbox" id="participationToggle" name="participationToggle">
                     <span class="slider"></span>
                 </label>
