@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo
         "<script>
             alert('Bitte füllen Sie alle Felder aus.');
-            window.location.href = 'add_teachers.php';
+            window.location.href = 'add_teachers_overview.php?mode=manual';
         </script>";
         exit;
     }
@@ -39,16 +39,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo
         "<script>
             alert('$teacherName wurde erfolgreich hinzugefügt.');
-            window.location.href = 'add_teachers.php';
+            window.location.href = 'add_teachers_overview.php?mode=manual';
         </script>";
         exit;
     } else {
         echo "<script>alert('{$addResult["error"]}');</script>";
-        echo "<script>window.location.href = 'add_teachers.php'</script>"; // Redirect, damit das Formular bei F5 nicht erneut abgeschickt wird
+        echo "<script>window.location.href = 'add_teachers_overview.php?mode=manual'</script>"; // Redirect, damit das Formular bei F5 nicht erneut abgeschickt wird
     }
 }
-
-include 'nav.php';
 ?>
 
 <!DOCTYPE html>
@@ -66,7 +64,7 @@ include 'nav.php';
 
 <body>
     <div class="main-content">
-        <form method="post">
+        <form method="post" action="add_teachers_manual.php">
             <fieldset class="add-teachers-fieldset">
                 <legend>Lehrer hinzufügen</legend>
 
