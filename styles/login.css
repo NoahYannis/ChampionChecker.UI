@@ -3,11 +3,9 @@
   max-width: 500px;
 }
 
-
 input[type="password"] {
   margin-bottom: 0;
 }
-
 
 .forgot-password {
   display: inline-block;
@@ -93,7 +91,7 @@ input[type="password"] {
 }
 
 @media (width < 600px) {
-  .register-form {
+  .signup-form {
     width: 95%;
     padding: 5px;
   }

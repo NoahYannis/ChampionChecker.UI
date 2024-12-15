@@ -23,7 +23,7 @@ include 'nav.php';
 <body>
     <div class="main-content">
         <form method="post">
-            <fieldset>
+            <fieldset class="add-teachers-fieldset">
                 <legend>Lehrer hinzufügen</legend>
 
                 <label for="firstname">Vorname:</label>

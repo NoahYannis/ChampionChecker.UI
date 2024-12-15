@@ -221,6 +221,15 @@ textarea {
   }
 }
 
+textarea {
+  height: 50px;
+  transition: height 0.3s ease;
+
+  &:focus {
+    height: 80px;
+  }
+}
+
 label {
   display: block;
   margin-bottom: 5px;

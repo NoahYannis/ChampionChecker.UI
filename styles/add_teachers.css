@@ -1,3 +1,23 @@
 #additional-info {
   resize: none;
 }
+
+.add-teachers-fieldset {
+  max-height: 100vh;
+}
+
+@media (width < 600px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="submit"] {
+    padding: 2px;
+    font-size: 0.8rem;
+  }
+
+  input[type="submit"] {
+    height: 3rem;
+    font-size: 1.2rem;
+    border: 1px solid black;
+  }
+}
