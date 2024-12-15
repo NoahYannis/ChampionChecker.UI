@@ -99,6 +99,7 @@ abbr {
   font-size: clamp(1rem, 1.5vw, 1.5rem);
   font-weight: bold;
   word-wrap: break-word;
+  margin: 0;
 
   &.success {
     color: green;

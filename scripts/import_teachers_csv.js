@@ -14,6 +14,7 @@
   });
 
   function previewTeachers() {
+    resultMessage.innerHTML = "";
     teachers = []; // Leeren, falls noch alte Daten vorhanden sind.
     const file = fileInput.files[0];
 
@@ -107,7 +108,10 @@
       .then((response) => response.text())
       .then((data) => {
         spinner.style.display = "none";
-        resultMessage.innerHTML = `<p class="resultMessage">${data}</p>`;
+        const isSuccess = data.includes("erfolgreich");
+        resultMessage.innerHTML = `<p class="resultMessage ${
+          isSuccess ? "success" : "error"
+        }">${data}</p>`;
       })
       .catch((error) => {
         spinner.style.display = "none";
