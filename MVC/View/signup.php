@@ -54,7 +54,7 @@ include 'nav.php';
 </head>
 
 <body>
-    <div class="main-content">
+    <div class="main-content signup-main-content">
         <form class="signup-form" method="post">
             <fieldset class="signup-fieldset">
                 <legend>Registrierung</legend>
@@ -93,8 +93,7 @@ include 'nav.php';
 </body>
 
 <script>
-    // Register-Validierung
-    document.querySelector('.register-form').addEventListener('submit', function(event) {
+    document.querySelector('.signup-form').addEventListener('submit', function(event) {
 
         // Vorname und Nachname prüfen
         const lastname = document.getElementById('lastname').value.trim();

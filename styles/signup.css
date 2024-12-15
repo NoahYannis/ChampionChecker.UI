@@ -1,11 +1,5 @@
-.main-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 90%;
-  flex-grow: 1;
-  padding: 10px;
+.signup-main-content {
+  max-height: fit-content;
 }
 
 .signup-form {
@@ -15,26 +9,6 @@
 
 .signup-fieldset {
   max-height: 100vh;
-}
-
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-  width: 100%;
-  padding: 10px 15px;
-  margin-bottom: 10px;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-
-  &:hover {
-    border-color: var(--primary-color);
-  }
 }
 
 input[type="submit"] {
