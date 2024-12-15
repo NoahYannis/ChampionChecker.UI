@@ -12,8 +12,9 @@ class Teacher
         private string $firstName,
         private string $lastName,
         private string $shortCode,
+        private bool $isParticipating = true,
+        private ?string $additionalInfo = null,
         private ?ClassModel $class = null,
-        private ?string $additionalInfo = null
     ) {}
 
     public function getId(): ?int
@@ -68,7 +69,17 @@ class Teacher
         $this->shortCode = $shortCode;
     }
 
-    
+    public function getIsParticipating(): bool
+    {
+        return $this->isParticipating;
+    }
+
+    public function setIsParticipating(bool $isParticipating): void
+    {
+        $this->isParticipating = $isParticipating;
+    }
+
+
     public function getClass(): ?ClassModel
     {
         return $this->class;

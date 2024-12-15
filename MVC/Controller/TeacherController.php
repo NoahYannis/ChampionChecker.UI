@@ -100,6 +100,7 @@ class TeacherController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'shortCode' => $model->getShortCode(),
+            'isParticipating' => $model->getIsParticipating(),
             'additionalInfo' => $model->getAdditionalInfo()
         ];
 
