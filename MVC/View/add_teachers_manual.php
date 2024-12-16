@@ -1,5 +1,6 @@
 <?php
 require '../../vendor/autoload.php';
+session_start();
 
 use MVC\Controller\TeacherController;
 use MVC\Model\Teacher;
@@ -35,7 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $addResult = $teacherController->create($teacher);
 
     if ($addResult['success'] === true) {
+        // Cache leeren, damit der neue Lehrer beim nächsten Aufruf von add_teachers_overview.php angezeigt wird.
+        if (isset($_SESSION['overview_teachers'])) {
+            unset($_SESSION['overview_teachers']);
+            unset($_SESSION['overview_teachers_timestamp']);
+        }
+
         $teacherName = addslashes($_POST['firstname'] . ' ' . $_POST['lastname']);
+        
         echo
         "<script>
             alert('$teacherName wurde erfolgreich hinzugefügt.');

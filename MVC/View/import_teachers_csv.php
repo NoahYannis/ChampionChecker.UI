@@ -6,6 +6,7 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
     exit();
 }
 
+session_start();
 use MVC\Model\Teacher;
 use MVC\Controller\TeacherController;
 
@@ -60,6 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($importSuccess) {
         $response['message'] = 'Lehrer erfolgreich importiert.';
+        if (isset($_SESSION['overview_teachers'])) {
+            unset($_SESSION['overview_teachers']);
+            unset($_SESSION['overview_teachers_timestamp']);
+        }
     }
 
     echo $response['message'];
@@ -98,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewTeachers()">
                 </label>
             </div>
-            <div class="import-preview" id="teacherPreview"></div> <!-- Import-Vorschau -->
+            <div class="scrollable-container" id="teacherPreview"></div> <!-- Import-Vorschau -->
             <button class="submitButton" id="submitButton" disabled onclick="event.preventDefault(); uploadTeachers();" name="submitButton">
                 Importieren
                 <div class="spinner" id="spinner"></div>

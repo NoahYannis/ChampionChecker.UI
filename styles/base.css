@@ -184,6 +184,11 @@ button {
   }
 }
 
+.scrollable-container {
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
 input[type="submit"] {
   justify-content: center;
   border-radius: 8px;

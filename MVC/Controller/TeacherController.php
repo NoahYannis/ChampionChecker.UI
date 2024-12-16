@@ -76,6 +76,8 @@ class TeacherController implements IController
                 firstName: $item['firstName'],
                 lastName: $item['lastName'],
                 shortCode: $item['shortCode'],
+                isParticipating: $item['isParticipating'],
+                // TODO: Alle Klassen abfragen
                 additionalInfo: $item['additionalInfo'] ?? null
             );
             $teachers[] = $teacher;

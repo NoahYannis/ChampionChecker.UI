@@ -27,11 +27,6 @@ input[type="file"] {
 }
 
 
-.import-preview {
-  max-height: 50vh;
-  overflow-y: auto;
-}
-
 table {
   border-collapse: collapse;
   border-radius: 8px;
@@ -75,7 +70,7 @@ table {
     font-weight: 600;
   }
 
-  .import-preview {
+  .scrollable-container {
     padding-left: 3vw;
     padding-right: 3vw;
     max-width: 80vw;

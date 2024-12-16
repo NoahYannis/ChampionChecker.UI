@@ -102,7 +102,7 @@ include 'nav.php';
                     <input type="file" id="fileToUpload" name="fileToUpload" accept=".csv" onchange="previewStudents()">
                 </label>
             </div>
-            <div class="import-preview" id="studentPreview"></div>
+            <div class="scrollable-container" id="studentPreview"></div>
             <button class="submitButton" id="submitButton" disabled onclick="event.preventDefault(); uploadStudents();" name="submitButton">
                 Importieren
                 <div class="spinner" id="spinner"></div>

@@ -12,7 +12,7 @@ class Teacher
         private string $firstName,
         private string $lastName,
         private string $shortCode,
-        private bool $isParticipating = true,
+        private bool $isParticipating = false,
         private ?string $additionalInfo = null,
         private ?ClassModel $class = null,
     ) {}
