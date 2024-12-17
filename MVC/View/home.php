@@ -60,7 +60,7 @@ function printCompetitionResult($competitionResults)
     // Gesamtpunkte pro Klasse berechnen
     $pointsByClass = aggregatePointsByClass($competitionResults);
 
-    echo "<table class='competition-table'>";
+    echo "<table class='table-style competition-table'>";
     echo "<thead>";
     echo "<tr>";
     echo "<th>Klasse</th>";
@@ -92,6 +92,7 @@ $competitionResults = loadCompetitionResults();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
+    <link rel="stylesheet" type="text/css" href="../../styles/base.css" />
     <link rel="stylesheet" type="text/css" href="../../styles/home.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
 </head>
