@@ -11,7 +11,6 @@ include 'nav.php';
 
 
 use MVC\Controller\TeacherController;
-use MVC\Model\Teacher;
 
 $teacherController = TeacherController::getInstance();
 
@@ -60,12 +59,12 @@ function printTeachers($teachers)
 
     foreach ($teachers as $teacher) {
         echo "<tr>";
-        echo "<td>" . $teacher->getLastName() . "</td>";
-        echo "<td>" . $teacher->getFirstName() . "</td>";
-        echo "<td>" . $teacher->getShortCode() . "</td>";
-        echo "<td>" . ($teacher->getIsParticipating() == true ? "Ja" : "Nein") . "</td>";
-        echo "<td>" . $teacher->getClass() . "</td>"; // TOOD: Alle Klassen abfragen
-        echo "<td>" . (empty($teacher->getAdditionalInfo()) ? '-' : htmlspecialchars($teacher->getAdditionalInfo())) . "</td>";
+        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getLastName()) . "</div></td>";
+        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getFirstName()) . "</div></td>";
+        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getShortCode()) . "</div></td>";
+        echo "<td><div class='td-content'>" . ($teacher->getIsParticipating() == true ? "Ja" : "Nein") . "</div></td>";
+        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getClass()) . "</div></td>"; // TODO: Alle Klassen abfragen
+        echo "<td><div class='td-content'>" . (empty($teacher->getAdditionalInfo()) ? '-' : htmlspecialchars($teacher->getAdditionalInfo())) . "</div></td>";
         echo "</tr>";
     }
 

@@ -57,7 +57,7 @@ function printCompetitionResult($competitionResults)
 {
     global $classController;
 
-    if(isset($_SESSION['competitionResultsTimestamp'])) {
+    if (isset($_SESSION['competitionResultsTimestamp'])) {
         echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
     }
 
@@ -84,6 +84,14 @@ function printCompetitionResult($competitionResults)
 }
 
 $competitionResults = loadCompetitionResults();
+
+// Ergebnisse alphabetisch sortieren
+usort($competitionResults, function ($resultA, $resultB) {
+    return strcmp(
+        getCompetitionName($resultA->getCompetitionId()),
+        getCompetitionName($resultB->getCompetitionId())
+    );
+});
 ?>
 
 <!-- TODO: Filtern, mehr Infos anzeigen -->

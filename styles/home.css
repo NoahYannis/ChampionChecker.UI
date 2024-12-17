@@ -21,3 +21,11 @@ body {
 .competition-table tbody tr:last-of-type {
   border-bottom: 2px solid #009879;
 }
+
+@media screen and (width < 600px) {
+  .competition-table th,
+  .competition-table td {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+}

@@ -212,7 +212,7 @@ input[type="submit"] {
 }
 
 input[type="text"],
-input[type="email"],  
+input[type="email"],
 input[type="password"],
 textarea {
   width: 100%;
@@ -245,8 +245,8 @@ label {
 .table-style {
   width: 100%;
   border-collapse: collapse;
-  margin: 20px 0;
-  font-size: 18px;
+  margin: 20px auto;
+  font-size: clamp(0.9rem, 2.5vw, 1.2rem);
   text-align: center;
   border: 3px solid #000;
 }
@@ -262,6 +262,16 @@ label {
   padding: 12px 15px;
   border: 1px solid #000;
   text-align: center;
+  max-width: 250px;
+  max-height: 100px;
+  overflow: auto;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.td-content {
+  max-height: 150px;
+  overflow-y: auto;
 }
 
 .table-style tbody tr {
@@ -274,5 +284,21 @@ label {
   cursor: pointer;
 }
 
-@media  (width < 600px) {
+@media (max-width: 600px) {
+  .table-style {
+    margin: 10px auto;
+    width: 100%;
+  }
+
+  .table-style th,
+  .table-style td {
+    padding: 4px 6px;
+    max-width: 65px;
+    overflow-x: auto;
+    font-size: clamp(0.6rem, 1.5vw, 1rem);
+  }
+
+  .td-content {
+    max-height: 80px;
+  }
 }
