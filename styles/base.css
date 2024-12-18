@@ -184,6 +184,44 @@ button {
   }
 }
 
+.circle-button {
+  border-radius: 16px;
+  padding-inline: 10px;
+  padding-block: 10px;
+  height: 50px;
+  width: 50px;
+
+  i {
+    font-size: clamp(1rem, 1.25vw, 1.5rem);
+  }
+
+  .fas {
+    margin: 0;
+  }
+
+  &:hover:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+.add-button {
+  background-color: #00a82d;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: #00751f;
+  }
+}
+
+.edit-button {
+  background-color: blue;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: darkblue;
+  }
+}
+
 .scrollable-container {
   max-height: 50vh;
   overflow-y: auto;

@@ -41,10 +41,6 @@ function loadAllTeachers($cacheDuration = 300): array
 
 function printTeachers($teachers)
 {
-    if (isset($_SESSION['overview_teachers_timestamp'])) {
-        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['overview_teachers_timestamp']) . "<br></p>";
-    }
-
     global $classController;
 
     echo "<table class='table-style'>";
@@ -84,6 +80,10 @@ function printTeachers($teachers)
 
     echo "</tbody>";
     echo "</table>";
+
+    if (isset($_SESSION['overview_teachers_timestamp'])) {
+        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['overview_teachers_timestamp']) . "<br></p>";
+    }
 }
 
 
@@ -103,6 +103,8 @@ usort($teachers, function ($teacherA, $teacherB) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/base.css" />
+    <link rel="stylesheet" type="text/css" href="../../styles/teacher_overview.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
     <title>Lehrerverwaltung</title>
 </head>
@@ -112,7 +114,14 @@ usort($teachers, function ($teacherA, $teacherB) {
         <h1>Lehrerverwaltung</h1>
     </header>
 
-    <button onclick="window.location.href='add_teachers_overview.php?mode=manual'">Lehrer hinzufügen</button>
+    <div class="button-container">
+        <button class="circle-button add-button" onclick="window.location.href='add_teachers_overview.php?mode=manual'">
+            <i class="fas fa-plus"></i>
+        </button>
+        <button class="circle-button edit-button">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+    </div>
 
     <section>
         <?php printTeachers($teachers); ?>
