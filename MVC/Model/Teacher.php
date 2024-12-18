@@ -14,7 +14,7 @@ class Teacher
         private string $shortCode,
         private bool $isParticipating = false,
         private ?string $additionalInfo = null,
-        private ?ClassModel $class = null,
+        private ?array $classes = null,  // Speichert die Class-Ids der zugehörigen Klassen
     ) {}
 
     public function getId(): ?int
@@ -80,15 +80,31 @@ class Teacher
     }
 
 
-    public function getClass(): ?ClassModel
+    public function getClasses(): ?array
     {
-        return $this->class;
+        return $this->classes;
     }
 
-    public function setClass(?ClassModel $class): void
+    public function setClasses(?array $classes): void
     {
-        $this->class = $class;
+        if ($classes === null) {
+            $this->classes = null;
+            return;
+        }
+
+        if (count($classes) > 2) {
+            error_log("Es wurde versucht, dem Lehrer '$this->id' mehr als 2 Klassen zuzuweisen.");
+            return;
+        }
+
+        if (array_filter($classes, fn($classId) => !is_int($classId))) {
+            error_log("Class-Ids müssen vom Typ Integer sein.");
+            return;
+        }
+
+        $this->classes = $classes;
     }
+
 
     public function getAdditionalInfo(): ?string
     {

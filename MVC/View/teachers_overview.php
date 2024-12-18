@@ -11,8 +11,10 @@ include 'nav.php';
 
 
 use MVC\Controller\TeacherController;
+use MVC\Controller\ClassController;
 
 $teacherController = TeacherController::getInstance();
+$classController = ClassController::getInstance();
 
 function loadAllTeachers($cacheDuration = 300): array
 {
@@ -43,7 +45,8 @@ function printTeachers($teachers)
         echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['overview_teachers_timestamp']) . "<br></p>";
     }
 
-    echo "<dib class='scrollable-container'>";
+    global $classController;
+
     echo "<table class='table-style'>";
     echo "<thead>";
     echo "<tr>";
@@ -63,14 +66,24 @@ function printTeachers($teachers)
         echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getFirstName()) . "</div></td>";
         echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getShortCode()) . "</div></td>";
         echo "<td><div class='td-content'>" . ($teacher->getIsParticipating() == true ? "Ja" : "Nein") . "</div></td>";
-        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getClass()) . "</div></td>"; // TODO: Alle Klassen abfragen
+
+        $classes = $teacher->getClasses() ?? [];
+        $classNames = [];
+
+        foreach ($classes as $class) {
+            $className = $classController->getClassName($class['id']);
+            if ($className) {
+                $classNames[] = htmlspecialchars($className);
+            }
+        }
+
+        echo "<td><div class='td-content'>" . (!empty($classNames) ? implode(', ', $classNames) : '-') . "</div></td>";
         echo "<td><div class='td-content'>" . (empty($teacher->getAdditionalInfo()) ? '-' : htmlspecialchars($teacher->getAdditionalInfo())) . "</div></td>";
         echo "</tr>";
     }
 
     echo "</tbody>";
     echo "</table>";
-    echo "</div>";
 }
 
 

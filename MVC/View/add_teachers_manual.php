@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         shortCode: $_POST['shortcode'],
         isParticipating: isset($_POST['participationToggle']) && $_POST['participationToggle'] === 'on' ? true : false,
         additionalInfo: $_POST['additional-info'],
-        class: null,
+        classes: null, // TODO: Ergänzen
     );
 
     $addResult = $teacherController->create($teacher);
