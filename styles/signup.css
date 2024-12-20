@@ -1,10 +1,12 @@
 .signup-main-content {
   max-height: fit-content;
+  width: 90%;
 }
 
 .signup-form {
   width: 100%;
   max-width: 500px;
+  margin-top: 20px;
 }
 
 .signup-fieldset {
@@ -15,8 +17,8 @@ input[type="submit"] {
   justify-content: center;
   width: 90%;
   border-radius: 8px;
-  background-color: #f8d294;
-  min-height: 2.5rem;
+  background-color: #6E7B8B;
+  color: white;  min-height: 2.5rem;
   padding-inline: 40px;
   padding-block: 10px;
   align-items: center;
@@ -29,7 +31,7 @@ input[type="submit"] {
   &:hover {
     transform: translateY(2px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    background-color: #d8b77a;
+    background-color: #36454F;
   }
 }
 
@@ -111,6 +113,12 @@ input[type="submit"] {
 }
 
 @media (width > 800px) {
+
+ .button-container {
+  width: 30%;
+  padding-inline: 40px;
+ }
+
   .divider-container {
     margin-top: 40px;
   }

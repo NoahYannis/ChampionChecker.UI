@@ -72,10 +72,10 @@ include 'nav.php';
 
                 <?php if ($passwordResetEmailClicked): ?>
                     <label for="newPassword">Neues Passwort:</label>
-                    <input type="password" id="newPassword" name="newPassword" required>
+                    <input type="password" autocomplete="new-password" id="newPassword" name="newPassword" required>
                     <!-- Versteckte Felder für token und email -->
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
-                    <input type="hidden" name="email" value="<?php echo htmlspecialchars($email); ?>">
+                    <input type="hidden" name="email" autocomplete="email" value="<?php echo htmlspecialchars($email); ?>">
                 <?php else: ?>
                     <label for="email">E-Mail:</label>
                     <input type="email" autocomplete="email" id="email" name="email" required>

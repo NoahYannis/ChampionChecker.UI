@@ -56,7 +56,7 @@ include 'nav.php';
                 <input type="email" autocomplete="email" id="email" name="email" required>
 
                 <label for="password">Passwort:</label>
-                <input type="password" autocomplete="current-password id=" password" name="password" required>
+                <input type="password" autocomplete="current-password" id="password" name="password" required>
                 <a href="forgot_password.php" class="forgot-password">Passwort vergessen?</a>
 
                 <div class="button-container">

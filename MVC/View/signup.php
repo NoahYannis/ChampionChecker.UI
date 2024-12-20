@@ -60,19 +60,19 @@ include 'nav.php';
                 <legend>Registrierung</legend>
 
                 <label for="firstname">Vorname:</label>
-                <input type="text" id="firstname" name="firstname" required>
+                <input type="text" id="firstname" autocomplete="given-name" name="firstname" required>
 
                 <label for="lastname">Nachname:</label>
-                <input type="text" id="lastname" name="lastname" required>
+                <input type="text" id="lastname" autocomplete="family-name" name="lastname" required>
 
                 <label for="email">E-Mail:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" id="email" autocomplete="email" name="email" required>
 
                 <label for="password">Passwort:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" autocomplete="new-password" name="password" required>
 
                 <label for="repeat-password">Passwort wiederholen:</label>
-                <input type="password" id="repeat-password" name="repeat-password" required>
+                <input type="password" id="repeat-password" autocomplete="new-password" name="repeat-password" required>
 
                 <input type="submit" value="Registrieren">
             </fieldset>
