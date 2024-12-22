@@ -22,15 +22,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    $firstname = htmlspecialchars(trim($_POST['firstname']), ENT_QUOTES, 'UTF-8');
+    $lastname = htmlspecialchars(trim($_POST['lastname']), ENT_QUOTES, 'UTF-8');
+    $shortcode = htmlspecialchars(trim($_POST['shortcode']), ENT_QUOTES, 'UTF-8');
+    $additionalInfo = isset($_POST['additional-info']) ? htmlspecialchars(trim($_POST['additional-info']), ENT_QUOTES, 'UTF-8') : null;
+    $isParticipating = isset($_POST['participationToggle']) && $_POST['participationToggle'] === 'on';
+
     $teacherController = TeacherController::getInstance();
+
     $teacher = new Teacher(
         id: null,
-        firstName: $_POST['firstname'],
-        lastName: $_POST['lastname'],
-        shortCode: $_POST['shortcode'],
-        isParticipating: isset($_POST['participationToggle']) && $_POST['participationToggle'] === 'on' ? true : false,
-        additionalInfo: $_POST['additional-info'],
-        classes: null, // TODO: Ergänzen
+        firstName: $firstname,
+        lastName: $lastname,
+        shortCode: $shortcode,
+        isParticipating: $isParticipating,
+        additionalInfo: $additionalInfo,
+        classes: null // TODO: Ergänzen
     );
 
     $addResult = $teacherController->create($teacher);

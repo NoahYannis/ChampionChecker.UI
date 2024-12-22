@@ -42,9 +42,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($teachersData as $data) {
         $teacher = new Teacher(
             id: null, // wird von API gesetzt
-            firstName: $data['firstName'],
-            lastName: $data['lastName'],
-            shortCode: $data['shortCode'],
+            firstName: htmlspecialchars($data['firstName'], ENT_QUOTES, 'UTF-8'),
+            lastName: htmlspecialchars($data['lastName'], ENT_QUOTES, 'UTF-8'),
+            shortCode: htmlspecialchars($data['shortCode'], ENT_QUOTES, 'UTF-8'),
             classes: null,
             additionalInfo: null
         );
