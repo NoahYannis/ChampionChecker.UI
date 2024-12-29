@@ -61,12 +61,12 @@ function printCompetitionResult($competitionResults)
         echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
     }
 
-    echo "<table class='table-style'>";
+    echo "<table id='resultsTable' class='table-style'>";
     echo "<thead>";
     echo "<tr>";
-    echo "<th>Wettbewerb</th>";
-    echo "<th>Klasse</th>";
-    echo "<th>Punkte</th>";
+    echo "<th onclick='filterTable(0)'>Wettbewerb</th>";
+    echo "<th onclick='filterTable(1)'>Klasse</th>";
+    echo "<th onclick='filterTable(2)'>Punkte</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
@@ -105,6 +105,7 @@ usort($competitionResults, function ($resultA, $resultB) {
     <title>Home</title>
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/base.css" />
+    <link rel="stylesheet" type="text/css" href="../../styles/results.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
 </head>
 
@@ -118,6 +119,27 @@ usort($competitionResults, function ($resultA, $resultB) {
         <?php printCompetitionResult($competitionResults); ?>
     </section>
 
+    <script>
+        let sortDirections = {};
+
+        function filterTable(columnIndex) {
+            let table = document.getElementById("resultsTable");
+            let tbody = table.getElementsByTagName("tbody")[0];
+            let rows = Array.from(tbody.getElementsByTagName("tr"));
+
+            // Richtung togglen
+            sortDirections[columnIndex] = sortDirections[columnIndex] === "asc" ? "desc" : "asc";
+            let sortOrder = sortDirections[columnIndex];
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.getElementsByTagName("td")[columnIndex].innerText.trim();
+                let cellB = rowB.getElementsByTagName("td")[columnIndex].innerText.trim();
+                return sortOrder === "asc" ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
 </body>
 
 </html>
