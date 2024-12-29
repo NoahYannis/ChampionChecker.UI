@@ -43,15 +43,15 @@ function printTeachers($teachers)
 {
     global $classController;
 
-    echo "<table class='table-style'>";
+    echo "<table id='teacherTable' class='table-style'>";
     echo "<thead>";
     echo "<tr>";
-    echo "<th>Nachname</th>";
-    echo "<th>Vorname</th>";
-    echo "<th>Kürzel</th>";
-    echo "<th>Turnier-Teilnahme</th>";
-    echo "<th>Klassen</th>";
-    echo "<th>Sonstige Informationen</th>";
+    echo "<th onclick='filterTable(0)'>Nachname</th>";
+    echo "<th onclick='filterTable(1)'>Vorname</th>";
+    echo "<th onclick='filterTable(2)'>Kürzel</th>";
+    echo "<th onclick='filterTable(3)'>Turnier-Teilnahme</th>";
+    echo "<th onclick='filterTable(4)'>Klassen</th>";
+    echo "<th onclick='filterTable(5)'>Sonstige Informationen</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
@@ -126,6 +126,28 @@ usort($teachers, function ($teacherA, $teacherB) {
     <section>
         <?php printTeachers($teachers); ?>
     </section>
+
+    <script>
+        let sortDirections = {}; 
+        
+        function filterTable(columnIndex) {
+            let table = document.getElementById("teacherTable");
+            let tbody = table.getElementsByTagName("tbody")[0];
+            let rows = Array.from(tbody.getElementsByTagName("tr"));
+
+            // Richtung togglen
+            sortDirections[columnIndex] = sortDirections[columnIndex] === "asc" ? "desc" : "asc";
+            let sortOrder = sortDirections[columnIndex];
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.getElementsByTagName("td")[columnIndex].innerText.trim();
+                let cellB = rowB.getElementsByTagName("td")[columnIndex].innerText.trim();
+                return sortOrder === "asc" ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+        }
+    </script>
 
 </body>
 

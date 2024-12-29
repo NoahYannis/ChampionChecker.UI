@@ -1,12 +1,20 @@
 .button-container {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center; 
-    margin: 0; 
-    padding: 0; 
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
 
-    & > button {
-        margin: 0;
-    }
+  & > button {
+    margin: 0;
+  }
+}
+
+th {
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--primary-color-hover);
+  }
 }
