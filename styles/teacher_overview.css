@@ -18,3 +18,19 @@ th {
     background-color: var(--primary-color-hover);
   }
 }
+
+.status-circle {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.green {
+  background-color: darkgreen;
+}
+
+.red {
+  background-color: red;
+}

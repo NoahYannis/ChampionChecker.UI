@@ -49,9 +49,9 @@ function printTeachers($teachers)
     echo "<th onclick='filterTable(0)'>Nachname</th>";
     echo "<th onclick='filterTable(1)'>Vorname</th>";
     echo "<th onclick='filterTable(2)'>Kürzel</th>";
-    echo "<th onclick='filterTable(3)'>Turnier-Teilnahme</th>";
-    echo "<th onclick='filterTable(4)'>Klassen</th>";
-    echo "<th onclick='filterTable(5)'>Sonstige Informationen</th>";
+    echo "<th onclick='filterTable(3)'>Klassen</th>";
+    echo "<th onclick='filterTable(4)'>Sonstige Informationen</th>";
+    echo "<th onclick='filterTable(5)'>Turnier-Teilnahme</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
@@ -61,7 +61,6 @@ function printTeachers($teachers)
         echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getLastName()) . "</div></td>";
         echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getFirstName()) . "</div></td>";
         echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getShortCode()) . "</div></td>";
-        echo "<td><div class='td-content'>" . ($teacher->getIsParticipating() == true ? "Ja" : "Nein") . "</div></td>";
 
         $classes = $teacher->getClasses() ?? [];
         $classNames = [];
@@ -75,6 +74,7 @@ function printTeachers($teachers)
 
         echo "<td><div class='td-content'>" . (!empty($classNames) ? implode(', ', $classNames) : '-') . "</div></td>";
         echo "<td><div class='td-content'>" . (empty($teacher->getAdditionalInfo()) ? '-' : htmlspecialchars($teacher->getAdditionalInfo())) . "</div></td>";
+        echo "<td><div class='td-content'><span class='status-circle " . ($teacher->getIsParticipating() ? "green" : "red") . "'></span></div></td>";
         echo "</tr>";
     }
 
@@ -128,8 +128,8 @@ usort($teachers, function ($teacherA, $teacherB) {
     </section>
 
     <script>
-        let sortDirections = {}; 
-        
+        let sortDirections = {};
+
         function filterTable(columnIndex) {
             let table = document.getElementById("teacherTable");
             let tbody = table.getElementsByTagName("tbody")[0];
@@ -142,11 +142,22 @@ usort($teachers, function ($teacherA, $teacherB) {
             rows.sort((rowA, rowB) => {
                 let cellA = rowA.getElementsByTagName("td")[columnIndex].innerText.trim();
                 let cellB = rowB.getElementsByTagName("td")[columnIndex].innerText.trim();
+
+                let circleA = rowA.querySelector('.status-circle');
+                let circleB = rowB.querySelector('.status-circle');
+
+                if (circleA && circleB) {
+                    let isGreenA = circleA.classList.contains('green') ? 1 : 0;
+                    let isGreenB = circleB.classList.contains('green') ? 1 : 0;
+                    return sortOrder === "asc" ? isGreenA - isGreenB : isGreenB - isGreenA;
+                }
+
                 return sortOrder === "asc" ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
             });
 
             rows.forEach(row => tbody.appendChild(row));
         }
+    </script>
     </script>
 
 </body>
