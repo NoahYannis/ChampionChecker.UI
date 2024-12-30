@@ -137,19 +137,64 @@ usort($teachers, function ($teacherA, $teacherB) {
         const rows = Array.from(tbody.getElementsByTagName("tr"));
 
         document.querySelector('.edit-button').addEventListener('click', function() {
-            toggleEdit();
+            toggleEditState();
         });
 
 
-        function toggleEdit() {
+        function toggleEditState() {
             isEditing = !isEditing;
             if (isEditing) {
                 editButton.classList.remove('fa-pencil-alt');
                 editButton.classList.add('fa', 'fa-save');
+                displayEditInputs();
             } else {
                 editButton.classList.remove('fa-save');
                 editButton.classList.add('fa-pencil-alt');
+                exitEditState();
             }
+        }
+
+
+        // Zeileninhalt innerhalb von Input-Elementen anzeigen.
+        function displayEditInputs() {
+            rows.forEach(row => {
+                let cells = row.getElementsByTagName("td");
+
+                let lastName = cells[0].querySelector('.td-content').innerText;
+                let firstName = cells[1].querySelector('.td-content').innerText;
+                let shortCode = cells[2].querySelector('.td-content').innerText;
+                let classes = cells[3].querySelector('.td-content').innerText;
+                let additionalInfo = cells[4].querySelector('.td-content').innerText;
+                let isParticipating = cells[5].querySelector('.td-content').querySelector('.status-circle').classList.contains('green');
+
+                cells[0].innerHTML = `<input type="text" value="${lastName}">`;
+                cells[1].innerHTML = `<input type="text" value="${firstName}">`;
+                cells[2].innerHTML = `<input type="text" value="${shortCode}">`;
+                cells[3].innerHTML = `<input type="text" value="${classes}">`;
+                cells[4].innerHTML = `<input type="text" value="${additionalInfo}">`;
+                cells[5].innerHTML = `<input type="checkbox" ${isParticipating ? 'checked' : ''}>`;
+            });
+        }
+
+        // Input-Elemente durch Text ersetzen.
+        function exitEditState() {
+            rows.forEach(row => {
+                let cells = row.getElementsByTagName("td");
+
+                let lastName = cells[0].querySelector('input').value;
+                let firstName = cells[1].querySelector('input').value;
+                let shortCode = cells[2].querySelector('input').value;
+                let classes = cells[3].querySelector('input').value;
+                let additionalInfo = cells[4].querySelector('input').value;
+                let isParticipating = cells[5].querySelector('input').checked;
+
+                cells[0].innerHTML = `<div class='td-content'>${lastName}</div>`;
+                cells[1].innerHTML = `<div class='td-content'>${firstName}</div>`;
+                cells[2].innerHTML = `<div class='td-content'>${shortCode}</div>`;
+                cells[3].innerHTML = `<div class='td-content'>${classes}</div>`;
+                cells[4].innerHTML = `<div class='td-content` + (additionalInfo === '-' ? ' empty' : '') + `'>${additionalInfo}</div>`;
+                cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isParticipating ? 'green' : 'red'}'></span></div>`;
+            });
         }
 
         function filterTable(columnIndex) {
@@ -175,7 +220,6 @@ usort($teachers, function ($teacherA, $teacherB) {
 
             rows.forEach(row => tbody.appendChild(row));
         }
-    </script>
     </script>
 
 </body>
