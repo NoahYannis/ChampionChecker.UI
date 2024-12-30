@@ -132,6 +132,9 @@ usort($teachers, function ($teacherA, $teacherB) {
         let sortDirections = {};
 
         const editButton = document.querySelector('.edit-button i');
+        const table = document.getElementById("teacherTable");
+        const tbody = table.getElementsByTagName("tbody")[0];
+        const rows = Array.from(tbody.getElementsByTagName("tr"));
 
         document.querySelector('.edit-button').addEventListener('click', function() {
             toggleEdit();
@@ -150,10 +153,6 @@ usort($teachers, function ($teacherA, $teacherB) {
         }
 
         function filterTable(columnIndex) {
-            let table = document.getElementById("teacherTable");
-            let tbody = table.getElementsByTagName("tbody")[0];
-            let rows = Array.from(tbody.getElementsByTagName("tr"));
-
             // Richtung togglen
             sortDirections[columnIndex] = sortDirections[columnIndex] === "asc" ? "desc" : "asc";
             let sortOrder = sortDirections[columnIndex];
@@ -162,10 +161,10 @@ usort($teachers, function ($teacherA, $teacherB) {
                 let cellA = rowA.getElementsByTagName("td")[columnIndex].innerText.trim();
                 let cellB = rowB.getElementsByTagName("td")[columnIndex].innerText.trim();
 
-                let circleA = rowA.querySelector('.status-circle');
-                let circleB = rowB.querySelector('.status-circle');
-
-                if (circleA && circleB) {
+                // Turnier-Teilnahme
+                if (columnIndex === 5) {
+                    let circleA = rowA.querySelector('.status-circle');
+                    let circleB = rowB.querySelector('.status-circle');
                     let isGreenA = circleA.classList.contains('green') ? 1 : 0;
                     let isGreenB = circleB.classList.contains('green') ? 1 : 0;
                     return sortOrder === "asc" ? isGreenA - isGreenB : isGreenB - isGreenA;
