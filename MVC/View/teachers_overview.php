@@ -58,9 +58,9 @@ function printTeachers($teachers)
 
     foreach ($teachers as $teacher) {
         echo "<tr>";
-        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getLastName()) . "</div></td>";
-        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getFirstName()) . "</div></td>";
-        echo "<td><div class='td-content'>" . htmlspecialchars($teacher->getShortCode()) . "</div></td>";
+        echo "<td data-column='Nachname'><div class='td-content'>" . htmlspecialchars($teacher->getLastName()) . "</div></td>";
+        echo "<td data-column='Vorname'><div class='td-content'>" . htmlspecialchars($teacher->getFirstName()) . "</div></td>";
+        echo "<td data-column='Kürzel'><div class='td-content'>" . htmlspecialchars($teacher->getShortCode()) . "</div></td>";
 
         $classes = $teacher->getClasses() ?? [];
         $classNames = [];
@@ -72,9 +72,9 @@ function printTeachers($teachers)
             }
         }
 
-        echo "<td><div class='td-content'>" . (!empty($classNames) ? implode(', ', $classNames) : '-') . "</div></td>";
-        echo "<td><div class='td-content'>" . (empty($teacher->getAdditionalInfo()) ? '-' : htmlspecialchars($teacher->getAdditionalInfo())) . "</div></td>";
-        echo "<td><div class='td-content'><span class='status-circle " . ($teacher->getIsParticipating() ? "green" : "red") . "'></span></div></td>";
+        echo "<td data-column='Klassen'><div class='td-content'>" . (!empty($classNames) ? implode(', ', $classNames) : '-') . "</div></td>";
+        echo "<td data-column='Sonstiges'><div class='td-content'>" . (empty($teacher->getAdditionalInfo()) ? '-' : htmlspecialchars($teacher->getAdditionalInfo())) . "</div></td>";
+        echo "<td data-column='Teilnahme'><div class='td-content'><span class='status-circle " . ($teacher->getIsParticipating() ? "green" : "red") . "'></span></div></td>";
         echo "</tr>";
     }
 
@@ -128,7 +128,26 @@ usort($teachers, function ($teacherA, $teacherB) {
     </section>
 
     <script>
+        let isEditing = false;
         let sortDirections = {};
+
+        const editButton = document.querySelector('.edit-button i');
+
+        document.querySelector('.edit-button').addEventListener('click', function() {
+            toggleEdit();
+        });
+
+
+        function toggleEdit() {
+            isEditing = !isEditing;
+            if (isEditing) {
+                editButton.classList.remove('fa-pencil-alt');
+                editButton.classList.add('fa', 'fa-save');
+            } else {
+                editButton.classList.remove('fa-save');
+                editButton.classList.add('fa-pencil-alt');
+            }
+        }
 
         function filterTable(columnIndex) {
             let table = document.getElementById("teacherTable");

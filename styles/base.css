@@ -219,12 +219,21 @@ button {
   }
 }
 
-.edit-button {
+.edit-button, .save-button {
   background-color: blue;
   color: white;
 
   &:hover:not(:disabled) {
     background-color: darkblue;
+  }
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background-color: darkred;
   }
 }
 
