@@ -121,7 +121,7 @@ usort($teachers, function ($teacherA, $teacherB) {
         <button class="circle-button edit-button">
             <i class="fas fa-pencil-alt"></i>
         </button>
-        <button style="display: none;" class="circle-button cancel-button">
+        <button class="circle-button cancel-button hidden">
             <i class="fas fa-times"></i>
         </button>
     </div>
@@ -133,6 +133,7 @@ usort($teachers, function ($teacherA, $teacherB) {
     <script>
         let isEditing = false;
         let sortDirections = {};
+        let storedValues = [];
 
         const editButton = document.querySelector('.edit-button i');
         const cancelButton = document.querySelector(".cancel-button");
@@ -142,23 +143,29 @@ usort($teachers, function ($teacherA, $teacherB) {
 
         document.querySelector('.edit-button').addEventListener('click', function() {
             toggleEditState();
+            cancelButton.classList.toggle("hidden");
+        });
+
+        document.querySelector('.cancel-button').addEventListener('click', function() {
+            toggleEditState(true);
+            cancelButton.classList.toggle("hidden");
         });
 
 
-
-        function toggleEditState() {
+        function toggleEditState(wasCanceled = false) {
             isEditing = !isEditing;
+            toggleEditButtonIcon();
+
             if (isEditing) {
-                editButton.classList.remove('fa-pencil-alt');
-                editButton.classList.add('fa', 'fa-save');
-                cancelButton.style.display = "flex";
                 displayEditInputs();
             } else {
-                editButton.classList.remove('fa-save');
-                editButton.classList.add('fa-pencil-alt');
-                cancelButton.style.display = "none";
-                exitEditState();
+                exitEditState(wasCanceled);
             }
+        }
+
+        function toggleEditButtonIcon() {
+            editButton.classList.toggle('fa-pencil-alt');
+            editButton.classList.toggle('fa-save');
         }
 
 
@@ -174,6 +181,9 @@ usort($teachers, function ($teacherA, $teacherB) {
                 let additionalInfo = cells[4].querySelector('.td-content').innerText;
                 let isParticipating = cells[5].querySelector('.td-content').querySelector('.status-circle').classList.contains('green');
 
+                // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
+                storedValues[row.rowIndex] = [lastName, firstName, shortCode, classes, additionalInfo, isParticipating];
+
                 cells[0].innerHTML = `<input type="text" value="${lastName}">`;
                 cells[1].innerHTML = `<input type="text" value="${firstName}">`;
                 cells[2].innerHTML = `<input type="text" value="${shortCode}">`;
@@ -184,16 +194,23 @@ usort($teachers, function ($teacherA, $teacherB) {
         }
 
         // Input-Elemente durch Text ersetzen.
-        function exitEditState() {
+        function exitEditState(wasCanceled = false) {
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
+                let storedRow = storedValues[row.rowIndex];
 
-                let lastName = cells[0].querySelector('input').value;
-                let firstName = cells[1].querySelector('input').value;
-                let shortCode = cells[2].querySelector('input').value;
-                let classes = cells[3].querySelector('input').value;
-                let additionalInfo = cells[4].querySelector('input').value;
-                let isParticipating = cells[5].querySelector('input').checked;
+                let lastName = wasCanceled && storedRow ? storedRow[0] : cells[0].querySelector('input').value;
+                let firstName = wasCanceled && storedRow ? storedRow[1] : cells[1].querySelector('input').value;
+                let shortCode = wasCanceled && storedRow ? storedRow[2] : cells[2].querySelector('input').value;
+                let classes = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('input').value;
+                let additionalInfo = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('input').value;
+                let isParticipating = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').checked;
+
+                lastName = lastName || "-";
+                firstName = firstName || "-";
+                shortCode = shortCode || "-";
+                classes = classes || "-";
+                additionalInfo = additionalInfo || "-";
 
                 cells[0].innerHTML = `<div class='td-content'>${lastName}</div>`;
                 cells[1].innerHTML = `<div class='td-content'>${firstName}</div>`;
@@ -202,6 +219,8 @@ usort($teachers, function ($teacherA, $teacherB) {
                 cells[4].innerHTML = `<div class='td-content` + (additionalInfo === '-' ? ' empty' : '') + `'>${additionalInfo}</div>`;
                 cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isParticipating ? 'green' : 'red'}'></span></div>`;
             });
+
+            storedValues = [];
         }
 
         function filterTable(columnIndex) {
