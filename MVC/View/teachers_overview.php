@@ -86,6 +86,37 @@ function printTeachers($teachers)
     }
 }
 
+$response = [
+    'success' => true,
+    'message' => ''
+];
+
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    $putData = file_get_contents('php://input');
+
+    if (empty($putData)) {
+        $response['success'] = false;
+        $response['message'] = 'Leere Anfrage erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+    $teachersData = json_decode($putData, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $response['success'] = false;
+        $response['message'] = 'Ungültiges JSON erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+    // TODO: JSON an API schicken.
+
+    unset($_SESSION['overview_teachers']);
+    unset($_SESSION['overview_teachers_timestamp']);
+}
+
+
 
 $teachers = loadAllTeachers();
 
@@ -161,6 +192,10 @@ usort($teachers, function ($teacherA, $teacherB) {
                 displayEditInputs();
             } else {
                 exitEditState(wasCanceled);
+                if (!wasCanceled) {
+                    saveChangedTeachers(changedTeachers);
+                    changedTeachers = [];
+                }
             }
         }
 
@@ -193,6 +228,7 @@ usort($teachers, function ($teacherA, $teacherB) {
                 cells[5].innerHTML = `<input type="checkbox" ${isParticipating ? 'checked' : ''}>`;
             });
         }
+
 
         // Input-Elemente durch Text ersetzen.
         function exitEditState(wasCanceled = false) {
@@ -236,6 +272,25 @@ usort($teachers, function ($teacherA, $teacherB) {
 
             storedValues = [];
             console.log(changedTeachers);
+        }
+
+
+        function saveChangedTeachers(changedTeachers) {
+            const teacherJSON = JSON.stringify(changedTeachers);
+            // TODO: Speicher-Ergebnis visualisieren siehe CSV
+
+            fetch('teachers_overview.php', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: teacherJSON
+            }).then(response => {
+                return response.text(); 
+            }).then(data => {
+                console.log(data);
+            }).catch(error => console.error('Error:', error));
+
         }
 
 
