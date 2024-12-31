@@ -228,7 +228,7 @@ button {
   }
 }
 
-.delete-button {
+.delete-button, .cancel-button {
   background-color: red;
   color: white;
 

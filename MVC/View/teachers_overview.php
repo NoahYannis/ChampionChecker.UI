@@ -121,6 +121,9 @@ usort($teachers, function ($teacherA, $teacherB) {
         <button class="circle-button edit-button">
             <i class="fas fa-pencil-alt"></i>
         </button>
+        <button style="display: none;" class="circle-button cancel-button">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
 
     <section>
@@ -132,6 +135,7 @@ usort($teachers, function ($teacherA, $teacherB) {
         let sortDirections = {};
 
         const editButton = document.querySelector('.edit-button i');
+        const cancelButton = document.querySelector(".cancel-button");
         const table = document.getElementById("teacherTable");
         const tbody = table.getElementsByTagName("tbody")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"));
@@ -141,15 +145,18 @@ usort($teachers, function ($teacherA, $teacherB) {
         });
 
 
+
         function toggleEditState() {
             isEditing = !isEditing;
             if (isEditing) {
                 editButton.classList.remove('fa-pencil-alt');
                 editButton.classList.add('fa', 'fa-save');
+                cancelButton.style.display = "flex";
                 displayEditInputs();
             } else {
                 editButton.classList.remove('fa-save');
                 editButton.classList.add('fa-pencil-alt');
+                cancelButton.style.display = "none";
                 exitEditState();
             }
         }
