@@ -134,6 +134,7 @@ usort($teachers, function ($teacherA, $teacherB) {
         let isEditing = false;
         let sortDirections = {};
         let storedValues = [];
+        let changedTeachers = [];
 
         const editButton = document.querySelector('.edit-button i');
         const cancelButton = document.querySelector(".cancel-button");
@@ -206,6 +207,19 @@ usort($teachers, function ($teacherA, $teacherB) {
                 let additionalInfo = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('input').value;
                 let isParticipating = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').checked;
 
+                // Prüfen, ob Zeile geändert wurde
+                if (checkIfRowWasModified(row, storedRow)) {
+                    let changedTeacher = {
+                        lastName: lastName,
+                        firstName: firstName,
+                        shortCode: shortCode,
+                        classes: classes,
+                        additionalInfo: additionalInfo,
+                        isParticipating: isParticipating
+                    };
+                    changedTeachers.push(changedTeacher);
+                }
+
                 lastName = lastName || "-";
                 firstName = firstName || "-";
                 shortCode = shortCode || "-";
@@ -221,6 +235,31 @@ usort($teachers, function ($teacherA, $teacherB) {
             });
 
             storedValues = [];
+            console.log(changedTeachers);
+        }
+
+
+        function checkIfRowWasModified(row, storedRow) {
+            let cells = row.getElementsByTagName("td");
+            for (let i = 0; i < cells.length; i++) {
+                const inputElement = cells[i].querySelector('input, textarea');
+                const storedValue = storedRow[i];
+                let inputValue;
+
+                if (inputElement && inputElement.type === 'checkbox') {
+                    inputValue = inputElement.checked;
+                } else if (inputElement && inputElement.tagName === 'TEXTAREA') {
+                    inputValue = inputElement.value;
+                } else if (inputElement) {
+                    inputValue = inputElement.value;
+                }
+
+                // Nur geänderte Datensätze speichern.
+                if (inputValue !== storedValue) {
+                    return true;
+                }
+            }
+            return false;
         }
 
         function filterTable(columnIndex) {
