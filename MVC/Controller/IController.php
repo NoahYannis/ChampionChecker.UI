@@ -28,13 +28,13 @@ interface IController
 
     /**
      * @param T $model
-     * @return void
+     * @return array
      */
-    public function update(object $model): void;
+    public function update(object $model): array;
 
     /**
      * @param int $id
-     * @return void
+     * @return array
      */
     public function delete(int $id): array;
 

@@ -10,6 +10,7 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 
 use MVC\Controller\TeacherController;
 use MVC\Controller\ClassController;
+use MVC\Model\Teacher;
 
 $teacherController = TeacherController::getInstance();
 $classController = ClassController::getInstance();
@@ -107,10 +108,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         exit;
     }
 
-    // TODO: JSON an API schicken.
 
-    unset($_SESSION['teachers']);
-    unset($_SESSION['overview_teachers_timestamp']);
+    $changedTeachers = [];
+
+    foreach ($teachersData as $data) {
+        $classes = trim($data['classes']) === '-' ? [] : array_map('trim', explode(',', $data['classes']));
+        $additionalInfo = trim($data['additionalInfo']) === '-' ? null : trim($data['additionalInfo']);
+        $shortCode = trim($data['shortCode']);
+
+        $teacher = new Teacher(
+            id: $teacherController->getIdFromShortCode($shortCode),
+            firstName: trim($data['firstName']),
+            lastName: trim($data['lastName']),
+            shortCode: $shortCode,
+            isParticipating: isset($data['isParticipating']) ? (bool)$data['isParticipating'] : false,
+            additionalInfo: $additionalInfo,
+            classes: $classes,
+        );
+        $changedTeachers[] = $teacher;
+    }
+
+    $putSuccess = true;
+
+    foreach ($changedTeachers as $teacher) {
+        $updateResult = $teacherController->update(($teacher));
+        $putSuccess &= $updateResult['success'] === true;
+    }
+
+    // TOOO: Update-Ergebnis visualisieren
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
@@ -122,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     }
 
     $shortCode = $_GET['shortCode'];
-    $teacherId = $teacherController->getTeacherIdFromShortCode($shortCode);
+    $teacherId = $teacherController->getIdFromShortCode($shortCode);
     $deleteResult = $teacherController->delete($teacherId);
 
     if ($deleteResult['success'] === true) {
@@ -256,7 +281,7 @@ include 'nav.php';
 
                 cells[0].innerHTML = `<input type="text" value="${lastName}">`;
                 cells[1].innerHTML = `<input type="text" value="${firstName}">`;
-                cells[2].innerHTML = `<input type="text" value="${shortCode}">`;
+                cells[2].innerHTML = `<input type="text" value="${shortCode}" class='readonly-input' readonly>`;
                 cells[3].innerHTML = `<input type="text" value="${classes}">`;
                 cells[4].innerHTML = `<input type="text" value="${additionalInfo}">`;
                 cells[5].innerHTML = `<input type="checkbox" ${isParticipating ? 'checked' : ''}>`;

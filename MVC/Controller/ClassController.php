@@ -192,9 +192,9 @@ class ClassController implements IController
 
     /**
      * @param ClassModel $model
-     * @return void
+     * @return array
      */
-    public function update(object $model): void
+    public function update(object $model): array
     {
         if (!$model instanceof ClassModel) {
             throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
@@ -207,7 +207,7 @@ class ClassController implements IController
             'classTeacherId' => $model->getClassTeacherId()
         ];
 
-        $this->sendApiRequest("/api/class/{$model->getId()}", 'PUT', $data);
+        $updateResult = $this->sendApiRequest("/api/class/{$model->getId()}", 'PUT', $data);
 
         if (isset($_SESSION['classes'])) {
             foreach ($_SESSION['classes'] as $key => $class) {
@@ -217,6 +217,8 @@ class ClassController implements IController
                 }
             }
         }
+
+        return $updateResult;
     }
 
     /**

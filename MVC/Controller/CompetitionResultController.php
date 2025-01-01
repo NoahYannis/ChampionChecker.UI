@@ -81,9 +81,9 @@ class CompetitionResultController implements IController
 
     /**
      * @param CompetitionResult $model
-     * @return void
+     * @return array
      */
-    public function update(object $model): void
+    public function update(object $model): array
     {
         if (!$model instanceof CompetitionResult) {
             throw new \InvalidArgumentException('Model must be an instance of CompetitionResult.');
@@ -96,7 +96,8 @@ class CompetitionResultController implements IController
             'studentId' => $model->getStudentId()
         ];
 
-        $this->sendApiRequest("/api/competitionresult/{$model->getId()}", 'PUT', $data);
+        $updateResult = $this->sendApiRequest("/api/competitionresult/{$model->getId()}", 'PUT', $data);
+        return $updateResult;
     }
 
     /**

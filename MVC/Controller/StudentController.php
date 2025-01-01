@@ -135,9 +135,9 @@ class StudentController implements IController
 
     /**
      * @param Student $model
-     * @return void
+     * @return array
      */
-    public function update(object $model): void
+    public function update(object $model): array
     {
         $data = [
             'firstName' => $model->getFirstName(),
@@ -148,7 +148,8 @@ class StudentController implements IController
             'competitionResults' => $model->getCompetitionResults()
         ];
 
-        $this->sendApiRequest("/api/student/{$model->getId()}", 'PUT', $data);
+        $updateResult = $this->sendApiRequest("/api/student/{$model->getId()}", 'PUT', $data);
+        return $updateResult;
     }
 
     /**

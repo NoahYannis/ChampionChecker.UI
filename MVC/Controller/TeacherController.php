@@ -112,24 +112,27 @@ class TeacherController implements IController
 
     /**
      * @param Teacher $model
-     * @return void
+     * @return array
      */
-    public function update(object $model): void
+    public function update(object $model): array
     {
         if (!$model instanceof Teacher) {
             throw new \InvalidArgumentException('Model must be an instance of Teacher.');
         }
 
         $data = [
+            'id' => $model->getId(),
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'shortCode' => $model->getShortCode(),
-            'additionalInfo' => $model->getAdditionalInfo() ?? ""
+            'isParticipating' => $model->getIsParticipating(),
+            'additionalInfo' => $model->getAdditionalInfo() ?? "",
+            'classes' => $model->getClasses() ?? []
         ];
 
-        $this->sendApiRequest("/api/teacher/{$model->getId()}", 'PUT', $data);
+        $updateResult = $this->sendApiRequest("/api/teacher", 'PUT', $data);
 
-        if (isset($_SESSION['teachers'])) {
+        if ($updateResult['success'] === true && isset($_SESSION['teachers'])) {
             foreach ($_SESSION['teachers'] as $key => $teacher) {
                 if ($teacher->getId() === $model->getId()) {
                     $_SESSION['teachers'][$key] = $model;
@@ -137,6 +140,8 @@ class TeacherController implements IController
                 }
             }
         }
+
+        return $updateResult;
     }
 
     /**
@@ -159,7 +164,7 @@ class TeacherController implements IController
         return $deleteResult;
     }
 
-    public function getTeacherIdFromShortCode(string $shortCode): int
+    public function getIdFromShortCode(string $shortCode): int
     {
         if (isset($_SESSION['teachers'])) {
             foreach ($_SESSION['teachers'] as $teacher) {
