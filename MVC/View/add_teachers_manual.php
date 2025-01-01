@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $teacherName = addslashes($_POST['firstname'] . ' ' . $_POST['lastname']);
-        
+
         echo
         "<script>
             alert('$teacherName wurde erfolgreich hinzugefügt.');
@@ -58,8 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </script>";
         exit;
     } else {
-        echo "<script>alert('{$addResult["error"]}');</script>";
-        echo "<script>window.location.href = 'add_teachers_overview.php?mode=manual'</script>"; // Redirect, damit das Formular bei F5 nicht erneut abgeschickt wird
+        $errorMessage = addslashes(htmlspecialchars($addResult["error"], ENT_NOQUOTES, 'UTF-8'));
+        echo "<script> alert('$errorMessage'); </script>";
+
+        // Redirect, damit das Formular bei F5 nicht erneut abgeschickt wird
+        echo "<script>window.location.href = 'add_teachers_overview.php?mode=manual'</script>";
     }
 }
 ?>

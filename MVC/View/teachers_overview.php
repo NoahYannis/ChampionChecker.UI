@@ -311,6 +311,7 @@ usort($teachers, function ($teacherA, $teacherB) {
         }
 
 
+        // Prüft, ob eine Zeile im Edit-Modus bearbeitet wurde
         function checkIfRowWasModified(row, storedRow) {
             let cells = row.getElementsByTagName("td");
             for (let i = 0; i < cells.length; i++) {
