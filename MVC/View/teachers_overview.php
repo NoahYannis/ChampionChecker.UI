@@ -199,8 +199,11 @@ include 'nav.php';
         });
 
         document.querySelector('.cancel-button').addEventListener('click', function() {
-            toggleEditState(true);
-            cancelButton.classList.toggle("hidden");
+            const confirmation = confirm('Alle Änderungen gehen verloren. Bearbeitung abbrechen?');
+            if (confirmation) {
+                toggleEditState(true);
+                this.classList.toggle("hidden");
+            }
         });
 
 
@@ -218,6 +221,7 @@ include 'nav.php';
                 }
             }
         }
+
 
         function toggleEditButtonIcon() {
             editButton.classList.toggle('fa-pencil-alt');
@@ -259,7 +263,10 @@ include 'nav.php';
 
                 let deleteButton = row.querySelector('.delete-button');
                 deleteButton.addEventListener('click', () => {
-                    deleteTeacher(shortCode, row.rowIndex);
+                    const confirmation = confirm('Sind Sie sicher, dass Sie diesen Lehrer löschen möchten?');
+                    if (confirmation) {
+                        deleteTeacher(shortCode, row.rowIndex);
+                    }
                 });
             });
         }
