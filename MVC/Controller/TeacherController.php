@@ -242,7 +242,7 @@ class TeacherController implements IController
             if (isset($responseData['errors']) && is_array($responseData['errors'])) {
                 foreach ($responseData['errors'] as $fieldErrors) {
                     if (is_array($fieldErrors) && !empty($fieldErrors)) {
-                        $errorMessage = $fieldErrors['description'];
+                        $errorMessage = $fieldErrors['description'] ?? $fieldErrors[0];
                         break;
                     }
                 }

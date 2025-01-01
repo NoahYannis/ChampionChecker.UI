@@ -131,9 +131,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $putSuccess = true;
 
     foreach ($changedTeachers as $teacher) {
-        $updateResult = $teacherController->update(($teacher));
+        $updateResult = $teacherController->update($teacher);
         $putSuccess &= $updateResult['success'] === true;
+        $updateResults[] = $updateResult;
     }
+
+    // Ergebnis an die Frontend-Seite zurückgeben
+    echo json_encode([
+        'success' => $putSuccess,
+        'results' => $updateResults ?? []
+    ]);
+    exit;
 
     // TOOO: Update-Ergebnis visualisieren
 }
@@ -347,21 +355,27 @@ include 'nav.php';
 
 
         function saveChangedTeachers(changedTeachers) {
+            if (changedTeachers.length === 0) {
+                return;
+            }
+
             const teacherJSON = JSON.stringify(changedTeachers);
-            // TODO: Speicher-Ergebnis visualisieren siehe CSV
 
             fetch('teachers_overview.php', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: teacherJSON
-            }).then(response => {
-                return response.text();
-            }).then(data => {
-                console.log(data);
-            }).catch(error => console.error('Error:', error));
-
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: teacherJSON
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Alle Lehrer wurden erfolgreich aktualisiert.');
+                    } else {
+                        alert('Einige Lehrer konnten nicht aktualisiert werden.');
+                        console.log(data.results);
+                    }
+                }).catch(error => console.error('Error:', error));
         }
 
 
