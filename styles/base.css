@@ -369,4 +369,11 @@ label {
   .td-content {
     max-height: 80px;
   }
+
+  .circle-button {
+      padding-inline: 5px;
+      padding-block: 5px;
+      height: 30px;
+      width: 30px;
+  }
 }

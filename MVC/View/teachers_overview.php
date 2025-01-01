@@ -349,8 +349,6 @@ include 'nav.php';
             // Löschen-Spalte & -Knöpfe entfernen.
             headerRow.querySelector("th:last-child").remove();
             document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
-
-            console.log(changedTeachers);
         }
 
 
@@ -425,6 +423,10 @@ include 'nav.php';
         }
 
         function filterTable(columnIndex) {
+            if (isEditing) {
+                return;
+            }
+
             // Richtung togglen
             sortDirections[columnIndex] = sortDirections[columnIndex] === "asc" ? "desc" : "asc";
             let sortOrder = sortDirections[columnIndex];
