@@ -61,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($importSuccess) {
         $response['message'] = 'Lehrer erfolgreich importiert.';
-        if (isset($_SESSION['overview_teachers'])) {
-            unset($_SESSION['overview_teachers']);
+        if (isset($_SESSION['teachers'])) {
+            unset($_SESSION['teachers']);
             unset($_SESSION['overview_teachers_timestamp']);
         }
     }

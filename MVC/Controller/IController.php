@@ -7,7 +7,8 @@ namespace MVC\Controller;
 /**
  * @template T
  */
-interface IController {
+interface IController
+{
     /**
      * @param int $id
      * @return T|null
@@ -35,7 +36,7 @@ interface IController {
      * @param int $id
      * @return void
      */
-    public function delete(int $id): void;
+    public function delete(int $id): array;
 
     /**
      * @param string $endpoint

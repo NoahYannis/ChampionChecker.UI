@@ -221,11 +221,11 @@ class ClassController implements IController
 
     /**
      * @param int $id
-     * @return void
+     * @return array
      */
-    public function delete(int $id): void
+    public function delete(int $id): array
     {
-        $this->sendApiRequest("/api/class/$id", 'DELETE');
+        $deleteResult = $this->sendApiRequest("/api/class/$id", 'DELETE');
 
         if (isset($_SESSION['classes'])) {
             foreach ($_SESSION['classes'] as $key => $class) {
@@ -235,6 +235,8 @@ class ClassController implements IController
                 }
             }
         }
+
+        return $deleteResult;
     }
 
 
@@ -273,7 +275,7 @@ class ClassController implements IController
     protected function sendApiRequest(string $endpoint, string $method, array $data = []): array
     {
         $curl = curl_init();
-    
+
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => $this->apiUrl . $endpoint,
@@ -284,7 +286,7 @@ class ClassController implements IController
             ],
             CURLOPT_USERAGENT => 'PHP API Request'
         ]);
-    
+
         $response = curl_exec($curl);
         if (curl_errno($curl)) {
             return [
@@ -292,17 +294,17 @@ class ClassController implements IController
                 'error' => 'cURL error: ' . curl_error($curl)
             ];
         }
-    
+
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-    
+
         if ($statusCode >= 400) {
             return [
                 'success' => false,
                 'error' => "API request failed with status code $statusCode.: $response"
             ];
         }
-    
+
         return [
             'success' => true,
             'error' => null

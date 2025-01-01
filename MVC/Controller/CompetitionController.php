@@ -9,19 +9,22 @@ use DateTime;
 /**
  * @implements IController<Competition>
  */
-class CompetitionController implements IController {
+class CompetitionController implements IController
+{
 
     private static ?CompetitionController $instance = null;
-    private array $cachedCompetitions = []; 
+    private array $cachedCompetitions = [];
     private string $apiUrl;
 
-    public function __construct() {
+    public function __construct()
+    {
         $config = require $_SERVER['DOCUMENT_ROOT'] . '/ChampionChecker.UI/config.php';
         $this->apiUrl = $config['api_url'];
     }
 
 
-    public static function getInstance(): CompetitionController {
+    public static function getInstance(): CompetitionController
+    {
         if (self::$instance === null) {
             self::$instance = new CompetitionController();
         }
@@ -32,7 +35,8 @@ class CompetitionController implements IController {
      * @param int $id
      * @return Competition|null
      */
-    public function getById(int $id): ?Competition {
+    public function getById(int $id): ?Competition
+    {
 
         if (isset($this->cachedCompetitions[$id])) {
             return $this->cachedCompetitions[$id];
@@ -55,21 +59,22 @@ class CompetitionController implements IController {
 
             return $competition;
         }
-        
+
         return null;
     }
 
     /**
      * @return Competition[]
      */
-    public function getAll(): array {
+    public function getAll(): array
+    {
 
         if (!empty($this->cachedCompetitions)) {
             return $this->cachedCompetitions;
         }
 
         $data = $this->getApiData('/api/competition');
-        $competitions = []; 
+        $competitions = [];
 
         foreach ($data as $item) {
             $competition = new Competition(
@@ -96,7 +101,8 @@ class CompetitionController implements IController {
      * @param Competition $model
      * @return array
      */
-    public function create(object $model): array {
+    public function create(object $model): array
+    {
         if (!$model instanceof Competition) {
             throw new \InvalidArgumentException('Model must be an instance of Competition.');
         }
@@ -118,7 +124,8 @@ class CompetitionController implements IController {
      * @param Competition $model
      * @return void
      */
-    public function update(object $model): void {
+    public function update(object $model): void
+    {
         if (!$model instanceof Competition) {
             throw new \InvalidArgumentException('Model must be an instance of Competition.');
         }
@@ -137,10 +144,12 @@ class CompetitionController implements IController {
 
     /**
      * @param int $id
-     * @return void
+     * @return array
      */
-    public function delete(int $id): void {
-        $this->sendApiRequest("/api/competition/$id", 'DELETE');
+    public function delete(int $id): array
+    {
+        $deleteResult = $this->sendApiRequest("/api/competition/$id", 'DELETE');
+        return $deleteResult;
     }
 
 
@@ -148,7 +157,8 @@ class CompetitionController implements IController {
      * @param string $endpoint
      * @return mixed
      */
-    public function getApiData(string $endpoint) {
+    public function getApiData(string $endpoint)
+    {
         $curl = curl_init();
 
         curl_setopt_array($curl, [
@@ -178,7 +188,7 @@ class CompetitionController implements IController {
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
     {
         $curl = curl_init();
-    
+
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => $this->apiUrl . $endpoint,
@@ -189,7 +199,7 @@ class CompetitionController implements IController {
             ],
             CURLOPT_USERAGENT => 'PHP API Request'
         ]);
-    
+
         $response = curl_exec($curl);
         if (curl_errno($curl)) {
             return [
@@ -197,17 +207,17 @@ class CompetitionController implements IController {
                 'error' => 'cURL error: ' . curl_error($curl)
             ];
         }
-    
+
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
-    
+
         if ($statusCode >= 400) {
             return [
                 'success' => false,
                 'error' => "API request failed with status code $statusCode.: $response"
             ];
         }
-    
+
         return [
             'success' => true,
             'error' => null

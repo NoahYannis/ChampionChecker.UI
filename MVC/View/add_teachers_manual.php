@@ -44,8 +44,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($addResult['success'] === true) {
         // Cache leeren, damit der neue Lehrer beim nächsten Aufruf von add_teachers_overview.php angezeigt wird.
-        if (isset($_SESSION['overview_teachers'])) {
-            unset($_SESSION['overview_teachers']);
+        if (isset($_SESSION['teachers'])) {
+            unset($_SESSION['teachers']);
             unset($_SESSION['overview_teachers_timestamp']);
         }
 

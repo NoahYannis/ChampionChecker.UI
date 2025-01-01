@@ -141,11 +141,11 @@ class TeacherController implements IController
 
     /**
      * @param int $id
-     * @return void
+     * @return array
      */
-    public function delete(int $id): void
+    public function delete(int $id): array
     {
-        $this->sendApiRequest("/api/teacher/$id", 'DELETE');
+        $deleteResult = $this->sendApiRequest("/api/teacher/$id", 'DELETE');
 
         if (isset($_SESSION['teachers'])) {
             foreach ($_SESSION['teachers'] as $key => $teacher) {
@@ -155,6 +155,21 @@ class TeacherController implements IController
                 }
             }
         }
+
+        return $deleteResult;
+    }
+
+    public function getTeacherIdFromShortCode(string $shortCode): int
+    {
+        if (isset($_SESSION['teachers'])) {
+            foreach ($_SESSION['teachers'] as $teacher) {
+                if (strtoupper(trim($teacher->getShortCode())) === strtoupper(trim($shortCode))) {
+                    return $teacher->getId();
+                }
+            }
+        }
+
+        return -1;
     }
 
     /**

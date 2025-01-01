@@ -101,11 +101,12 @@ class CompetitionResultController implements IController
 
     /**
      * @param int $id
-     * @return void
+     * @return array
      */
-    public function delete(int $id): void
+    public function delete(int $id): array
     {
-        $this->sendApiRequest("/api/competitionresult/$id", 'DELETE');
+        $deleteResult = $this->sendApiRequest("/api/competitionresult/$id", 'DELETE');
+        return $deleteResult;
     }
 
     /**

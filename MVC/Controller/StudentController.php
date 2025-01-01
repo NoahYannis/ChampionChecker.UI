@@ -153,11 +153,12 @@ class StudentController implements IController
 
     /**
      * @param int $id
-     * @return void
+     * @return array
      */
-    public function delete(int $id): void
+    public function delete(int $id): array
     {
-        $this->sendApiRequest("/api/student/$id", 'DELETE');
+        $deleteResult = $this->sendApiRequest("/api/student/$id", 'DELETE');
+        return $deleteResult;
     }
 
     /**
@@ -221,7 +222,7 @@ class StudentController implements IController
         if ($statusCode >= 400) {
             $responseData = json_decode($response, true);
             $errorMessage = $responseData['errors'][0]['description'] ?? 'Unbekannter Fehler';
-            
+
             return [
                 'success' => false,
                 'error' => $errorMessage

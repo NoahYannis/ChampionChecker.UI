@@ -7,8 +7,6 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
     exit();
 }
 
-include 'nav.php';
-
 
 use MVC\Controller\TeacherController;
 use MVC\Controller\ClassController;
@@ -21,9 +19,9 @@ function loadAllTeachers($cacheDuration = 300): array
     global $teacherController;
 
     // Gecachte Daten für die Dauer des Cache zurückgeben.
-    if (isset($_SESSION['overview_teachers']) && isset($_SESSION['overview_teachers_timestamp'])) {
+    if (isset($_SESSION['teachers']) && isset($_SESSION['overview_teachers_timestamp'])) {
         if ((time() - $_SESSION['overview_teachers_timestamp']) < $cacheDuration) {
-            return $_SESSION['overview_teachers'];
+            return $_SESSION['teachers'];
         }
     }
 
@@ -31,12 +29,11 @@ function loadAllTeachers($cacheDuration = 300): array
     $teachers = $teacherController->getAll();
 
     // Ergebnisse und Zeitstempel in der Session speichern
-    $_SESSION['overview_teachers'] = $teachers;
+    $_SESSION['teachers'] = $teachers;
     $_SESSION['overview_teachers_timestamp'] = time();
 
     return $teachers;
 }
-
 
 
 function printTeachers($teachers)
@@ -112,13 +109,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     // TODO: JSON an API schicken.
 
-    unset($_SESSION['overview_teachers']);
+    unset($_SESSION['teachers']);
     unset($_SESSION['overview_teachers_timestamp']);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-}
+    header('Content-Type: application/json');
 
+    if (!isset($_GET['shortCode'])) {
+        echo json_encode(['success' => false, 'message' => 'Das Lehrerkürzel wurde nicht übermittelt.']);
+        exit;
+    }
+
+    $shortCode = $_GET['shortCode'];
+    $teacherId = $teacherController->getTeacherIdFromShortCode($shortCode);
+    $deleteResult = $teacherController->delete($teacherId);
+
+    if ($deleteResult['success'] === true) {
+        echo json_encode(['success' => true, 'message' => 'Der Lehrer ' . addslashes($shortCode) . ' wurde erfolgreich entfernt.']);
+    } else {
+        $errorMessage = addslashes(htmlspecialchars($deleteResult["error"], ENT_NOQUOTES, 'UTF-8'));
+        echo json_encode(['success' => false, 'message' => $errorMessage]);
+    }
+    exit;
+}
 
 $teachers = loadAllTeachers();
 
@@ -126,7 +140,10 @@ $teachers = loadAllTeachers();
 usort($teachers, function ($teacherA, $teacherB) {
     return strcmp($teacherA->getLastName(), $teacherB->getLastName());
 });
+
+include 'nav.php';
 ?>
+
 
 <!DOCTYPE html>
 <html lang="de">
@@ -239,6 +256,11 @@ usort($teachers, function ($teacherA, $teacherB) {
                 cells[3].innerHTML = `<input type="text" value="${classes}">`;
                 cells[4].innerHTML = `<input type="text" value="${additionalInfo}">`;
                 cells[5].innerHTML = `<input type="checkbox" ${isParticipating ? 'checked' : ''}>`;
+
+                let deleteButton = row.querySelector('.delete-button');
+                deleteButton.addEventListener('click', () => {
+                    deleteTeacher(shortCode, row.rowIndex);
+                });
             });
         }
 
@@ -311,8 +333,29 @@ usort($teachers, function ($teacherA, $teacherB) {
         }
 
 
+        function deleteTeacher(shortCode, rowIndex) {
+            fetch(`teachers_overview.php?shortCode=${shortCode}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.success) {
+                        const row = table.rows[rowIndex];
+                        if (row) {
+                            row.remove();
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+
         // Prüft, ob eine Zeile im Edit-Modus bearbeitet wurde
         function checkIfRowWasModified(row, storedRow) {
+            if (!storedRow) {
+                return false;
+            }
             let cells = row.getElementsByTagName("td");
             for (let i = 0; i < cells.length; i++) {
                 const inputElement = cells[i].querySelector('input, textarea');
