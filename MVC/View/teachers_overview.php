@@ -116,6 +116,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     unset($_SESSION['overview_teachers_timestamp']);
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+}
 
 
 $teachers = loadAllTeachers();
@@ -171,6 +173,7 @@ usort($teachers, function ($teacherA, $teacherB) {
         const cancelButton = document.querySelector(".cancel-button");
         const table = document.getElementById("teacherTable");
         const tbody = table.getElementsByTagName("tbody")[0];
+        const headerRow = table.getElementsByTagName("tr")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"));
 
         document.querySelector('.edit-button').addEventListener('click', function() {
@@ -207,8 +210,18 @@ usort($teachers, function ($teacherA, $teacherB) {
 
         // Zeileninhalt innerhalb von Input-Elementen anzeigen.
         function displayEditInputs() {
+            let deleteHeader = document.createElement("th");
+            headerRow.appendChild(deleteHeader);
+
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
+
+                let deleteColumn = document.createElement("td");
+                deleteColumn.innerHTML = `
+                <button class="circle-button delete-button">
+                    <i class="fas fa-trash"></i>
+                </button>`;
+                row.appendChild(deleteColumn);
 
                 let lastName = cells[0].querySelector('.td-content').innerText;
                 let firstName = cells[1].querySelector('.td-content').innerText;
@@ -228,7 +241,6 @@ usort($teachers, function ($teacherA, $teacherB) {
                 cells[5].innerHTML = `<input type="checkbox" ${isParticipating ? 'checked' : ''}>`;
             });
         }
-
 
         // Input-Elemente durch Text ersetzen.
         function exitEditState(wasCanceled = false) {
@@ -271,6 +283,11 @@ usort($teachers, function ($teacherA, $teacherB) {
             });
 
             storedValues = [];
+
+            // Löschen-Spalte & -Knöpfe entfernen.
+            headerRow.querySelector("th:last-child").remove();
+            document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
+
             console.log(changedTeachers);
         }
 
@@ -286,7 +303,7 @@ usort($teachers, function ($teacherA, $teacherB) {
                 },
                 body: teacherJSON
             }).then(response => {
-                return response.text(); 
+                return response.text();
             }).then(data => {
                 console.log(data);
             }).catch(error => console.error('Error:', error));
