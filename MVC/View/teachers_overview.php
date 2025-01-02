@@ -36,6 +36,32 @@ function loadAllTeachers($cacheDuration = 300): array
     return $teachers;
 }
 
+function loadAllClassNames($cacheDuration = 300): array
+{
+    global $classController;
+    $classNames = [];
+
+    // Gecachte Daten für die Dauer des Cache zurückgeben. Gleichen Stempel wie bei Lehrern nehmen, damit Daten gemeinsam aktualisiert werden.
+    if (isset($_SESSION['classes']) && isset($_SESSION['overview_teachers_timestamp'])) {
+        if ((time() - $_SESSION['overview_teachers_timestamp']) < $cacheDuration) {
+            foreach ($_SESSION['classes'] as $class) {
+                $classNames[] = $class->getName();
+            }
+        }
+    }
+
+    $classes = $classController->getAll();
+    $_SESSION['classes'] = $classes;
+
+    foreach ($_SESSION['classes'] as $class) {
+        $classNames[] = $class->getName();
+    }
+
+    $_SESSION['overview_teachers_timestamp'] = time();
+
+    return $classNames;
+}
+
 
 function printTeachers($teachers)
 {
@@ -47,7 +73,7 @@ function printTeachers($teachers)
     echo "<th onclick='filterTable(0)'>Nachname</th>";
     echo "<th onclick='filterTable(1)'>Vorname</th>";
     echo "<th onclick='filterTable(2)'>Kürzel</th>";
-    echo"<th onclick='filterTable(3)'><abbr title='Ein Lehrer kann maximal zwei Klassen zugeordnet sein, jede Klasse kann maximal zwei Lehrer haben.'>Klassen</abbr></th>";
+    echo "<th onclick='filterTable(3)'><abbr title='Ein Lehrer kann maximal zwei Klassen zugeordnet sein, jede Klasse kann maximal zwei Lehrer haben.'>Klassen</abbr></th>";
     echo "<th onclick='filterTable(4)'>Sonstige Informationen</th>";
     echo "<th onclick='filterTable(5)'>Turnier-Teilnahme</th>";
     echo "</tr>";
@@ -169,6 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     exit;
 }
 
+$classes = loadAllClassNames();
 $teachers = loadAllTeachers();
 
 // Lehrer nach Nachnamen sortieren
@@ -269,6 +296,8 @@ include 'nav.php';
             let deleteHeader = document.createElement("th");
             headerRow.appendChild(deleteHeader);
 
+            const classNames = <?php echo json_encode(loadAllClassNames()); ?>;
+
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
 
@@ -293,6 +322,11 @@ include 'nav.php';
                 cells[1].innerHTML = `<input type="text" value="${firstName}">`;
                 cells[2].innerHTML = `<input type="text" value="${shortCode}" class='readonly-input' readonly>`;
                 cells[3].innerHTML = `<input type="text" value="${classes}">`;
+
+                if (isParticipating) {
+                    addClassSelect(cells, classNames, classes);
+                }
+
                 cells[4].innerHTML = `<input type="text" value="${additionalInfo}">`;
                 cells[5].innerHTML = `<input type="checkbox" ${isParticipating ? 'checked' : ''}>`;
 
@@ -311,6 +345,11 @@ include 'nav.php';
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
                 let storedRow = storedValues[row.rowIndex];
+
+                let classSelect = cells[3].querySelector('select');
+                if (classSelect) {
+                    classSelect.remove();
+                }
 
                 let lastName = wasCanceled && storedRow ? storedRow[0] : cells[0].querySelector('input').value;
                 let firstName = wasCanceled && storedRow ? storedRow[1] : cells[1].querySelector('input').value;
@@ -458,6 +497,26 @@ include 'nav.php';
             });
 
             rows.forEach(row => tbody.appendChild(row));
+        }
+
+
+        // Select-Menü für teilnehmende Lehrer
+        function addClassSelect(cells, classNames, currentClasses) {
+            let select = document.createElement("select");
+
+            classNames.forEach(className => {
+                let option = document.createElement("option");
+                option.value = className;
+                option.textContent = className;
+                select.appendChild(option);
+            });
+
+            let optionExists = Array.from(select.options).some(option => option.value === currentClasses);
+            if (optionExists) {
+                select.value = currentClasses;
+            }
+
+            cells[3].appendChild(select);
         }
     </script>
 
