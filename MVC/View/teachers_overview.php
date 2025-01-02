@@ -47,7 +47,7 @@ function printTeachers($teachers)
     echo "<th onclick='filterTable(0)'>Nachname</th>";
     echo "<th onclick='filterTable(1)'>Vorname</th>";
     echo "<th onclick='filterTable(2)'>Kürzel</th>";
-    echo "<th onclick='filterTable(3)'>Klassen</th>";
+    echo"<th onclick='filterTable(3)'><abbr title='Ein Lehrer kann maximal zwei Klassen zugeordnet sein, jede Klasse kann maximal zwei Lehrer haben.'>Klassen</abbr></th>";
     echo "<th onclick='filterTable(4)'>Sonstige Informationen</th>";
     echo "<th onclick='filterTable(5)'>Turnier-Teilnahme</th>";
     echo "</tr>";
@@ -341,7 +341,7 @@ include 'nav.php';
                 let classElements = "-";
                 if (classes !== "-") {
                     classElements = classes
-                        .split(" ") 
+                        .split(" ")
                         .map(className => `<span class='class'>${className.trim()}</span>`)
                         .join(" ");
                 }
