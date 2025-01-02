@@ -62,15 +62,17 @@ function printTeachers($teachers)
 
         $classes = $teacher->getClasses() ?? [];
         $classNames = [];
-
         foreach ($classes as $class) {
             $className = $classController->getClassName($class['id']);
             if ($className) {
-                $classNames[] = htmlspecialchars($className);
+                $escapedName = htmlspecialchars($className);
+                $classNames[] = "<span class='class'>{$escapedName}</span>";
             }
         }
 
-        echo "<td data-column='Klassen'><div class='td-content'>" . (!empty($classNames) ? implode(', ', $classNames) : '-') . "</div></td>";
+        echo "<td data-column='Klassen'><div class='td-content'>" .
+            (!empty($classNames) ? implode(' ', $classNames) : '-') .
+            "</div></td>";
         echo "<td data-column='Sonstiges'><div class='td-content'>" . (empty($teacher->getAdditionalInfo()) ? '-' : htmlspecialchars($teacher->getAdditionalInfo())) . "</div></td>";
         echo "<td data-column='Teilnahme'><div class='td-content'><span class='status-circle " . ($teacher->getIsParticipating() ? "green" : "red") . "'></span></div></td>";
         echo "</tr>";
@@ -336,10 +338,18 @@ include 'nav.php';
                 classes = classes || "-";
                 additionalInfo = additionalInfo || "-";
 
+                let classElements = "-";
+                if (classes !== "-") {
+                    classElements = classes
+                        .split(" ") 
+                        .map(className => `<span class='class'>${className.trim()}</span>`)
+                        .join(" ");
+                }
+
                 cells[0].innerHTML = `<div class='td-content'>${lastName}</div>`;
                 cells[1].innerHTML = `<div class='td-content'>${firstName}</div>`;
                 cells[2].innerHTML = `<div class='td-content'>${shortCode}</div>`;
-                cells[3].innerHTML = `<div class='td-content'>${classes}</div>`;
+                cells[3].innerHTML = `<div class='td-content'>${classElements}</div>`;
                 cells[4].innerHTML = `<div class='td-content` + (additionalInfo === '-' ? ' empty' : '') + `'>${additionalInfo}</div>`;
                 cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isParticipating ? 'green' : 'red'}'></span></div>`;
             });

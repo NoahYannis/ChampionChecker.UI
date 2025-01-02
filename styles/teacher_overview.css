@@ -34,3 +34,14 @@ th {
 .red {
   background-color: red;
 }
+
+.class {
+  display: inline-block;
+  border-radius: 16px;
+  background-color: var(--primary-color);
+  color: black;
+  padding-inline: 10px;
+  padding-block: 3px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
