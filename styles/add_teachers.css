@@ -16,12 +16,24 @@
 
 .add-teacher-toggle {
   input[type="checkbox"]:checked + .slider {
-    background-color: lightgreen
+    background-color: lightgreen;
   }
 
   input[type="checkbox"] + .slider {
     background-color: red;
   }
+}
+
+.class-unavailable {
+  color: #a9a9a9;
+}
+
+select {
+  max-height: 70px;
+}
+
+option {
+  cursor: pointer;
 }
 
 @media (width < 600px) {
@@ -33,9 +45,26 @@
     font-size: 0.8rem;
   }
 
+  .main-content {
+    padding-top: 0;
+  }
+
   input[type="submit"] {
-    height: 3rem;
-    font-size: 1.2rem;
+    height: 2rem;
+    font-size: 1rem;
     border: 1px solid black;
+  }
+
+  textarea {
+    max-height: 30px;
+  }
+
+  select {
+    max-height: 50px;
+  }
+
+  .add-teachers-fieldset {
+    padding-block: 0px;
+    padding-inline: 20px;
   }
 }
