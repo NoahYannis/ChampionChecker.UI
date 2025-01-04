@@ -452,6 +452,7 @@ include 'nav.php';
                         const row = table.rows[rowIndex];
                         if (row) {
                             row.remove();
+                            storedValues.splice(rowIndex, 1);
                         }
                     }
                 })
