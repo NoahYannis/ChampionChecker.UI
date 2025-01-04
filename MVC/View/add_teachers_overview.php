@@ -67,12 +67,13 @@ include 'nav.php';
                 .then(html => {
                     formContainer.innerHTML = html;
 
-                    // CSV-Import-Script laden
-                    if (url.includes('import_teachers_csv.php')) {
-                        const script = document.createElement('script');
-                        script.src = '../../scripts/import_teachers_csv.js';
-                        document.body.appendChild(script);
-                    }
+                    const scriptSrc = url.includes('import_teachers_csv.php') ?
+                        '../../scripts/import_teachers_csv.js' :
+                        '../../scripts/add_teachers_manual.js';
+
+                    const script = document.createElement('script');
+                    script.src = scriptSrc;
+                    document.body.appendChild(script);
                 })
                 .catch(error => console.error('Fehler beim Laden des Formulars:', error));
         }

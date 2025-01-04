@@ -269,7 +269,8 @@ input[type="submit"] {
 input[type="text"],
 input[type="email"],
 input[type="password"],
-textarea {
+textarea,
+select {
   width: 100%;
   padding: 10px 15px;
   margin-bottom: 10px;
@@ -371,9 +372,9 @@ label {
   }
 
   .circle-button {
-      padding-inline: 5px;
-      padding-block: 5px;
-      height: 30px;
-      width: 30px;
+    padding-inline: 5px;
+    padding-block: 5px;
+    height: 30px;
+    width: 30px;
   }
 }
