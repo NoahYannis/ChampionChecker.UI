@@ -173,7 +173,9 @@ class StudentController implements IController
         curl_setopt_array($curl, [
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_URL => $this->apiUrl . $endpoint,
-            CURLOPT_USERAGENT => 'PHP API Request'
+            CURLOPT_USERAGENT => 'PHP API Request',
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
         ]);
 
         $response = curl_exec($curl);
@@ -206,7 +208,9 @@ class StudentController implements IController
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json'
             ],
-            CURLOPT_USERAGENT => 'PHP API Request'
+            CURLOPT_USERAGENT => 'PHP API Request',
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false
         ]);
 
         $response = curl_exec($curl);
