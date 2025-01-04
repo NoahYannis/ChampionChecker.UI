@@ -90,8 +90,11 @@ function printTeachers($teachers)
         $classNames = [];
 
         if (is_array($classes)) {
-            $classes = array_map([ClassModel::class, 'mapToModel'], $classes);
+            $classes = array_map(function ($class) {
+                return $class instanceof ClassModel ? $class : ClassModel::mapToModel($class);
+            }, $classes);
         }
+
 
         foreach ($classes as $class) {
             $className = $class->getName();
