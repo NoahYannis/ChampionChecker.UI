@@ -106,7 +106,6 @@ class ClassModel implements JsonSerializable
         }, 0);
     }
 
-
     public function jsonSerialize(): array
     {
         return [
@@ -118,5 +117,17 @@ class ClassModel implements JsonSerializable
             'teachers' => $this->teachers,
             'pointsAchieved' => $this->getPointsAchieved(),
         ];
+    }
+
+    public static function mapToModel(array $data): self
+    {
+        return new self(
+            $data['id'] ?? null,
+            $data['name'] ?? '',
+            $data['students'] ?? [],
+            $data['competitions'] ?? [],
+            $data['competitionResults'] ?? [],
+            $data['teachers'] ?? []
+        );
     }
 }

@@ -98,9 +98,7 @@ class TeacherController implements IController
             throw new \InvalidArgumentException('Model must be an instance of Teacher.');
         }
 
-
         $data = [
-            'id' => $model->getId(),
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'shortCode' => $model->getShortCode(),

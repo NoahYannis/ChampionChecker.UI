@@ -11,6 +11,7 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 use MVC\Controller\TeacherController;
 use MVC\Controller\ClassController;
 use MVC\Model\Teacher;
+use MVC\Model\ClassModel;
 
 $teacherController = TeacherController::getInstance();
 $classController = ClassController::getInstance();
@@ -66,8 +67,6 @@ function loadAllClassNames($cacheDuration = 300): array
 
 function printTeachers($teachers)
 {
-    global $classController;
-
     echo "<table id='teacherTable' class='table-style'>";
     echo "<thead>";
     echo "<tr>";
@@ -89,6 +88,11 @@ function printTeachers($teachers)
 
         $classes = $teacher->getClasses() ?? [];
         $classNames = [];
+
+        if (is_array($classes)) {
+            $classes = array_map([ClassModel::class, 'mapToModel'], $classes);
+        }
+
         foreach ($classes as $class) {
             $className = $class->getName();
             if ($className) {
