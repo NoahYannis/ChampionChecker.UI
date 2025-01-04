@@ -16,6 +16,7 @@
         "Halten Sie STRG gedrückt, um mehrere Optionen auszuwählen."
       );
       classSelect.id = "class-select";
+      classSelect.name = "classes[]";
       classSelect.multiple = true;
 
       fetch("../../Helper/get_available_classes.php", {
