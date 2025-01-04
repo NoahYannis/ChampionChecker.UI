@@ -11,6 +11,10 @@
       classLabel.id = "class-label";
 
       const classSelect = document.createElement("select");
+      classSelect.setAttribute(
+        "title",
+        "Halten Sie STRG gedrückt, um mehrere Optionen auszuwählen."
+      );
       classSelect.id = "class-select";
       classSelect.multiple = true;
 
