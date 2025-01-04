@@ -98,12 +98,15 @@ class TeacherController implements IController
             throw new \InvalidArgumentException('Model must be an instance of Teacher.');
         }
 
+
         $data = [
+            'id' => $model->getId(),
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'shortCode' => $model->getShortCode(),
             'isParticipating' => $model->getIsParticipating(),
-            'additionalInfo' => $model->getAdditionalInfo()
+            'additionalInfo' => $model->getAdditionalInfo() ?? "",
+            'classes' => $model->getClasses() ?? []
         ];
 
         $createResult = $this->sendApiRequest('/api/teacher', 'POST', $data);
@@ -221,7 +224,8 @@ class TeacherController implements IController
             CURLOPT_HTTPHEADER => [
                 'Content-Type: application/json'
             ],
-            CURLOPT_USERAGENT => 'PHP API Request'
+            CURLOPT_USERAGENT => 'PHP API Request',
+            CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
         $response = curl_exec($curl);

@@ -47,6 +47,7 @@ function loadAllClassNames($cacheDuration = 300): array
             foreach ($_SESSION['classes'] as $class) {
                 $classNames[] = $class->getName();
             }
+            return $classNames;
         }
     }
 
@@ -89,7 +90,7 @@ function printTeachers($teachers)
         $classes = $teacher->getClasses() ?? [];
         $classNames = [];
         foreach ($classes as $class) {
-            $className = $classController->getClassName($class['id']);
+            $className = $class->getName();
             if ($className) {
                 $escapedName = htmlspecialchars($className);
                 $classNames[] = "<span class='class'>{$escapedName}</span>";
@@ -140,7 +141,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $changedTeachers = [];
 
     foreach ($teachersData as $data) {
-        $classes = trim($data['classes']) === '-' ? [] : array_map('trim', explode(',', $data['classes']));
+        $classes = trim($data['classes']) === '-' ? [] : array_map('trim', explode(' ', $data['classes']));
+
+        $classObjects = [];
+        foreach ($classes as $class) {
+            $classObjects[] = $classController->getByName($class);
+        }
+
+
         $additionalInfo = trim($data['additionalInfo']) === '-' ? null : trim($data['additionalInfo']);
         $shortCode = trim($data['shortCode']);
 
@@ -151,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             shortCode: $shortCode,
             isParticipating: isset($data['isParticipating']) ? (bool)$data['isParticipating'] : false,
             additionalInfo: $additionalInfo,
-            classes: $classes,
+            classes: $classObjects,
         );
         $changedTeachers[] = $teacher;
     }
