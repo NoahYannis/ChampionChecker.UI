@@ -45,8 +45,9 @@ class ClassController implements IController
                 id: $data['id'],
                 name: $data['name'],
                 students: $data['students'] ?? [],
-                pointsAchieved: $data['pointsAchieved'],
-                classTeacherId: $data['classTeacherId'] ?? null
+                competitions: $data['competitions'] ?? [],
+                competitionResults: $data['competitionResults'] ?? [],
+                teachers: $data['teachers'] ?? []
             );
 
             // Klasse im Cache speichern
@@ -125,8 +126,9 @@ class ClassController implements IController
                     id: $classData['id'],
                     name: $classData['name'],
                     students: $classData['students'] ?? [],
-                    pointsAchieved: $classData['pointsAchieved'] ?? 0,
-                    classTeacherId: $classData['classTeacherId'] ?? null
+                    competitions: $classData['competitions'] ?? [],
+                    competitionResults: $classData['competitionResults'] ?? [],
+                    teachers: $classData['teachers'] ?? []
                 );
             }
         }
@@ -153,8 +155,9 @@ class ClassController implements IController
                 id: $item['id'],
                 name: $item['name'],
                 students: $item['students'] ?? [],
-                pointsAchieved: $item['pointsAchieved'],
-                classTeacherId: $item['classTeacherId'] ?? null
+                competitions: $item['competitions'] ?? [],
+                competitionResults: $item['competitionResults'] ?? [],
+                teachers: $item['teachers'] ?? []
             );
             $classes[] = $classModel;
 
@@ -177,8 +180,9 @@ class ClassController implements IController
         $data = [
             'name' => $model->getName(),
             'students' => $model->getStudents(),
-            'pointsAchieved' => $model->getPointsAchieved(),
-            'classTeacherId' => $model->getClassTeacherId()
+            'competitions' => $model->getCompetitions(),
+            'competitionResults' => $model->getCompetitionResults(),
+            'teachers' => $model->getTeachers()
         ];
 
         $createResult = $this->sendApiRequest('/api/class', 'POST', $data);
@@ -203,8 +207,9 @@ class ClassController implements IController
         $data = [
             'name' => $model->getName(),
             'students' => $model->getStudents(),
-            'pointsAchieved' => $model->getPointsAchieved(),
-            'classTeacherId' => $model->getClassTeacherId()
+            'competitions' => $model->getCompetitions(),
+            'competitionResults' => $model->getCompetitionResults(),
+            'teachers' => $model->getTeachers()
         ];
 
         $updateResult = $this->sendApiRequest("/api/class/{$model->getId()}", 'PUT', $data);
