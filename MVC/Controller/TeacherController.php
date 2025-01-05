@@ -197,6 +197,11 @@ class TeacherController implements IController
         $response = curl_exec($curl);
         curl_close($curl);
 
+        if ($response === false) {
+            $error = curl_error($curl);
+            throw new RuntimeException('cURL error: ' . $error);
+        }
+
         $data = json_decode($response, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -230,6 +235,12 @@ class TeacherController implements IController
         ]);
 
         $response = curl_exec($curl);
+
+        if ($response === false) {
+            $error = curl_error($curl);
+            throw new RuntimeException('cURL error: ' . $error);
+        }
+
         if (curl_errno($curl)) {
             return [
                 'success' => false,

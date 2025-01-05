@@ -214,6 +214,12 @@ class StudentController implements IController
         ]);
 
         $response = curl_exec($curl);
+
+        if ($response === false) {
+            $error = curl_error($curl);
+            throw new RuntimeException('cURL error: ' . $error);
+        }
+  
         if (curl_errno($curl)) {
             return [
                 'success' => false,

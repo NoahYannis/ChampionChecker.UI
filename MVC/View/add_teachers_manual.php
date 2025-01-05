@@ -3,6 +3,7 @@ require '../../vendor/autoload.php';
 session_start();
 
 use MVC\Controller\TeacherController;
+use MVC\Controller\ClassController;
 use MVC\Model\Teacher;
 
 if (!isset($_COOKIE['ChampionCheckerCookie'])) {
@@ -22,13 +23,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    $teacherController = TeacherController::getInstance();
+    $classController = ClassController::getInstance();
+
     $firstname = htmlspecialchars(trim($_POST['firstname']), ENT_QUOTES, 'UTF-8');
     $lastname = htmlspecialchars(trim($_POST['lastname']), ENT_QUOTES, 'UTF-8');
     $shortcode = htmlspecialchars(trim($_POST['shortcode']), ENT_QUOTES, 'UTF-8');
     $additionalInfo = isset($_POST['additional-info']) ? htmlspecialchars(trim($_POST['additional-info']), ENT_QUOTES, 'UTF-8') : null;
     $isParticipating = isset($_POST['participationToggle']) && $_POST['participationToggle'] === 'on';
+    $classes = isset($_POST['classes']) ? array_map(function ($className) use ($classController) {
+        return $classController->getByName($className);
+    }, $_POST['classes']) : [];
 
-    $teacherController = TeacherController::getInstance();
 
     $teacher = new Teacher(
         id: null,
@@ -37,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         shortCode: $shortcode,
         isParticipating: $isParticipating,
         additionalInfo: $additionalInfo,
-        classes: null // TODO: Ergänzen
+        classes: $classes
     );
 
     $addResult = $teacherController->create($teacher);
