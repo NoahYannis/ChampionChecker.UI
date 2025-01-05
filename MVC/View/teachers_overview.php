@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $changedTeachers = [];
 
     foreach ($teachersData as $data) {
-        $classes = trim($data['classes']) === '-' ? [] : array_map('trim', explode(' ', $data['classes']));
+        $classes = $data['classes'];
 
         $classObjects = [];
         foreach ($classes as $class) {
@@ -289,7 +289,7 @@ include 'nav.php';
             toggleEditButtonIcon();
 
             if (isEditing) {
-                displayEditInputs();
+                enterEditState();
             } else {
                 exitEditState(wasCanceled);
                 if (!wasCanceled) {
@@ -307,7 +307,7 @@ include 'nav.php';
 
 
         // Zeileninhalt innerhalb von Input-Elementen anzeigen.
-        function displayEditInputs() {
+        function enterEditState() {
             let deleteHeader = document.createElement("th");
             headerRow.appendChild(deleteHeader);
 
@@ -326,7 +326,7 @@ include 'nav.php';
                 let lastName = cells[0].querySelector('.td-content').innerText;
                 let firstName = cells[1].querySelector('.td-content').innerText;
                 let shortCode = cells[2].querySelector('.td-content').innerText;
-                let classes = cells[3].querySelector('.td-content').innerText;
+                let classes = cells[3].querySelector('.td-content').innerText.split(" ").map(c => c.trim());
                 let additionalInfo = cells[4].querySelector('.td-content').innerText;
                 let isParticipating = cells[5].querySelector('.td-content').querySelector('.status-circle').classList.contains('green');
 
@@ -336,7 +336,12 @@ include 'nav.php';
                 cells[0].innerHTML = `<input type="text" value="${lastName}">`;
                 cells[1].innerHTML = `<input type="text" value="${firstName}">`;
                 cells[2].innerHTML = `<input type="text" value="${shortCode}" class='readonly-input' readonly>`;
-                cells[3].innerHTML = `<input type="text" value="${classes}">`;
+
+                cells[3].innerHTML = classes.map(className => {
+                    return className !== "-" ? `<span class="class" title="Klasse entfernen">
+                        ${className} <i onclick="this.parentElement.remove()" class="fas fa-times"></i>
+                    </span>` : "-";
+                }).join(' ');
 
                 if (isParticipating) {
                     addClassSelect(cells, classNames, classes);
@@ -369,7 +374,11 @@ include 'nav.php';
                 let lastName = wasCanceled && storedRow ? storedRow[0] : cells[0].querySelector('input').value;
                 let firstName = wasCanceled && storedRow ? storedRow[1] : cells[1].querySelector('input').value;
                 let shortCode = wasCanceled && storedRow ? storedRow[2] : cells[2].querySelector('input').value;
-                let classes = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('input').value;
+
+                let classes = wasCanceled && storedRow ?
+                    storedRow[3] :
+                    Array.from(cells[3].querySelectorAll('.class')).map(c => c.innerText.trim());
+
                 let additionalInfo = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('input').value;
                 let isParticipating = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').checked;
 
@@ -392,12 +401,13 @@ include 'nav.php';
                 classes = classes || "-";
                 additionalInfo = additionalInfo || "-";
 
-                let classElements = "-";
-                if (classes !== "-") {
+                let classElements;
+                if (classes.length === 1 && classes[0] === "-") {
+                    classElements = "-";
+                } else {
                     classElements = classes
-                        .split(" ")
                         .map(className => `<span class='class'>${className.trim()}</span>`)
-                        .join(" ");
+                        .join("");
                 }
 
                 cells[0].innerHTML = `<div class='td-content'>${lastName}</div>`;
@@ -465,27 +475,41 @@ include 'nav.php';
             if (!storedRow) {
                 return false;
             }
+
             let cells = row.getElementsByTagName("td");
             for (let i = 0; i < cells.length; i++) {
                 const inputElement = cells[i].querySelector('input, textarea');
                 const storedValue = storedRow[i];
                 let inputValue;
 
-                if (inputElement && inputElement.type === 'checkbox') {
-                    inputValue = inputElement.checked;
-                } else if (inputElement && inputElement.tagName === 'TEXTAREA') {
-                    inputValue = inputElement.value;
-                } else if (inputElement) {
-                    inputValue = inputElement.value;
+                if (inputElement) {
+                    inputValue = inputElement.type === 'checkbox' ?
+                        inputElement.checked :
+                        inputElement.value;
                 }
 
-                // Nur geänderte Datensätze speichern.
-                if (inputValue !== storedValue) {
+                // Klassen
+                if (i === 3) {
+                    let classElements = Array.from(cells[3].querySelectorAll('.class')).map(c => c.innerText);
+                    inputValue = classElements.length > 0 ? classElements : "-";
+                }
+
+                let trimmedInputValue = Array.isArray(inputValue) ?
+                    inputValue.map(c => c.trim()).join(',') :
+                    inputValue;
+
+                let trimmedStoredValue = Array.isArray(storedValue) ?
+                    storedValue.map(c => c.trim()).join(',') :
+                    storedValue;
+
+                if (trimmedInputValue !== trimmedStoredValue) {
                     return true;
                 }
             }
+
             return false;
         }
+
 
         function filterTable(columnIndex) {
             if (isEditing) {
@@ -519,6 +543,12 @@ include 'nav.php';
         // Select-Menü für teilnehmende Lehrer
         function addClassSelect(cells, classNames, currentClasses) {
             let select = document.createElement("select");
+            let defaultOption = document.createElement("option");
+            defaultOption.textContent = "Klassen auswählen:";
+            defaultOption.value = "";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            select.appendChild(defaultOption);
 
             classNames.forEach(className => {
                 let option = document.createElement("option");
@@ -526,11 +556,6 @@ include 'nav.php';
                 option.textContent = className;
                 select.appendChild(option);
             });
-
-            let optionExists = Array.from(select.options).some(option => option.value === currentClasses);
-            if (optionExists) {
-                select.value = currentClasses;
-            }
 
             cells[3].appendChild(select);
         }

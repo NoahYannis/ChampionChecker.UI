@@ -44,5 +44,18 @@ th {
   padding-block: 3px;
   text-align: center;
   border: 1px solid #ccc;
-  margin: 5px;
+  margin: 5px 5px 10px 5px;
+
+  .fas.fa-times {
+    color: red;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+}
+
+@media (width > 600px) {
+  .table-style th,
+  .table-style td {
+    max-width: 300px;
+  }
 }
