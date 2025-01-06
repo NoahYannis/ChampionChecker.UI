@@ -179,14 +179,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $updateResults[] = $updateResult;
     }
 
-    // Ergebnis an die Frontend-Seite zurückgeben
     echo json_encode([
         'success' => $putSuccess,
         'results' => $updateResults ?? []
     ]);
     exit;
-
-    // TOOO: Update-Ergebnis visualisieren
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
@@ -231,6 +228,7 @@ include 'nav.php';
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/base.css" />
     <link rel="stylesheet" type="text/css" href="../../styles/teacher_overview.css" />
+    <link rel="stylesheet" type="text/css" href="../../styles/add_teachers.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
     <title>Lehrerverwaltung</title>
@@ -307,11 +305,11 @@ include 'nav.php';
 
 
         // Zeileninhalt innerhalb von Input-Elementen anzeigen.
-        function enterEditState() {
+        async function enterEditState() {
             let deleteHeader = document.createElement("th");
             headerRow.appendChild(deleteHeader);
 
-            const classNames = <?php echo json_encode(loadAllClassNames()); ?>;
+            const classNames = await fetchAvailableClasses();
 
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
@@ -543,25 +541,82 @@ include 'nav.php';
             rows.forEach(row => tbody.appendChild(row));
         }
 
+        async function fetchAvailableClasses() {
+            try {
+                const response = await fetch("../../Helper/get_available_classes.php");
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error("Error fetching classes:", error);
+                return [];
+            }
+        }
+
 
         // Select-Menü für teilnehmende Lehrer
         function addClassSelect(cells, classNames, currentClasses) {
             let select = document.createElement("select");
+            select.id = "class-select";
+            select.name = "classes[]";
+            select.multiple = true;
+            select.setAttribute(
+                "title",
+                "Halten Sie STRG gedrückt, um mehrere Optionen auszuwählen."
+            );
+
             let defaultOption = document.createElement("option");
             defaultOption.textContent = "Klassen auswählen:";
-            defaultOption.value = "";
             defaultOption.disabled = true;
-            defaultOption.selected = true;
             select.appendChild(defaultOption);
 
-            classNames.forEach(className => {
+            classNames.forEach(classItem => {
                 let option = document.createElement("option");
-                option.value = className;
-                option.textContent = className;
+                option.value = classItem.name;
+                option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
+
+                if (!classItem.available) {
+                    option.classList.add("class-unavailable");
+                    option.disabled = true;
+                }
+
                 select.appendChild(option);
             });
 
             cells[3].appendChild(select);
+
+            let previousSelectedOptions = [];
+
+            select.addEventListener("change", function() {
+                const selectedOptions = Array.from(select.selectedOptions);
+                if (selectedOptions.length > 2) {
+                    selectedOptions[selectedOptions.length - 1].selected = false;
+                    alert("Ein Lehrer kann maximal 2 Klassen betreuen.");
+                }
+
+                classNames.forEach(classItem => {
+                    const option = select.querySelector(`option[value="${classItem.name}"]`);
+                    const isSelected = selectedOptions.some(option => option.value === classItem.name);
+                    const wasSelected = previousSelectedOptions.some(option => option.value === classItem.name);
+
+                    if (isSelected && !wasSelected) {
+                        classItem.teacherCount += 1;
+                    } else if (!isSelected && wasSelected) {
+                        classItem.teacherCount -= 1;
+                    }
+
+                    option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
+
+                    if (classItem.teacherCount > 2) {
+                        option.classList.add('class-unavailable');
+                        option.disabled = true;
+                    } else {
+                        option.classList.remove('class-unavailable');
+                        option.disabled = false;
+                    }
+                });
+
+                previousSelectedOptions = selectedOptions;
+            });
         }
     </script>
 

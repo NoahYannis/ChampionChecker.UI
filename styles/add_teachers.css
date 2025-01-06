@@ -29,7 +29,12 @@
 }
 
 select {
-  max-height: 84px;
+  height: 84px;
+  transition: height 0.3s ease;
+
+  &:focus {
+    height: 200px;
+  }
 }
 
 option {
