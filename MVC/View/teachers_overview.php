@@ -411,7 +411,7 @@ include 'nav.php';
                 } else {
                     classElements = classes
                         .map(className => `<span class='class'>${className.trim()}</span>`)
-                        .join("");
+                        .join(" ");
                 }
 
                 cells[0].innerHTML = `<div class='td-content'>${lastName}</div>`;
