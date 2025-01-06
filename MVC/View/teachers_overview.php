@@ -267,15 +267,6 @@ include 'nav.php';
         const tbody = table.getElementsByTagName("tbody")[0];
         const headerRow = table.getElementsByTagName("tr")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"));
-        let classData;
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            try {
-                classData = await fetchAvailableClasses();
-            } catch (error) {
-                console.error("Fehler beim Laden der Klassen:", error);
-            }
-        });
 
         document.querySelector('.edit-button').addEventListener('click', function() {
             toggleEditState();
@@ -317,6 +308,8 @@ include 'nav.php';
         async function enterEditState() {
             let deleteHeader = document.createElement("th");
 
+            const classNames = await fetchAvailableClasses();
+
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
 
@@ -348,7 +341,7 @@ include 'nav.php';
                 }).join(' ');
 
                 if (isParticipating) {
-                    addClassSelect(cells, classData, classes);
+                    addClassSelect(cells, classNames, classes);
                 }
 
                 cells[4].innerHTML = `<input type="text" value="${additionalInfo}">`;
@@ -358,7 +351,7 @@ include 'nav.php';
 
                 checkbox.addEventListener('change', async function() {
                     if (this.checked) {
-                        addClassSelect(cells, classData, classes);
+                        addClassSelect(cells, classNames, classes);
                     } else {
                         const classSelect = cells[3].querySelector('#class-select');
                         if (classSelect) classSelect.remove();
@@ -463,9 +456,9 @@ include 'nav.php';
                 }).then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Alle Änderungen wurden erfolgreich gespeichert.');
+                        alert('Alle Lehrer wurden erfolgreich aktualisiert.');
                     } else {
-                        alert('Einige Änderungen konnten nicht übernommen werden.');
+                        alert('Einige Lehrer konnten nicht aktualisiert werden.');
                         console.log(data.results);
                     }
                 }).catch(error => console.error('Error:', error));
@@ -573,7 +566,7 @@ include 'nav.php';
 
 
         // Select-Menü für teilnehmende Lehrer
-        function addClassSelect(cells, classData, currentClasses) {
+        function addClassSelect(cells, classNames, currentClasses) {
             let select = document.createElement("select");
             select.id = "class-select";
             select.name = "classes[]";
@@ -588,7 +581,7 @@ include 'nav.php';
             defaultOption.disabled = true;
             select.appendChild(defaultOption);
 
-            classData.forEach(classItem => {
+            classNames.forEach(classItem => {
                 let option = document.createElement("option");
                 option.value = classItem.name;
                 option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
@@ -616,7 +609,7 @@ include 'nav.php';
                     return;
                 }
 
-                classData.forEach(classItem => {
+                classNames.forEach(classItem => {
                     const option = select.querySelector(`option[value="${classItem.name}"]`);
                     const isSelected = selectedOptions.some(option => option.value === classItem.name);
                     const wasSelected = previousSelectedOptions.some(option => option.value === classItem.name);
