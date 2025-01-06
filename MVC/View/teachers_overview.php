@@ -294,8 +294,8 @@ include 'nav.php';
                 exitEditState(wasCanceled);
                 if (!wasCanceled) {
                     saveChangedTeachers(changedTeachers);
-                    changedTeachers = [];
                 }
+                changedTeachers = [];
             }
         }
 
@@ -393,6 +393,10 @@ include 'nav.php';
                         isParticipating: isParticipating
                     };
                     changedTeachers.push(changedTeacher);
+                }
+
+                if (classes.length === 0) {
+                    classes = ["-"];
                 }
 
                 lastName = lastName || "-";
