@@ -600,9 +600,13 @@ include 'nav.php';
 
             select.addEventListener("change", function() {
                 const selectedOptions = Array.from(select.selectedOptions);
-                if (selectedOptions.length > 2) {
+                const classElementsCount = cells[3].querySelectorAll('.class').length;
+
+                if (classElementsCount >= 2) {
+                    alert("Es können höchstens 2 Klassen gleichzeitig zugewiesen werden. Bitte entfernen Sie eine Klasse, um eine neue hinzuzufügen.");
                     selectedOptions[selectedOptions.length - 1].selected = false;
-                    alert("Ein Lehrer kann maximal 2 Klassen betreuen.");
+                    select.blur();
+                    return;
                 }
 
                 classNames.forEach(classItem => {
