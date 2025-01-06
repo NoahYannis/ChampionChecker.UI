@@ -260,6 +260,7 @@ include 'nav.php';
         let sortDirections = {};
         let storedValues = [];
         let changedTeachers = [];
+        let classData = [];
 
         const editButton = document.querySelector('.edit-button i');
         const cancelButton = document.querySelector(".cancel-button");
@@ -308,7 +309,7 @@ include 'nav.php';
         async function enterEditState() {
             let deleteHeader = document.createElement("th");
 
-            const classData = await fetchAvailableClasses();
+            classData = await fetchAvailableClasses();
 
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
@@ -335,9 +336,12 @@ include 'nav.php';
                 cells[2].innerHTML = `<input type="text" value="${shortCode}" class='readonly-input' readonly>`;
 
                 cells[3].innerHTML = classes.map(className => {
-                    return className !== "-" ? `<span data-class="${className}" class="class" title="Klasse entfernen">
-                    ${className} <i onclick="this.parentElement.remove()" class="fas fa-times"></i>
-                    </span>` : "-";
+                    return className !== "-" ?
+                        `<span data-class="${className}" class="class" title="Klasse entfernen">
+                        ${className} 
+                        <i onclick="removeClassElement(this.parentElement, '${className}')" class="fas fa-times"></i>
+                        </span>` :
+                        "-";
                 }).join(' ');
 
                 if (isParticipating) {
@@ -664,6 +668,36 @@ include 'nav.php';
                 });
 
                 previousSelectedOptions = selectedOptions;
+            });
+        }
+
+        /**
+         * Entfernt die geklickte Klasse im Edit-Modus und aktualisiert die Lehreranzahl der Klasse
+         *
+         * @param {HTMLElement} element - Das Klassen-Span, das entfernt werden soll.
+         * @param {string} className - Der Name der Klasse, die entfernt werden soll.
+         */
+        function removeClassElement(element, className) {
+            element.remove();
+
+            const removedClass = classData.find(cd => cd.name === className);
+
+            if (!removedClass) {
+                console.warn(`Klasse mit dem Namen "${className}" wurde in classData nicht gefunden.`);
+                return;
+            }
+
+            removedClass.teacherCount -= 1;
+
+            document.querySelectorAll("select#class-select").forEach(select => {
+                const outdatedOption = select.querySelector(`option[value="${className}"]`);
+                if (outdatedOption) {
+                    outdatedOption.textContent = `${className} (${removedClass.teacherCount}/2)`;
+                    if (removedClass.teacherCount < 2) {
+                        outdatedOption.disabled = false;
+                        outdatedOption.classList.remove("class-unavailable");
+                    }
+                }
             });
         }
     </script>
