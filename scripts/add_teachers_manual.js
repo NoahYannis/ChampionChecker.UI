@@ -2,10 +2,15 @@
   const participationToggle = document.getElementById("participationToggle");
   const participationToggleLabel = participationToggle.parentNode;
 
+  // Verhindern, dass beim Togglen mehrere asynchrone Fetch-Anfragen zeitgleich verarbeitet werden.
+  let isFetching = false;
+
   function toggleClassDisplay() {
     const isChecked = participationToggle.checked;
 
-    if (isChecked && !document.getElementById("class-select")) {
+    if (isChecked && !document.getElementById("class-select") && !isFetching) {
+      isFetching = true;
+
       const classLabel = document.createElement("label");
       classLabel.innerHTML = `<abbr title="Ein Lehrer kann bis zu 2 Klassen, eine Klasse bis zu 2 Lehrer.">Klassen:</abbr>`;
       classLabel.id = "class-label";
@@ -22,9 +27,7 @@
       fetch("../../Helper/get_available_classes.php", {
         method: "GET",
       })
-        .then((response) => {
-          return response.json();
-        })
+        .then((response) => response.json())
         .then((data) => {
           data.forEach((classItem) => {
             const option = document.createElement("option");
@@ -58,6 +61,9 @@
         })
         .catch((error) => {
           console.error("Error fetching classes:", error);
+        })
+        .finally(() => {
+          isFetching = false;
         });
     } else {
       document.getElementById("class-select")?.remove();
