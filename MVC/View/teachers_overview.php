@@ -345,7 +345,18 @@ include 'nav.php';
                 }
 
                 cells[4].innerHTML = `<input type="text" value="${additionalInfo}">`;
-                cells[5].innerHTML = `<input type="checkbox" ${isParticipating ? 'checked' : ''}>`;
+                cells[5].innerHTML = `<input id='participation' type="checkbox" ${isParticipating ? 'checked' : ''}>`;
+
+                const checkbox = cells[5].querySelector("#participation");
+
+                checkbox.addEventListener('change', async function() {
+                    if (this.checked) {
+                        addClassSelect(cells, classNames, classes);
+                    } else {
+                        const classSelect = cells[3].querySelector('#class-select');
+                        if (classSelect) classSelect.remove();
+                    }
+                });
 
                 let deleteButton = row.querySelector('.delete-button');
                 deleteButton.addEventListener('click', () => {
@@ -355,7 +366,7 @@ include 'nav.php';
                     }
                 });
             });
-            
+
             headerRow.appendChild(deleteHeader);
         }
 
