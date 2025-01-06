@@ -307,7 +307,6 @@ include 'nav.php';
         // Zeileninhalt innerhalb von Input-Elementen anzeigen.
         async function enterEditState() {
             let deleteHeader = document.createElement("th");
-            headerRow.appendChild(deleteHeader);
 
             const classNames = await fetchAvailableClasses();
 
@@ -336,8 +335,8 @@ include 'nav.php';
                 cells[2].innerHTML = `<input type="text" value="${shortCode}" class='readonly-input' readonly>`;
 
                 cells[3].innerHTML = classes.map(className => {
-                    return className !== "-" ? `<span class="class" title="Klasse entfernen">
-                        ${className} <i onclick="this.parentElement.remove()" class="fas fa-times"></i>
+                    return className !== "-" ? `<span data-class="${className}" class="class" title="Klasse entfernen">
+                    ${className} <i onclick="this.parentElement.remove()" class="fas fa-times"></i>
                     </span>` : "-";
                 }).join(' ');
 
@@ -356,6 +355,8 @@ include 'nav.php';
                     }
                 });
             });
+            
+            headerRow.appendChild(deleteHeader);
         }
 
         // Input-Elemente durch Text ersetzen.
@@ -600,8 +601,40 @@ include 'nav.php';
 
                     if (isSelected && !wasSelected) {
                         classItem.teacherCount += 1;
+
+                        if (cells[3].querySelector(`span[data-class="${classItem.name}"]`)) {
+                            return;
+                        }
+
+                        const classElement = document.createElement("span");
+                        classElement.classList.add("class");
+                        classElement.setAttribute("data-class", classItem.name);
+                        classElement.textContent = `${classItem.name}`;
+                        classElement.setAttribute("title", "Klasse entfernen");
+
+                        const removeIcon = document.createElement("i");
+                        removeIcon.classList.add("fas", "fa-times");
+                        removeIcon.onclick = function() {
+                            classElement.remove();
+                            option.selected = false;
+                            classItem.teacherCount -= 1;
+                            option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
+                            option.classList.remove("class-unavailable");
+                            option.disabled = false;
+                        };
+
+                        classElement.appendChild(removeIcon);
+                        cells[3].insertBefore(classElement, select);
+
                     } else if (!isSelected && wasSelected) {
+
                         classItem.teacherCount -= 1;
+                        const classElement = cells[3].querySelector(
+                            `span[data-class="${classItem.name}"]`
+                        );
+                        if (classElement) {
+                            classElement.remove();
+                        }
                     }
 
                     option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
