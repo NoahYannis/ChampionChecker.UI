@@ -308,7 +308,7 @@ include 'nav.php';
         async function enterEditState() {
             let deleteHeader = document.createElement("th");
 
-            const classNames = await fetchAvailableClasses();
+            const classData = await fetchAvailableClasses();
 
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
@@ -341,7 +341,7 @@ include 'nav.php';
                 }).join(' ');
 
                 if (isParticipating) {
-                    addClassSelect(cells, classNames, classes);
+                    addClassSelect(cells, classData, classes);
                 }
 
                 cells[4].innerHTML = `<input type="text" value="${additionalInfo}">`;
@@ -351,7 +351,7 @@ include 'nav.php';
 
                 checkbox.addEventListener('change', async function() {
                     if (this.checked) {
-                        addClassSelect(cells, classNames, classes);
+                        addClassSelect(cells, classData, classes);
                     } else {
                         const classSelect = cells[3].querySelector('#class-select');
                         if (classSelect) classSelect.remove();
@@ -456,9 +456,9 @@ include 'nav.php';
                 }).then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Alle Lehrer wurden erfolgreich aktualisiert.');
+                        alert('Alle Änderungen wurden erfolgreich gespeichert.');
                     } else {
-                        alert('Einige Lehrer konnten nicht aktualisiert werden.');
+                        alert('Einige Änderungen konnten nicht übernommen werden.');
                         console.log(data.results);
                     }
                 }).catch(error => console.error('Error:', error));
@@ -566,7 +566,7 @@ include 'nav.php';
 
 
         // Select-Menü für teilnehmende Lehrer
-        function addClassSelect(cells, classNames, currentClasses) {
+        function addClassSelect(cells, classData, currentClasses) {
             let select = document.createElement("select");
             select.id = "class-select";
             select.name = "classes[]";
@@ -581,7 +581,7 @@ include 'nav.php';
             defaultOption.disabled = true;
             select.appendChild(defaultOption);
 
-            classNames.forEach(classItem => {
+            classData.forEach(classItem => {
                 let option = document.createElement("option");
                 option.value = classItem.name;
                 option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
@@ -609,7 +609,7 @@ include 'nav.php';
                     return;
                 }
 
-                classNames.forEach(classItem => {
+                classData.forEach(classItem => {
                     const option = select.querySelector(`option[value="${classItem.name}"]`);
                     const isSelected = selectedOptions.some(option => option.value === classItem.name);
                     const wasSelected = previousSelectedOptions.some(option => option.value === classItem.name);
