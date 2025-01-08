@@ -91,7 +91,6 @@ $competitionResults = loadCompetitionResults();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
-    <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/base.css" />
     <link rel="stylesheet" type="text/css" href="../../styles/home.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>

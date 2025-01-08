@@ -50,7 +50,6 @@
 	<html>
 
     <head>
-		<link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
 		<script src="https://cdn.jsdelivr.net/npm/less"></script>
 		<meta charset="utf-8">
 		<meta name="description" content="Klassenpunkte eintragen">
