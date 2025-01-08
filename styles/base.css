@@ -342,6 +342,21 @@ label {
   background-color: #f1f1f1;
 }
 
+.result-message {
+  margin: 15px;
+  font-size: clamp(0.95rem, 3vw, 1.5rem);
+  text-align: center;
+  color: green;
+
+  &.hidden {
+    display: none;
+  }
+
+  &.visible {
+    visibility: visible;
+  }
+}
+
 .hidden {
   display: none;
 }

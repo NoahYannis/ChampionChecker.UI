@@ -239,6 +239,7 @@ include 'nav.php';
         <h1>Lehrerverwaltung</h1>
     </header>
 
+    <div id="result-message" class="result-message hidden"></div>
     <div class="button-container">
         <button class="circle-button add-button" onclick="window.location.href='add_teachers_overview.php?mode=manual'">
             <i class="fas fa-plus"></i>
@@ -460,9 +461,9 @@ include 'nav.php';
                 }).then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Alle Änderungen wurden erfolgreich gespeichert.');
+                        showResultMessage('Alle Änderungen wurden erfolgreich gespeichert.');
                     } else {
-                        alert('Einige Änderungen konnten nicht übernommen werden.');
+                        showResultMessage('Einige Änderungen konnten nicht übernommen werden.', false);
                         console.log(data.results);
                     }
                 }).catch(error => console.error('Error:', error));
@@ -475,7 +476,6 @@ include 'nav.php';
                 })
                 .then(response => response.json())
                 .then(data => {
-                    alert(data.message);
                     if (data.success) {
                         const row = table.rows[rowIndex];
                         if (row) {
@@ -483,6 +483,7 @@ include 'nav.php';
                             storedValues.splice(rowIndex, 1);
                         }
                     }
+                    showResultMessage(data.message, data.success);
                 })
                 .catch(error => console.error('Error:', error));
         }
@@ -699,6 +700,17 @@ include 'nav.php';
                     }
                 }
             });
+        }
+
+        function showResultMessage(message, isSuccess = true) {
+            const resultMessage = document.getElementById('result-message');
+            resultMessage.textContent = message;
+            resultMessage.style.color = isSuccess ? 'green' : 'red';
+            resultMessage.classList.remove('hidden');
+
+            setTimeout(() => {
+                resultMessage.classList.add('hidden');
+            }, 5000);
         }
     </script>
 
