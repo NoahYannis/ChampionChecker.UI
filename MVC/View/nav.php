@@ -12,6 +12,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/nav.css" />
+    <link rel="icon" type="image/x-icon" href="../../favicon.ico" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
 </head>
 
