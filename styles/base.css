@@ -377,9 +377,10 @@ label {
   .table-style th,
   .table-style td {
     padding: 4px 6px;
-    max-width: 65px;
+    max-width: 55px;
+    max-height: 50px;
     overflow-x: auto;
-    font-size: clamp(0.6rem, 1.5vw, 1rem);
+    font-size: clamp(0.5rem, 1.5vw, 1rem);
   }
 
   .td-content {
@@ -389,7 +390,7 @@ label {
   .circle-button {
     padding-inline: 5px;
     padding-block: 5px;
-    height: 30px;
-    width: 30px;
+    height: 40px;
+    width: 40px;
   }
 }
