@@ -10,15 +10,16 @@
 }
 
 .signup-fieldset {
-  max-height: 100vh;
+  max-height: 105vh;
 }
 
 input[type="submit"] {
   justify-content: center;
   width: 90%;
   border-radius: 8px;
-  background-color: #6E7B8B;
-  color: white;  min-height: 2.5rem;
+  background-color: #6e7b8b;
+  color: white;
+  min-height: 2.5rem;
   padding-inline: 40px;
   padding-block: 10px;
   align-items: center;
@@ -31,7 +32,7 @@ input[type="submit"] {
   &:hover {
     transform: translateY(2px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    background-color: #36454F;
+    background-color: #36454f;
   }
 }
 
@@ -112,12 +113,48 @@ input[type="submit"] {
   }
 }
 
-@media (width > 800px) {
+.password-check-container {
+  margin-block: 10px;
+  border: 2px solid #6e7b8b;
+  border-radius: 8px;
+  padding-inline: 10px;
+  padding-block: 5px;
+}
 
- .button-container {
-  width: 30%;
-  padding-inline: 40px;
- }
+.password-check-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.password-check-icon {
+  margin-right: 10px;
+  color: red;
+
+  &.valid {
+    color: green;
+  }
+
+  &.invalid {
+    color: red;
+  }
+}
+
+.password-mismatch {
+  color: red;
+  display: none;
+
+  &.visible {
+    display: block;
+    font-size: 12px;
+  }
+}
+
+@media (width > 800px) {
+  .button-container {
+    width: 30%;
+    padding-inline: 40px;
+  }
 
   .divider-container {
     margin-top: 40px;
@@ -126,6 +163,12 @@ input[type="submit"] {
   button {
     min-width: 40%;
     font-size: 1.2rem;
+  }
+
+  .password-mismatch {
+    &.visible {
+      font-size: 16px;
+    }
   }
 
   .moodle-login {

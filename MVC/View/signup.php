@@ -70,8 +70,36 @@ include 'nav.php';
                 <label for="password">Passwort:</label>
                 <input type="password" id="password" autocomplete="new-password" name="password" required>
 
+                <div id="check-container" class="password-check-container hidden">
+                    <div class="password-check-row">
+                        <span id="uppercase-check" class="password-check-icon">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <span>Großbuchstaben</span>
+                    </div>
+                    <div class="password-check-row">
+                        <span id="number-check" class="password-check-icon">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <span>Zahlen</span>
+                    </div>
+                    <div class="password-check-row">
+                        <span id="special-char-check" class="password-check-icon">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <span>Sonderzeichen</span>
+                    </div>
+                    <div class="password-check-row">
+                        <span id="length-check" class="password-check-icon">
+                            <i class="fas fa-times"></i>
+                        </span>
+                        <span>Mindestens 8 Zeichen</span>
+                    </div>
+                </div>
+
                 <label for="repeat-password">Passwort wiederholen:</label>
                 <input type="password" id="repeat-password" autocomplete="new-password" name="repeat-password" required>
+                <span class="password-mismatch">Die Passwörter stimmen nicht überein. </span>
 
                 <input type="submit" value="Registrieren">
             </fieldset>
@@ -92,6 +120,79 @@ include 'nav.php';
 </body>
 
 <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const passwordInput = document.getElementById('password');
+        const passwordRepeat = document.getElementById('repeat-password');
+        const mismatchMessage = document.querySelector('.password-mismatch');
+
+        const uppercaseCheck = document.getElementById('uppercase-check');
+        const numberCheck = document.getElementById('number-check');
+        const specialCharCheck = document.getElementById('special-char-check');
+        const lengthCheck = document.getElementById('length-check');
+        const checkContainer = document.getElementById('check-container');
+
+        passwordInput.addEventListener("focus", function() {
+            checkContainer.classList.remove("hidden");
+        })
+
+        passwordInput.addEventListener("blur", function() {
+            checkContainer.classList.add("hidden");
+        })
+
+        passwordRepeat.addEventListener("input", function() {
+            if (passwordInput.value !== passwordRepeat.value) {
+                mismatchMessage.classList.add('visible');
+                passwordInput.style.borderColor = "red";
+                passwordRepeat.style.borderColor = "red";
+            } else {
+                mismatchMessage.classList.remove('visible');
+                passwordInput.style.borderColor = "lime";
+                passwordRepeat.style.borderColor = "lime";
+                passwordRepeat.style.focus = "lime";
+            }
+        })
+
+        passwordInput.addEventListener('input', function() {
+            const value = passwordInput.value;
+
+            // Großbuchstaben
+            if (/[A-Z]/.test(value)) {
+                uppercaseCheck.innerHTML = '<i class="fas fa-check"></i>';
+                uppercaseCheck.classList.add('valid');
+            } else {
+                uppercaseCheck.innerHTML = '<i class="fas fa-times"></i>';
+                uppercaseCheck.classList.remove('valid');
+            }
+
+            // Zahlen
+            if (/\d/.test(value)) {
+                numberCheck.innerHTML = '<i class="fas fa-check"></i>';
+                numberCheck.classList.add('valid');
+            } else {
+                numberCheck.innerHTML = '<i class="fas fa-times"></i>';
+                numberCheck.classList.remove('valid');
+            }
+
+            // Sonderzeichen
+            if (/[!@#$%^&*(),.?":{}|<>§-°€~]/.test(value)) {
+                specialCharCheck.innerHTML = '<i class="fas fa-check"></i>';
+                specialCharCheck.classList.add('valid');
+            } else {
+                specialCharCheck.innerHTML = '<i class="fas fa-times"></i>';
+                specialCharCheck.classList.remove('valid');
+            }
+
+            // Minimale Länge
+            if (value.length >= 8) {
+                lengthCheck.innerHTML = '<i class="fas fa-check"></i>';
+                lengthCheck.classList.add('valid');
+            } else {
+                lengthCheck.innerHTML = '<i class="fas fa-times"></i>';
+                lengthCheck.classList.remove('valid');
+            }
+        });
+    })
+
     document.querySelector('.signup-form').addEventListener('submit', function(event) {
 
         // Vorname und Nachname prüfen
