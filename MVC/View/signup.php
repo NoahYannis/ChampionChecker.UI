@@ -131,16 +131,19 @@ include 'nav.php';
         const lengthCheck = document.getElementById('length-check');
         const checkContainer = document.getElementById('check-container');
 
-        passwordInput.addEventListener("focus", function() {
+        passwordInput.addEventListener("focus", () => {
             checkContainer.classList.remove("hidden");
         })
 
-        passwordInput.addEventListener("blur", function() {
+        passwordInput.addEventListener("blur", () => {
             checkContainer.classList.add("hidden");
         })
 
-        passwordRepeat.addEventListener("input", function() {
-            if (passwordInput.value !== passwordRepeat.value) {
+        passwordInput.addEventListener('input', checkPasswordRequirements);
+        passwordRepeat.addEventListener('input', checkPasswordsMatch);
+
+        function checkPasswordsMatch() {
+            if (passwordRepeat.value && passwordInput.value !== passwordRepeat.value) {
                 mismatchMessage.classList.add('visible');
                 passwordInput.style.borderColor = "red";
                 passwordRepeat.style.borderColor = "red";
@@ -148,11 +151,10 @@ include 'nav.php';
                 mismatchMessage.classList.remove('visible');
                 passwordInput.style.borderColor = "lime";
                 passwordRepeat.style.borderColor = "lime";
-                passwordRepeat.style.focus = "lime";
             }
-        })
+        }
 
-        passwordInput.addEventListener('input', function() {
+        function checkPasswordRequirements() {
             const value = passwordInput.value;
 
             // Großbuchstaben
@@ -190,8 +192,11 @@ include 'nav.php';
                 lengthCheck.innerHTML = '<i class="fas fa-times"></i>';
                 lengthCheck.classList.remove('valid');
             }
-        });
+
+            checkPasswordsMatch();
+        }
     })
+
 
     document.querySelector('.signup-form').addEventListener('submit', function(event) {
 
