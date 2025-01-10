@@ -34,6 +34,10 @@ input[type="submit"] {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
     background-color: #36454f;
   }
+
+  &:focus {
+    border: 5px solid black;
+  }
 }
 
 .divider-container {
@@ -80,6 +84,26 @@ input[type="submit"] {
 
   img {
     max-height: 4rem;
+  }
+}
+
+input[type="password"].input-error {
+  border-color: red;
+
+  &:focus {
+    border-color: red;
+    outline: none;
+    box-shadow: 0 0 3px red;
+  }
+}
+
+input[type="password"].input-valid {
+  border-color: lime;
+
+  &:focus {
+    border-color: lime;
+    outline: none;
+    box-shadow: 0 0 3px lime;
   }
 }
 

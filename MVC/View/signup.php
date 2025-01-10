@@ -145,12 +145,16 @@ include 'nav.php';
         function checkPasswordsMatch() {
             if (passwordRepeat.value && passwordInput.value !== passwordRepeat.value) {
                 mismatchMessage.classList.add('visible');
-                passwordInput.style.borderColor = "red";
-                passwordRepeat.style.borderColor = "red";
+                passwordInput.classList.add('input-error');
+                passwordInput.classList.remove('input-valid');
+                passwordRepeat.classList.add('input-error');
+                passwordRepeat.classList.remove('input-valid');
             } else {
                 mismatchMessage.classList.remove('visible');
-                passwordInput.style.borderColor = "lime";
-                passwordRepeat.style.borderColor = "lime";
+                passwordInput.classList.add('input-valid');
+                passwordInput.classList.remove('input-error');
+                passwordRepeat.classList.add('input-valid');
+                passwordRepeat.classList.remove('input-error');
             }
         }
 
