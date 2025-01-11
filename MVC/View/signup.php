@@ -68,7 +68,10 @@ include 'nav.php';
                 <input type="email" id="email" autocomplete="email" name="email" required>
 
                 <label for="password">Passwort:</label>
-                <input type="password" id="password" autocomplete="new-password" name="password" required>
+                <div class="password-container">
+                    <input type="password" id="password" autocomplete="new-password" name="password" required>
+                    <span id="password-toggle" class="fa fa-fw fa-eye toggle-password-icon"></span>
+                </div>
 
                 <div id="check-container" class="password-check-container hidden">
                     <div class="password-check-row">
@@ -98,7 +101,11 @@ include 'nav.php';
                 </div>
 
                 <label for="repeat-password">Passwort wiederholen:</label>
-                <input type="password" id="repeat-password" autocomplete="new-password" name="repeat-password" required>
+                <div class="password-container">
+                    <input type="password" id="repeat-password" autocomplete="new-password" name="repeat-password" required>
+                    <span id="password-toggle" class="fa fa-fw fa-eye toggle-password-icon"></span>
+                </div>
+
                 <span class="password-mismatch">Die Passwörter stimmen nicht überein. </span>
 
                 <input type="submit" value="Registrieren">
@@ -124,6 +131,7 @@ include 'nav.php';
         const passwordInput = document.getElementById('password');
         const passwordRepeat = document.getElementById('repeat-password');
         const mismatchMessage = document.querySelector('.password-mismatch');
+        const togglePasswordIcons = document.querySelectorAll('.toggle-password-icon');
 
         const uppercaseCheck = document.getElementById('uppercase-check');
         const numberCheck = document.getElementById('number-check');
@@ -139,8 +147,29 @@ include 'nav.php';
             checkContainer.classList.add("hidden");
         })
 
+        togglePasswordIcons.forEach((i) => {
+            i.addEventListener('click', function() {
+                const input = i.previousElementSibling;
+                togglePasswordVisibility(input, i);
+            });
+        });
+
         passwordInput.addEventListener('input', checkPasswordRequirements);
         passwordRepeat.addEventListener('input', checkPasswordsMatch);
+
+
+        function togglePasswordVisibility(input, icon) {
+            const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+            input.setAttribute('type', type);
+
+            if (type === 'text') {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
 
         function checkPasswordsMatch() {
             if (passwordRepeat.value && passwordInput.value !== passwordRepeat.value) {

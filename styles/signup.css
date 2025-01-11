@@ -107,6 +107,18 @@ input[type="password"].input-valid {
   }
 }
 
+.password-container {
+  display: flex;
+}
+
+.toggle-password-icon {
+  margin-left: -30px;
+  margin-top: 15px;
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
 @media (width < 600px) {
   .signup-form {
     width: 95%;
@@ -117,7 +129,7 @@ input[type="password"].input-valid {
   input[type="email"],
   input[type="password"],
   input[type="submit"] {
-    padding: 2px;
+    padding: 5px;
     font-size: 0.8rem;
   }
 
@@ -134,6 +146,10 @@ input[type="password"].input-valid {
     img {
       height: 4rem;
     }
+  }
+
+  .toggle-password-icon {
+    margin-top: 10px;
   }
 }
 

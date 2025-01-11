@@ -112,7 +112,7 @@ input[type="password"] {
   input[type="email"],
   input[type="password"],
   input[type="submit"] {
-    padding: 2px;
+    padding: 5px;
     font-size: 0.8rem;
   }
 
@@ -127,7 +127,7 @@ input[type="password"] {
   }
 
   .toggle-password-icon {
-    margin-top: 6px;
+    margin-top: 10px;
   }
 }
 
