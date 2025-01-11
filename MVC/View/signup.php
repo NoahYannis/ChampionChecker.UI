@@ -113,7 +113,7 @@ include 'nav.php';
         <div class="button-container">
             <button id="login-email" onclick="window.location.href = 'login.php'">Login E-Mail</button>
             <button class="moodle-login" onclick="window.location.href = 'login.php'">
-                <img src="../../moodle-logo.svg" alt="Moodle Logo">
+                <img src="../../resources/moodle-logo.svg" alt="Moodle Logo">
             </button>
         </div>
     </div>

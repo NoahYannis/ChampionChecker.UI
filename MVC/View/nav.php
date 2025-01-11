@@ -12,7 +12,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/nav.css" />
-    <link rel="icon" type="image/x-icon" href="../../favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="../../resources/favicon.ico" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
 </head>
 
@@ -34,7 +34,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
             </label>
             <div class="nav-logo">
                 <a href="home.php">
-                    <img src="../../logo.png" alt="ChampionChecker Logo" />
+                    <img src="../../resources/logo.png" alt="ChampionChecker Logo" />
                 </a>
             </div>
         </div>
@@ -47,33 +47,33 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
             </ul>
         </div>
         <div class="profile" id="profile">
-            <img src="../../profile.webp" alt="Profilbild" />
+            <img src="../../resources/profile.webp" alt="Profilbild" />
         </div>
 
         <div class="profile-menu" id="profile-menu" style="display: none;">
             <ul>
                 <?php if ($isAuthenticated): ?>
-                <li>
-                    <a href="#" onclick="logout()">
-                        <i class="fas fa-sign-out-alt"></i> Ausloggen
-                    </a>
-                </li>
-                <li>
-                    <a href="settings.php">
-                        <i class="fas fa-cog"></i> Einstellungen
-                    </a>
-                </li>
+                    <li>
+                        <a href="#" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Ausloggen
+                        </a>
+                    </li>
+                    <li>
+                        <a href="settings.php">
+                            <i class="fas fa-cog"></i> Einstellungen
+                        </a>
+                    </li>
                 <?php else: ?>
-                <li>
-                    <a href="signup.php">
-                        <i class="fas fa-user-plus"></i> Registrieren
-                    </a>
-                </li>
-                <li>
-                    <a href="login.php">
-                        <i class="fas fa-sign-in-alt"></i> Anmelden
-                    </a>
-                </li>
+                    <li>
+                        <a href="signup.php">
+                            <i class="fas fa-user-plus"></i> Registrieren
+                        </a>
+                    </li>
+                    <li>
+                        <a href="login.php">
+                            <i class="fas fa-sign-in-alt"></i> Anmelden
+                        </a>
+                    </li>
                 <?php endif; ?>
             </ul>
         </div>
@@ -120,7 +120,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
     });
 
     function logout() {
-        fetch('../../logout.php', {
+        fetch('../../Helper/logout.php', {
                 method: 'POST'
             })
             .then(() => window.location.href = 'home.php')

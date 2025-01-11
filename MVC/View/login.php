@@ -61,7 +61,7 @@ include 'nav.php';
                 <div class="button-container">
                     <input type="submit" value="Login">
                     <button class="moodle-login" onclick="window.location.href = 'login.php'">
-                        <img src="../../moodle-logo.svg" alt="Moodle Logo">
+                        <img src="../../resources/moodle-logo.svg" alt="Moodle Logo">
                     </button>
                 </div>
             </fieldset>
