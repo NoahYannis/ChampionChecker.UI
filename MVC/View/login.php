@@ -15,13 +15,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $loginResult = $userController->login($_POST['email'], $_POST['password']);
 
     if ($loginResult['success'] === true) {
-        $userName = addslashes($loginResult['response'] ?? ''); 
-            echo "<script>
+        $userName = addslashes($loginResult['response'] ?? '');
+        echo "<script>
             alert('Willkommen, $userName. Ihr Login war erfolgreich.');
             window.location.href = 'home.php';
         </script>";
         exit;
-    } else {    
+    } else {
         $errorDescription = $loginResult['response']['errors'][0]['description'] ?? '';
         $errorDescription = addslashes($errorDescription); // Sonderzeichen escapen
         echo "<script>alert('$errorDescription');</script>";
@@ -55,7 +55,10 @@ include 'nav.php';
                 <input type="email" autocomplete="email" id="email" name="email" required>
 
                 <label for="password">Passwort:</label>
-                <input type="password" autocomplete="current-password" id="password" name="password" required>
+                <div class="password-container">
+                    <input type="password" autocomplete="current-password" id="password" name="password" required>
+                    <span id="password-toggle" class="fa fa-fw fa-eye toggle-password-icon"></span>
+                </div>
                 <a href="forgot_password.php" class="forgot-password">Passwort vergessen?</a>
 
                 <div class="button-container">
@@ -78,6 +81,24 @@ include 'nav.php';
     </div>
 </body>
 
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const passwordInput = document.getElementById("password");
+        const togglePasswordIcon = document.getElementById('password-toggle');
 
+        togglePasswordIcon.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            if (type === 'text') {
+                togglePasswordIcon.classList.remove('fa-eye');
+                togglePasswordIcon.classList.add('fa-eye-slash');
+            } else {
+                togglePasswordIcon.classList.remove('fa-eye-slash');
+                togglePasswordIcon.classList.add('fa-eye');
+            }
+        });
+    })
+</script>
 
 </html>
