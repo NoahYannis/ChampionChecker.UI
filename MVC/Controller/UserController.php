@@ -35,9 +35,14 @@ class UserController
 
         try {
             $apiResult = $this->sendApiRequest('/api/auth/login', 'POST', $data);
-            $statusCode = $apiResult['statusCode'];
+            $success = $apiResult['statusCode'] < 400;
+
+            if ($success) {
+                $this->extractUserInitials($apiResult['response']);
+            }
+
             return [
-                'success' => $statusCode < 400,
+                'success' => $success,
                 'response' => $apiResult['response']
             ];
         } catch (Exception $e) {
@@ -66,7 +71,7 @@ class UserController
                 $loginResult = $this->login($user->getEmail(),  $user->getPassword());
                 $registerSuccess = $registerSuccess && ($loginResult['success'] ?? false);
             }
-            
+
             return [
                 'success' => $registerSuccess,
                 'response' => $apiResult['response']
@@ -116,13 +121,29 @@ class UserController
             return [
                 'success' => $statusCode < 400,
                 'response' => $apiResult['response']
-            ];        
+            ];
         } catch (Exception $e) {
             return [
                 'success' => false,
                 'error' => 'Fehler beim Zurücksetzen des Passworts: ' . $e->getMessage()
             ];
         }
+    }
+
+    public function extractUserInitials($apiUsername): void
+    {
+        $parts = explode('.', $apiUsername);
+        if (count($parts) < 2) {
+            return;
+        }
+
+        $firstName = $parts[0][0];
+        $lastName = $parts[1][0];
+        $initials = strtoupper($firstName . $lastName);
+
+        echo "<script>
+        sessionStorage.setItem('Initials', '" . addslashes(string: $initials) . "');
+      </script>";
     }
 
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
@@ -174,9 +195,9 @@ class UserController
         return [
             'statusCode' => $statusCode,
             'response' => $responseBody,
-             // Bei erfolgreicher Anfrage enthält der Body den Nutzernamen,
-             // bei Fehlern die Fehlermeldung, die über response['errors'][0]['description']
-             // abgerufen werden kann
+            // Bei erfolgreicher Anfrage enthält der Body den Nutzernamen,
+            // bei Fehlern die Fehlermeldung, die über response['errors'][0]['description']
+            // abgerufen werden kann
         ];
     }
 }

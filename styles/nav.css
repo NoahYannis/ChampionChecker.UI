@@ -113,12 +113,13 @@
   border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
   margin-right: 1vw;
   user-select: none;
 
   img {
+    max-height: 80px;
+    max-width: 80px;
     height: 100%;
     border-radius: 16px;
     padding: 10px;
@@ -127,6 +128,18 @@
       filter: invert(0.1);
     }
   }
+}
+
+.profile-initials {
+  transform: translate(-173%, 0%);
+  font-size: 1.5rem;
+  color: white;
+  font-weight: bold;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .profile-menu {

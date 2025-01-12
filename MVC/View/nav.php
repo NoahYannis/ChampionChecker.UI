@@ -47,7 +47,12 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
             </ul>
         </div>
         <div class="profile" id="profile">
-            <img src="../../resources/profile.webp" alt="Profilbild" />
+            <?php if ($isAuthenticated): ?>
+                <img src="../../resources/profile-authenticated.png" alt="Profilbild" />
+                <div class="profile-initials" id="profile-initials"></div>
+            <?php else: ?>
+                <img src="../../resources/profile.webp" alt="Profilbild" />
+            <?php endif; ?>
         </div>
 
         <div class="profile-menu" id="profile-menu" style="display: none;">
@@ -59,7 +64,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
                         </a>
                     </li>
                     <li>
-                        <a href="settings.php">
+                        <a href="#">
                             <i class="fas fa-cog"></i> Einstellungen
                         </a>
                     </li>
@@ -86,6 +91,16 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
     const hamburgerInput = document.getElementById('hamburger-input');
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const sideBar = document.querySelector('.sidebar');
+    const profileInitials = document.getElementById("profile-initials");
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const isAuthenticated = <?php echo json_encode($isAuthenticated); ?>;
+
+        if (isAuthenticated) {
+            let userInitials = sessionStorage.getItem("Initials") ?? "";
+            profileInitials.textContent = userInitials;
+        }
+    })
 
     // Sidebar bei Klick auf Hamburger-Icon toggeln
     hamburgerInput.addEventListener('change', function() {
