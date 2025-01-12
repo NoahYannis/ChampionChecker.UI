@@ -97,7 +97,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         const isAuthenticated = <?php echo json_encode($isAuthenticated); ?>;
 
         if (isAuthenticated) {
-            let userInitials = sessionStorage.getItem("Initials") ?? "";
+            let userInitials = localStorage.getItem("Initials") ?? "";
             profileInitials.textContent = userInitials;
         }
     })

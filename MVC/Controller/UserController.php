@@ -142,7 +142,7 @@ class UserController
         $initials = strtoupper($firstName . $lastName);
 
         echo "<script>
-        sessionStorage.setItem('Initials', '" . addslashes(string: $initials) . "');
+        localStorage.setItem('Initials', '" . addslashes(string: $initials) . "');
       </script>";
     }
 
