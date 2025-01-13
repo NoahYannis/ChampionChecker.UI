@@ -18,3 +18,7 @@ th {
     margin: 0;
   }
 }
+
+.edit-input {
+  max-width: 70px;
+}
