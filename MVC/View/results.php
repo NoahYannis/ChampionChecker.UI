@@ -8,6 +8,42 @@ use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
 use MVC\Model\CompetitionResult;
 
+
+if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+    $changedScores = file_get_contents('php://input');
+
+    if (empty($changedScores)) {
+        $response['success'] = false;
+        $response['message'] = 'Leere Anfrage erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+    $scoreData = json_decode($changedScores, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $response['success'] = false;
+        $response['message'] = 'Ungültiges JSON erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+    $compResController = new CompetitionResultController();
+    $patchResult = true;
+
+    foreach ($scoreData as $changedScore) {
+        $dataArray = ['pointsAchieved' => $changedScore["pointsAchieved"]];
+        $result = $compResController->patch($changedScore["competitionId"], $dataArray);
+        $patchResult &= $result["success"] === true;
+    }
+
+    $response['success'] = true;
+    $response['message'] = 'Alle Änderungen wurden erfolgreich gespeichert.';
+    echo json_encode($response);
+    exit;
+}
+
+
 $classController = new ClassController();
 
 /**
@@ -64,14 +100,15 @@ function printCompetitionResult($competitionResults)
     echo "<div id='result-message' class='result-message hidden'></div>";
 
     if (isset($_COOKIE['ChampionCheckerCookie'])) {
-        echo '<div class="button-container">
-        <button class="circle-button edit-button" id="edit-button">
-            <i class="fas fa-pencil-alt"></i>
-        </button>
-        <button class="circle-button cancel-button hidden" id="cancel-button">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>';
+        echo
+        '<div class="button-container">
+            <button class="circle-button edit-button" id="edit-button">
+                <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="circle-button cancel-button hidden" id="cancel-button">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>';
     }
 
 
@@ -88,7 +125,7 @@ function printCompetitionResult($competitionResults)
 
     foreach ($competitionResults as $result) {
         echo "<tr>";
-        echo "<td>" . getCompetitionName($result->getCompetitionId()) . "</td>";
+        echo "<td data-id=\"{$result->getCompetitionId()}\">" . getCompetitionName(competitionId: $result->getCompetitionId()) . "</td>";
         echo "<td>" . $classController->getClassName($result->getClassId()) . "</td>";
         $pointsAchieved = htmlspecialchars($result->getPointsAchieved());
         echo "<td data-points=\"$pointsAchieved\"><span class=\"td-content\">$pointsAchieved</span></td>";
@@ -149,13 +186,12 @@ usort($competitionResults, function ($resultA, $resultB) {
         const rows = Array.from(tbody.getElementsByTagName("tr"))
         const pointsCells = document.querySelectorAll('td[data-points]');
 
-        editButton.addEventListener("click", toggleEditState);
+        editButton.addEventListener('click', () => toggleEditState());
 
         cancelButton.addEventListener("click", () => {
             const confirmation = confirm('Alle Änderungen gehen verloren. Bearbeitung abbrechen?');
             if (confirmation) {
                 toggleEditState(true);
-                cancelButton.classList.toggle("hidden");
             }
         })
 
@@ -165,13 +201,12 @@ usort($competitionResults, function ($resultA, $resultB) {
             editButtonIcon.classList.toggle('fa-save');
             cancelButton.classList.toggle("hidden");
 
-
             if (isEditing) {
                 enterEditState();
             } else {
                 exitEditState(wasCanceled);
                 if (!wasCanceled) {
-                    // saveChangedSores(changedScores);
+                    saveChangedScores(changedScores);
                 }
                 changedScores = [];
             }
@@ -181,34 +216,37 @@ usort($competitionResults, function ($resultA, $resultB) {
             pointsCells.forEach(cell => {
                 const currentPoints = cell.dataset.points;
                 const rowIndex = cell.parentElement.rowIndex;
-
-                storedValues[rowIndex] = [currentPoints];
+                const compId = cell.parentElement.querySelector("td[data-id]").dataset.id;
+                storedValues[rowIndex] = [compId, currentPoints];
                 cell.innerHTML = `<input type="text" value="${currentPoints}" class="edit-input">`;
             });
         }
 
         function exitEditState(wasCanceled = false) {
             pointsCells.forEach(cell => {
-                const rowIndex = cell.parentElement.rowIndex;
-                const originalValue = storedValues[rowIndex];
+                let storedScore = storedValues[cell.parentElement.rowIndex];
 
                 if (wasCanceled) {
-                    cell.innerHTML = `<span>${originalValue}</span>`;
+                    cell.innerHTML = `<span>${storedScore}</span>`;
                 } else {
-                    const input = cell.querySelector('input');
-                    const newValue = input.value;
-                    cell.innerHTML = `<span class="td-content">${newValue}</span>`;
-                    cell.dataset.points = newValue;
+                    const inputValue = cell.querySelector('input')?.value;
+
+                    if (checkIfScoreWasModified(inputValue, storedScore)) {
+                        const competitionId = cell.parentElement.querySelector("td[data-id]").dataset.id;
+                        const scoreData = {
+                            competitionId,
+                            pointsAchieved: inputValue
+                        };
+                        changedScores.push(scoreData);
+                    }
+
+                    cell.innerHTML = `<span>${inputValue}</span>`;
+                    cell.dataset.points = inputValue;
                 }
             });
 
             storedValues = {};
         }
-
-        function saveChangedSores(changedScores) {
-
-        }
-
 
         function filterTable(columnIndex) {
             let table = document.getElementById("results-table");
@@ -226,6 +264,46 @@ usort($competitionResults, function ($resultA, $resultB) {
             });
 
             rows.forEach(row => tbody.appendChild(row));
+        }
+
+        function saveChangedScores(changedScores) {
+            if (changedScores.length === 0) {
+                return;
+            }
+
+            const scoreJSON = JSON.stringify(changedScores);
+
+            fetch('results.php', {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: scoreJSON
+                }).then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showResultMessage('Alle Änderungen wurden erfolgreich gespeichert.');
+                    } else {
+                        showResultMessage('Einige Änderungen konnten nicht übernommen werden.', false);
+                        console.log(data.results);
+                    }
+                }).catch(error => console.error('Error:', error));
+        }
+
+        // Überprüft, ob eine Punktzahl bearbeitet wurde. storedScore[0] speichert die Wettbewerbs-ID, storedScore[1] den gecachten Wert dazu.
+        function checkIfScoreWasModified(inputValue, storedScore) {
+            return inputValue !== storedScore[1];
+        }
+
+        function showResultMessage(message, isSuccess = true) {
+            const resultMessage = document.getElementById('result-message');
+            resultMessage.textContent = message;
+            resultMessage.style.color = isSuccess ? 'green' : 'red';
+            resultMessage.classList.remove('hidden');
+
+            setTimeout(() => {
+                resultMessage.classList.add('hidden');
+            }, 5000);
         }
     </script>
 </body>
