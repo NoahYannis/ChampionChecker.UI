@@ -73,7 +73,7 @@ function printCompetitionResult($competitionResults)
         </button>
     </div>';
     }
-    
+
 
 
     echo "<table id='results-table' class='table-style'>";
@@ -90,7 +90,8 @@ function printCompetitionResult($competitionResults)
         echo "<tr>";
         echo "<td>" . getCompetitionName($result->getCompetitionId()) . "</td>";
         echo "<td>" . $classController->getClassName($result->getClassId()) . "</td>";
-        echo "<td>{$result->getPointsAchieved()}</td>";
+        $pointsAchieved = htmlspecialchars($result->getPointsAchieved());
+        echo "<td data-points=\"$pointsAchieved\"><span class=\"td-content\">$pointsAchieved</span></td>";
         echo "</tr>";
     }
 
@@ -140,27 +141,77 @@ usort($competitionResults, function ($resultA, $resultB) {
         let changedScores = [];
 
         const editButton = document.getElementById("edit-button");
+        const editButtonIcon = document.querySelector(".edit-button i");
         const cancelButton = document.getElementById("cancel-button");
         const table = document.getElementById("results-table");
         const tbody = table.getElementsByTagName("tbody")[0];
         const headerRow = table.getElementsByTagName("tr")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"))
+        const pointsCells = document.querySelectorAll('td[data-points]');
 
-        editButton.addEventListener("click", () => {
-            cancelButton.classList.toggle("hidden");
-        })
+        editButton.addEventListener("click", toggleEditState);
 
         cancelButton.addEventListener("click", () => {
             const confirmation = confirm('Alle Änderungen gehen verloren. Bearbeitung abbrechen?');
             if (confirmation) {
-                // toggleEditState(true);
+                toggleEditState(true);
                 cancelButton.classList.toggle("hidden");
             }
         })
 
+        function toggleEditState(wasCanceled = false) {
+            isEditing = !isEditing;
+            editButtonIcon.classList.toggle('fa-pencil-alt');
+            editButtonIcon.classList.toggle('fa-save');
+            cancelButton.classList.toggle("hidden");
+
+
+            if (isEditing) {
+                enterEditState();
+            } else {
+                exitEditState(wasCanceled);
+                if (!wasCanceled) {
+                    // saveChangedSores(changedScores);
+                }
+                changedScores = [];
+            }
+        }
+
+        function enterEditState() {
+            pointsCells.forEach(cell => {
+                const currentPoints = cell.dataset.points;
+                const rowIndex = cell.parentElement.rowIndex;
+
+                storedValues[rowIndex] = [currentPoints];
+                cell.innerHTML = `<input type="text" value="${currentPoints}" class="edit-input">`;
+            });
+        }
+
+        function exitEditState(wasCanceled = false) {
+            pointsCells.forEach(cell => {
+                const rowIndex = cell.parentElement.rowIndex;
+                const originalValue = storedValues[rowIndex];
+
+                if (wasCanceled) {
+                    cell.innerHTML = `<span>${originalValue}</span>`;
+                } else {
+                    const input = cell.querySelector('input');
+                    const newValue = input.value;
+                    cell.innerHTML = `<span class="td-content">${newValue}</span>`;
+                    cell.dataset.points = newValue;
+                }
+            });
+
+            storedValues = {};
+        }
+
+        function saveChangedSores(changedScores) {
+
+        }
+
 
         function filterTable(columnIndex) {
-            let table = document.getElementById("resultsTable");
+            let table = document.getElementById("results-table");
             let tbody = table.getElementsByTagName("tbody")[0];
             let rows = Array.from(tbody.getElementsByTagName("tr"));
 
