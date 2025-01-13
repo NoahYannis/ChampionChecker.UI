@@ -61,7 +61,22 @@ function printCompetitionResult($competitionResults)
         echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
     }
 
-    echo "<table id='resultsTable' class='table-style'>";
+    echo "<div id='result-message' class='result-message hidden'></div>";
+
+    if (isset($_COOKIE['ChampionCheckerCookie'])) {
+        echo '<div class="button-container">
+        <button class="circle-button edit-button" id="edit-button">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button class="circle-button cancel-button hidden" id="cancel-button">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>';
+    }
+    
+
+
+    echo "<table id='results-table' class='table-style'>";
     echo "<thead>";
     echo "<tr>";
     echo "<th onclick='filterTable(0)'>Wettbewerb</th>";
@@ -120,6 +135,29 @@ usort($competitionResults, function ($resultA, $resultB) {
 
     <script>
         let sortDirections = {};
+        let isEditing = false;
+        let storedValues = [];
+        let changedScores = [];
+
+        const editButton = document.getElementById("edit-button");
+        const cancelButton = document.getElementById("cancel-button");
+        const table = document.getElementById("results-table");
+        const tbody = table.getElementsByTagName("tbody")[0];
+        const headerRow = table.getElementsByTagName("tr")[0];
+        const rows = Array.from(tbody.getElementsByTagName("tr"))
+
+        editButton.addEventListener("click", () => {
+            cancelButton.classList.toggle("hidden");
+        })
+
+        cancelButton.addEventListener("click", () => {
+            const confirmation = confirm('Alle Änderungen gehen verloren. Bearbeitung abbrechen?');
+            if (confirmation) {
+                // toggleEditState(true);
+                cancelButton.classList.toggle("hidden");
+            }
+        })
+
 
         function filterTable(columnIndex) {
             let table = document.getElementById("resultsTable");
