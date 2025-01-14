@@ -110,29 +110,42 @@ class CompetitionResultController implements IController
         return $deleteResult;
     }
 
-    public function patch(int $id, array $data): array
+    public function patch(int $id, array $data, string $operation): array
     {
-        $patchOperations = [];
+        // https://jsonpatch.com/
         foreach ($data as $key => $value) {
-            $patchOperations[] = [
-                "op" => "replace",
+            $patchDocument[] = [
+                "op" => $operation,
                 "path" => "/$key",
                 "value" => $value
             ];
         }
 
-        $patchJSON = json_encode($patchOperations);
-
         $patchResult = $this->sendApiRequest(
             "/api/competitionresult/$id",
             'PATCH',
-            [
-                'body' => $patchJSON,
-                'headers' => [
-                    'Content-Type: application/json-patch+json',
-                ]
-            ]
+            $patchDocument,
+            "application/json-patch+json",
         );
+
+        if (!$patchResult['success'] || !isset($_SESSION['results_competitionResults'])) {
+            return $patchResult;
+        }
+
+        // Cache-Eintrag aktualisieren
+        foreach ($_SESSION['results_competitionResults'] as &$competitionResult) {
+            if ($competitionResult->getId() !== $id) {
+                continue;
+            }
+
+            foreach ($data as $key => $value) {
+                $setterMethod = 'set' . ucfirst($key);
+                if (method_exists($competitionResult, $setterMethod)) {
+                    $competitionResult->$setterMethod($value);
+                }
+            }
+            break;
+        }
 
         return $patchResult;
     }
@@ -158,6 +171,11 @@ class CompetitionResultController implements IController
         $response = curl_exec($curl);
         curl_close($curl);
 
+        if ($response === false) {
+            $error = curl_error($curl);
+            throw new RuntimeException('cURL error: ' . $error);
+        }
+
         $data = json_decode($response, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -173,17 +191,17 @@ class CompetitionResultController implements IController
      * @param array $data
      * @return array
      */
-    private function sendApiRequest(string $endpoint, string $method, array $data = []): array
+    private function sendApiRequest(string $endpoint, string $method, array $data = [], string $contentType = 'application/json'): array
     {
         $curl = curl_init();
 
         curl_setopt_array($curl, [
-            CURLOPT_RETURNTRANSFER => 1,
+            CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL => $this->apiUrl . $endpoint,
             CURLOPT_CUSTOMREQUEST => $method,
-            CURLOPT_POSTFIELDS => json_encode($data),
+            CURLOPT_POSTFIELDS => json_encode(value: $data),
             CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json'
+                "Content-Type: $contentType"
             ],
             CURLOPT_USERAGENT => 'PHP API Request',
             CURLOPT_SSL_VERIFYPEER => false,

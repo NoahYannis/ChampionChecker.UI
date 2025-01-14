@@ -1,7 +1,6 @@
 <?php
 require '../../vendor/autoload.php';
 session_start();
-include 'nav.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\CompetitionController;
@@ -11,14 +10,6 @@ use MVC\Model\CompetitionResult;
 
 if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
     $changedScores = file_get_contents('php://input');
-
-    if (empty($changedScores)) {
-        $response['success'] = false;
-        $response['message'] = 'Leere Anfrage erhalten.';
-        echo json_encode($response);
-        exit;
-    }
-
     $scoreData = json_decode($changedScores, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
@@ -32,13 +23,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
     $patchResult = true;
 
     foreach ($scoreData as $changedScore) {
-        $dataArray = ['pointsAchieved' => $changedScore["pointsAchieved"]];
-        $result = $compResController->patch($changedScore["competitionId"], $dataArray);
-        $patchResult &= $result["success"] === true;
+        $data = ['pointsAchieved' => $changedScore["pointsAchieved"]];
+        $result = $compResController->patch($changedScore["compResId"], $data, "replace");
+        $patchResult &= $result["success"];
     }
 
-    $response['success'] = true;
-    $response['message'] = 'Alle Änderungen wurden erfolgreich gespeichert.';
+    $response = [
+        'success' => $patchResult,
+        'message' => $patchResult ? 'Änderungen erfolgreich gespeichert.' : 'Einige Änderungen konnten nicht übernommen werden.'
+    ];
+
     echo json_encode($response);
     exit;
 }
@@ -93,8 +87,8 @@ function printCompetitionResult($competitionResults)
 {
     global $classController;
 
-    if (isset($_SESSION['competitionResultsTimestamp'])) {
-        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
+    if (isset($_SESSION['results_competitionResultsTimestamp'])) {
+        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['results_competitionResultsTimestamp']) . "<br></p>";
     }
 
     echo "<div id='result-message' class='result-message hidden'></div>";
@@ -102,12 +96,12 @@ function printCompetitionResult($competitionResults)
     if (isset($_COOKIE['ChampionCheckerCookie'])) {
         echo
         '<div class="button-container">
-            <button class="circle-button edit-button" id="edit-button">
-                <i class="fas fa-pencil-alt"></i>
-            </button>
-            <button class="circle-button cancel-button hidden" id="cancel-button">
-                <i class="fas fa-times"></i>
-            </button>
+        <button class="circle-button edit-button" id="edit-button">
+        <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button class="circle-button cancel-button hidden" id="cancel-button">
+        <i class="fas fa-times"></i>
+        </button>
         </div>';
     }
 
@@ -125,7 +119,7 @@ function printCompetitionResult($competitionResults)
 
     foreach ($competitionResults as $result) {
         echo "<tr>";
-        echo "<td data-id=\"{$result->getCompetitionId()}\">" . getCompetitionName(competitionId: $result->getCompetitionId()) . "</td>";
+        echo "<td data-id=\"{$result->getId()}\">" . getCompetitionName(competitionId: $result->getCompetitionId()) . "</td>";
         echo "<td>" . $classController->getClassName($result->getClassId()) . "</td>";
         $pointsAchieved = htmlspecialchars($result->getPointsAchieved());
         echo "<td data-points=\"$pointsAchieved\"><span class=\"td-content\">$pointsAchieved</span></td>";
@@ -145,6 +139,8 @@ usort($competitionResults, function ($resultA, $resultB) {
         getCompetitionName($resultB->getCompetitionId())
     );
 });
+
+include 'nav.php';
 ?>
 
 <!-- TODO: Filtern, mehr Infos anzeigen -->
@@ -232,13 +228,14 @@ usort($competitionResults, function ($resultA, $resultB) {
                     const inputValue = cell.querySelector('input')?.value;
 
                     if (checkIfScoreWasModified(inputValue, storedScore)) {
-                        const competitionId = cell.parentElement.querySelector("td[data-id]").dataset.id;
+                        const compResId = cell.parentElement.querySelector("td[data-id]").dataset.id;
                         const scoreData = {
-                            competitionId,
+                            compResId,
                             pointsAchieved: inputValue
                         };
                         changedScores.push(scoreData);
                     }
+
 
                     cell.innerHTML = `<span>${inputValue}</span>`;
                     cell.dataset.points = inputValue;
@@ -271,6 +268,12 @@ usort($competitionResults, function ($resultA, $resultB) {
                 return;
             }
 
+            const invalidScore = changedScores.some(score => isNaN(score.pointsAchieved));
+            if (invalidScore) {
+                alert('Punktzahlen müssen ein numerischer Wert von 0 bis 100 sein.');
+                return;
+            }
+
             const scoreJSON = JSON.stringify(changedScores);
 
             fetch('results.php', {
@@ -281,12 +284,7 @@ usort($competitionResults, function ($resultA, $resultB) {
                     body: scoreJSON
                 }).then(response => response.json())
                 .then(data => {
-                    if (data.success) {
-                        showResultMessage('Alle Änderungen wurden erfolgreich gespeichert.');
-                    } else {
-                        showResultMessage('Einige Änderungen konnten nicht übernommen werden.', false);
-                        console.log(data.results);
-                    }
+                    showResultMessage(data.message, data.success);
                 }).catch(error => console.error('Error:', error));
         }
 
