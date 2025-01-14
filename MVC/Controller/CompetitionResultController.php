@@ -110,6 +110,35 @@ class CompetitionResultController implements IController
         return $deleteResult;
     }
 
+    public function patch(int $id, array $data): array
+    {
+        $patchOperations = [];
+        foreach ($data as $key => $value) {
+            $patchOperations[] = [
+                "op" => "replace",
+                "path" => "/$key",
+                "value" => $value
+            ];
+        }
+
+        $patchJSON = json_encode($patchOperations);
+
+        $patchResult = $this->sendApiRequest(
+            "/api/competitionresult/$id",
+            'PATCH',
+            [
+                'body' => $patchJSON,
+                'headers' => [
+                    'Content-Type: application/json-patch+json',
+                ]
+            ]
+        );
+
+        return $patchResult;
+    }
+
+
+
     /**
      * @param string $endpoint
      * @return mixed
@@ -167,7 +196,7 @@ class CompetitionResultController implements IController
             $error = curl_error($curl);
             throw new RuntimeException('cURL error: ' . $error);
         }
-        
+
         if (curl_errno($curl)) {
             return [
                 'success' => false,
