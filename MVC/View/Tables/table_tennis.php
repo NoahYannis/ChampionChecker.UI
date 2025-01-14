@@ -1,8 +1,9 @@
 <?php
 // table_tischtennis.php
 
+
 // Number of rows for the table
-$numRows = 5;
+$numPlayers = 5;
 
 // Start of the table for Tischtennis
 echo '
@@ -11,7 +12,7 @@ echo '
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width initial-scale=1.0">
-,
+
     <style>
         table {
             width: 100%;
@@ -56,16 +57,61 @@ echo '
         <tbody>
         ';
 
-// Generate dynamic matchups where each player plays against every other player exactly once
-for ($i = 1; $i <= $numRows; $i++) {
-    for ($j = $i + 1; $j <= $numRows; $j++) {
-        echo '
-            <tr>
-                <td>' . $i . '. vs ' . $j . '.</td>
-                <td>:</td>
-            </tr>';
+$matches = [];
+$players = range(1, $numPlayers); // Generate a list of players
+$playedPairs = [];
+$playersInLastRound = [];
+// this generates the matchups
+while (count($matches) < ($numPlayers * ($numPlayers - 1)) / 2) { // Total possible unique matches
+
+    for ($round = 0; $round < $numPlayers - 1; $round++) {
+        for ($i = 0; $i < $numPlayers / 2; $i++) {
+            $player1 = $players[$i];
+            $player2 = $players[$numPlayers - 1 - $i];
+
+            // Check if this pair has already played
+            if (!in_array([$player1, $player2], $playedPairs) && !in_array([$player2, $player1], $playedPairs)) {
+                $matches[] = [
+                    'player1' => $player1 ,
+                    'player2' => $player2 ,
+                ];
+
+                // Add this pair to the played pairs list
+                $playedPairs[] = [$player1, $player2];
+
+                // Break to ensure only one match is scheduled at a time
+                break 2;
+            }
+        }
     }
+
+    // Rotate players to ensure fairness
+    $firstPlayer = array_shift($players);
+    $players[] = $firstPlayer;
 }
+
+
+// Render the matches table
+echo '<table>';
+$i = 0;
+foreach ($matches as $match) {
+    echo '
+        <tr>
+            <td>' . $match['player1'] . '</td>
+            <td><input type="text" name="player_' .  $match['player1'] .  '" /></td>
+            <td>' . $match['player2'] . '</td>
+            <td><input type="text" name="player_' .  $match['player2'] .  '" /></td>
+            <td>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" name="pointsplayer_<?php echo '. $match['player1'] . '; ?>_round<?php echo $i; ?>" />
+                    :
+                    <input type="text" name="pointsplayer_<?php echo ' . $match['player2'] . '; ?>_round<?php echo $i; ?>" />
+                </div>
+            </td>
+       </tr>';
+        $i++;
+}
+echo '</table>';
 
 echo '
         </tbody>
@@ -87,7 +133,7 @@ echo '
         <tbody>';
 
 // Dynamically generate table rows
-for ($i = 1; $i <= $numRows; $i++) {
+for ($i = 1; $i <= $numPlayers; $i++) {
     echo '
             <tr>
                 <td>' . $i . '.</td>
