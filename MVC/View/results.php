@@ -220,14 +220,15 @@ include 'nav.php';
 
         function exitEditState(wasCanceled = false) {
             pointsCells.forEach(cell => {
-                let storedScore = storedValues[cell.parentElement.rowIndex];
+                let storedValue = storedValues[cell.parentElement.rowIndex];
+                let storedScore = storedValues[cell.parentElement.rowIndex][1];
 
                 if (wasCanceled) {
                     cell.innerHTML = `<span>${storedScore}</span>`;
                 } else {
                     const inputValue = cell.querySelector('input')?.value;
 
-                    if (checkIfScoreWasModified(inputValue, storedScore)) {
+                    if (checkIfScoreWasModified(inputValue, storedValue)) {
                         const compResId = cell.parentElement.querySelector("td[data-id]").dataset.id;
                         const scoreData = {
                             compResId,
