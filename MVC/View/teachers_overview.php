@@ -453,6 +453,7 @@ include 'nav.php';
 
             const teacherJSON = JSON.stringify(changedTeachers);
             spinner.style.display = 'inline-block';
+            editButton.parentElement.disabled = true;
 
             try {
                 const response = await fetch('teachers_overview.php', {
@@ -474,11 +475,13 @@ include 'nav.php';
                 console.error('Error:', error);
             } finally {
                 spinner.style.display = 'none';
+                editButton.parentElement.disabled = false;
             }
         }
 
         async function deleteTeacher(shortCode, rowIndex) {
             spinner.style.display = 'inline-block';
+            editButton.parentElement.disabled = true;
 
             try {
                 const response = await fetch(`teachers_overview.php?shortCode=${shortCode}`, {
@@ -498,6 +501,7 @@ include 'nav.php';
                 console.error('Error:', error);
             } finally {
                 spinner.style.display = 'none';
+                editButton.parentElement.disabled = true;
             }
         }
 
@@ -572,6 +576,9 @@ include 'nav.php';
         }
 
         async function fetchAvailableClasses() {
+            spinner.style.display = 'inline-block';
+            editButton.parentElement.disabled = true;
+
             try {
                 const response = await fetch("../../Helper/get_available_classes.php");
                 const data = await response.json();
@@ -579,6 +586,9 @@ include 'nav.php';
             } catch (error) {
                 console.error("Error fetching classes:", error);
                 return [];
+            } finally {
+                spinner.style.display = 'none';
+                editButton.parentElement.disabled = false;
             }
         }
 

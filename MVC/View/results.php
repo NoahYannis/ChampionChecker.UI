@@ -291,6 +291,7 @@ include 'nav.php';
 
         async function deleteCompResult(compResId, rowIndex) {
             spinner.style.display = 'inline-block'; 
+            editButton.disabled = true;
 
             try {
                 const response = await fetch(`results.php?compResId=${compResId}`, {
@@ -312,6 +313,7 @@ include 'nav.php';
                 console.error('Error:', error);
             } finally {
                 spinner.style.display = 'none';
+                editButton.disabled = false;
             }
         }
 
@@ -346,6 +348,7 @@ include 'nav.php';
 
             const scoreJSON = JSON.stringify(changedScores);
             spinner.style.display = 'inline-block';
+            editButton.disabled = true;
 
             try {
                 const response = await fetch('results.php', {
@@ -362,6 +365,7 @@ include 'nav.php';
                 console.error('Error:', error);
             } finally {
                 spinner.style.display = 'none';
+                editButton.disabled = false;
             }
         }
 
