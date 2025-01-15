@@ -37,6 +37,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
     exit;
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
+    if (!isset($_GET['compResId'])) {
+        echo json_encode(['success' => false, 'message' => 'Die Wettbewerbs-ID wurde nicht übermittelt.']);
+        exit;
+    }
+
+    $compResId = $_GET['compResId'];
+    $compResController = new CompetitionResultController();
+    $deleteResult = $compResController->delete($compResId);
+
+    if ($deleteResult['success'] === true) {
+        echo json_encode(['success' => true, 'message' => 'Das Ergebnis wurde erfolgreich entfernt.']);
+    } else {
+        $errorMessage = addslashes(htmlspecialchars($deleteResult["error"], ENT_NOQUOTES, 'UTF-8'));
+        echo json_encode(['success' => false, 'message' => $errorMessage]);
+    }
+    exit;
+}
+
 
 $classController = new ClassController();
 
@@ -166,12 +185,13 @@ include 'nav.php';
     <section>
         <?php printCompetitionResult($competitionResults); ?>
     </section>
-
+    
     <script>
         let sortDirections = {};
         let isEditing = false;
         let storedValues = [];
         let changedScores = [];
+        let pointsCells = document.querySelectorAll('td[data-points]');
 
         const editButton = document.getElementById("edit-button");
         const editButtonIcon = document.querySelector(".edit-button i");
@@ -180,7 +200,6 @@ include 'nav.php';
         const tbody = table.getElementsByTagName("tbody")[0];
         const headerRow = table.getElementsByTagName("tr")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"))
-        const pointsCells = document.querySelectorAll('td[data-points]');
 
         editButton.addEventListener('click', () => toggleEditState());
 
@@ -209,15 +228,34 @@ include 'nav.php';
         }
 
         function enterEditState() {
+            let deleteHeader = document.createElement("th");
+
             pointsCells.forEach(cell => {
                 const currentPoints = cell.dataset.points;
                 const rowIndex = cell.parentElement.rowIndex;
-                const compId = cell.parentElement.querySelector("td[data-id]").dataset.id;
-                storedValues[rowIndex] = [compId, currentPoints];
+                const compResId = cell.parentElement.querySelector("td[data-id]").dataset.id;
+                storedValues[rowIndex] = [compResId, currentPoints];
                 cell.innerHTML = `<input type="text" value="${currentPoints}" class="edit-input">`;
-            });
-        }
 
+                let deleteColumn = document.createElement("td");
+                deleteColumn.innerHTML = `
+                <button class="circle-button delete-button">
+                    <i class="fas fa-trash"></i>
+                </button>`;
+                cell.parentElement.appendChild(deleteColumn);
+
+                let deleteButton = cell.parentElement.querySelector('.delete-button');
+                deleteButton.addEventListener('click', () => {
+                    const confirmation = confirm('Sind Sie sicher, dass Sie dieses Ergebnis löschen möchten?');
+                    if (confirmation) {
+                        deleteCompResult(compResId, cell.parentElement.rowIndex);
+                    }
+                });
+            });
+
+            headerRow.appendChild(deleteHeader);
+        }
+    
         function exitEditState(wasCanceled = false) {
             pointsCells.forEach(cell => {
                 let storedValue = storedValues[cell.parentElement.rowIndex];
@@ -244,6 +282,28 @@ include 'nav.php';
             });
 
             storedValues = {};
+            headerRow.querySelector("th:last-child").remove();
+            document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
+        }
+
+
+        function deleteCompResult(compResId, rowIndex) {
+            fetch(`results.php?compResId=${compResId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = table.rows[rowIndex];
+                        if (row) {
+                            row.remove();
+                            pointsCells = document.querySelectorAll('td[data-points]');
+                            storedValues.splice(rowIndex, 1);
+                        }
+                    }
+                    showResultMessage(data.message, data.success);
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         function filterTable(columnIndex) {

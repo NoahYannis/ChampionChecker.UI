@@ -107,6 +107,19 @@ class CompetitionResultController implements IController
     public function delete(int $id): array
     {
         $deleteResult = $this->sendApiRequest("/api/competitionresult/$id", 'DELETE');
+        
+        if (!$deleteResult['success'] || !isset($_SESSION['results_competitionResults'])) {
+            return $deleteResult;
+        }
+
+        // Cache-Eintrag entfernen.
+        foreach ($_SESSION['results_competitionResults'] as $key => $competitionResult) {
+            if ($competitionResult->getId() === $id) {
+                unset($_SESSION['results_competitionResults'][$key]);
+                break;
+            }
+        }
+        
         return $deleteResult;
     }
 
