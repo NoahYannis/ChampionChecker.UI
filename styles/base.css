@@ -204,6 +204,12 @@ button {
     cursor: pointer;
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    filter: grayscale(70%) brightness(85%);
+    opacity: 0.6;
+  }
+
   @media screen and (width < 600px) {
     height: 40px;
     width: 40px;

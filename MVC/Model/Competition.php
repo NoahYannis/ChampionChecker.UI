@@ -5,8 +5,9 @@ namespace MVC\Model;
 use RuntimeException;
 use InvalidArgumentException;
 use DateTime;
+use JsonSerializable;
 
-class Competition
+class Competition implements JsonSerializable
 {
     public function __construct(
         private ?int $id = null,
@@ -21,6 +22,22 @@ class Competition
     ) {
         $this->date = $date instanceof DateTime ? $date : new DateTime($date);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'classParticipants' => $this->classParticipants,
+            'studentParticipants' => $this->studentParticipants,
+            'isTeam' => $this->isTeam,
+            'isMale' => $this->isMale,
+            'date' => $this->date ? $this->date->format(DateTime::ATOM) : null,
+            'refereeId' => $this->refereeId,
+            'referee' => $this->referee,
+        ];
+    }
+    
     public function getId(): ?int
     {
         return $this->id;
