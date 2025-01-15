@@ -121,6 +121,7 @@ function printCompetitionResult($competitionResults)
         <button class="circle-button cancel-button hidden" id="cancel-button">
         <i class="fas fa-times"></i>
         </button>
+        <div class="spinner" id="spinner"></div>
         </div>';
     }
 
@@ -185,7 +186,7 @@ include 'nav.php';
     <section>
         <?php printCompetitionResult($competitionResults); ?>
     </section>
-    
+
     <script>
         let sortDirections = {};
         let isEditing = false;
@@ -200,6 +201,8 @@ include 'nav.php';
         const tbody = table.getElementsByTagName("tbody")[0];
         const headerRow = table.getElementsByTagName("tr")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"))
+        const spinner = document.getElementById('spinner');
+
 
         editButton.addEventListener('click', () => toggleEditState());
 
@@ -210,7 +213,7 @@ include 'nav.php';
             }
         })
 
-        function toggleEditState(wasCanceled = false) {
+        async function toggleEditState(wasCanceled = false) {
             isEditing = !isEditing;
             editButtonIcon.classList.toggle('fa-pencil-alt');
             editButtonIcon.classList.toggle('fa-save');
@@ -221,7 +224,7 @@ include 'nav.php';
             } else {
                 exitEditState(wasCanceled);
                 if (!wasCanceled) {
-                    saveChangedScores(changedScores);
+                    await saveChangedScores(changedScores);
                 }
                 changedScores = [];
             }
@@ -255,7 +258,7 @@ include 'nav.php';
 
             headerRow.appendChild(deleteHeader);
         }
-    
+
         function exitEditState(wasCanceled = false) {
             pointsCells.forEach(cell => {
                 let storedValue = storedValues[cell.parentElement.rowIndex];
@@ -281,29 +284,35 @@ include 'nav.php';
                 }
             });
 
-            storedValues = {};
+            storedValues = [];
             headerRow.querySelector("th:last-child").remove();
             document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
         }
 
+        async function deleteCompResult(compResId, rowIndex) {
+            spinner.style.display = 'inline-block'; 
 
-        function deleteCompResult(compResId, rowIndex) {
-            fetch(`results.php?compResId=${compResId}`, {
+            try {
+                const response = await fetch(`results.php?compResId=${compResId}`, {
                     method: 'DELETE',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const row = table.rows[rowIndex];
-                        if (row) {
-                            row.remove();
-                            pointsCells = document.querySelectorAll('td[data-points]');
-                            storedValues.splice(rowIndex, 1);
-                        }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    const row = table.rows[rowIndex];
+                    if (row) {
+                        row.remove();
+                        pointsCells = document.querySelectorAll('td[data-points]');
+                        storedValues.splice(rowIndex, 1);
                     }
-                    showResultMessage(data.message, data.success);
-                })
-                .catch(error => console.error('Error:', error));
+                }
+
+                showResultMessage(data.message, data.success);
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
         }
 
         function filterTable(columnIndex) {
@@ -324,7 +333,7 @@ include 'nav.php';
             rows.forEach(row => tbody.appendChild(row));
         }
 
-        function saveChangedScores(changedScores) {
+        async function saveChangedScores(changedScores) {
             if (changedScores.length === 0) {
                 return;
             }
@@ -336,17 +345,24 @@ include 'nav.php';
             }
 
             const scoreJSON = JSON.stringify(changedScores);
+            spinner.style.display = 'inline-block';
 
-            fetch('results.php', {
+            try {
+                const response = await fetch('results.php', {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: scoreJSON
-                }).then(response => response.json())
-                .then(data => {
-                    showResultMessage(data.message, data.success);
-                }).catch(error => console.error('Error:', error));
+                });
+
+                const data = await response.json();
+                showResultMessage(data.message, data.success);
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+            }
         }
 
         // Überprüft, ob eine Punktzahl bearbeitet wurde. storedScore[0] speichert die Wettbewerbs-ID, storedScore[1] den gecachten Wert dazu.
