@@ -94,6 +94,16 @@ include 'nav.php';
         const cancelButton = document.querySelector(".cancel-button");
         const addButton = document.querySelector(".add-button");
         const spinner = document.getElementById('spinner');
+        const statuses = {
+            Geplant: 0,
+            Läuft: 1,
+            Ausstehend: 2,
+            Abgesagt: 3,
+            Verschoben: 4,
+            Beendet: 5
+        };
+        const statusKeys = Object.fromEntries(Object.entries(statuses).map(([key, value]) => [value, key]));
+
 
         let table, tbody, rows;
 
@@ -286,7 +296,25 @@ include 'nav.php';
                 cells[3].innerHTML = `<input type="text" value="${type}">`;
                 cells[4].innerHTML = `<input type="text" value="${gender}">`;
                 cells[5].innerHTML = `<input type="text" value="${participants}">`;
-                cells[6].innerHTML = `<input type="text" value="${state}">`;
+
+                const statusSelect = document.createElement("select");
+                statusSelect.id = "status-select";
+
+                let selectedOption = document.createElement("option");
+                selectedOption.textContent = state;
+                selectedOption.selected = true;
+                statusSelect.appendChild(selectedOption);
+
+                for (const [statusName, statusValue] of Object.entries(statuses)) {
+                    const option = document.createElement('option');
+                    option.value = statusValue;
+                    option.textContent = statusName;
+                    statusSelect.appendChild(option);
+                }
+
+
+                cells[6].innerHTML = ""; // Entfernt die Anzeige des bisherigen Status
+                cells[6].appendChild(statusSelect);
                 cells[7].innerHTML = `<input type="text" value="${additionalInfo}">`;
 
                 let deleteButton = row.querySelector('.delete-button');
@@ -322,7 +350,9 @@ include 'nav.php';
                 }
 
                 let participants = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').value;
-                let state = wasCanceled && storedRow ? storedRow[6] : cells[6].querySelector('input').value;
+
+                // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verewendet.
+                let state = wasCanceled && storedRow ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled && storedRow ? storedRow[7] : cells[7].querySelector('input').value;
 
                 if (checkIfRowWasModified(row, storedRow)) {
@@ -365,8 +395,6 @@ include 'nav.php';
         async function deleteCompetition(compId, rowIndex) {
             spinner.style.display = 'inline-block';
             editButton.disabled = true;
-            alert(compId);
-            return;
 
             try {
                 const response = await fetch(`competitions_overview?compId=${compId}`, {
@@ -430,7 +458,7 @@ include 'nav.php';
 
             // Kopfzeile überspringen
             for (let i = 0; i < cells.length - 1; i++) {
-                const inputElement = cells[i].querySelector('input');
+                const inputElement = cells[i].querySelector('input') || cells[i].querySelector('select');
                 const storedValue = storedRow[i];
 
                 if (inputElement.value !== storedValue) {
