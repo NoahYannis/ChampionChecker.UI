@@ -279,7 +279,7 @@
 
     li a {
       font-weight: bold;
-      font-size: clamp(1rem, 5vw, 1.3rem);
+      font-size: clamp(1rem, 4vw, 1.3rem);
       padding: 10px;
       text-align: left;
     }

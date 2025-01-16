@@ -21,9 +21,12 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         <div class="nav-items">
             <ul>
                 <li><a href="results.php">Ergebnisse</a></li>
-                <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                <?php if ($isAuthenticated): ?>
+                    <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
+                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
+                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                    <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </aside>
@@ -40,10 +43,13 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         </div>
         <div class="nav-items">
             <ul>
-                <li><a href="results.php" data-text="Ergebnisse">Ergebnisse</a></li>
-                <li><a href="add_classresult.php" data-text="Klassenergebnis hinzufügen">Klassenergebnis hinzufügen</a></li>
-                <li><a href="add_soloresult.php" data-text="Soloergebnis hinzufügen">Soloergebnis hinzufügen</a></li>
-                <li><a href="teachers_overview.php" data-text="Lehrerverwaltung">Lehrerverwaltung</a></li>
+                <li><a href="results.php">Ergebnisse</a></li>
+                <?php if ($isAuthenticated): ?>
+                    <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
+                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
+                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                    <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                <?php endif; ?>
             </ul>
         </div>
         <div class="profile" id="profile">
