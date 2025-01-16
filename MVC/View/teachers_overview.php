@@ -116,7 +116,7 @@ function printTeachers($teachers)
     echo "</table>";
 
     if (isset($_SESSION['overview_teachers_timestamp'])) {
-        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['overview_teachers_timestamp']) . "<br></p>";
+        echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['overview_teachers_timestamp']) . "<br></p>";
     }
 }
 

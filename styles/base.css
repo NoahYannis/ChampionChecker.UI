@@ -164,6 +164,10 @@ abbr {
   transition: all 0.3s;
 }
 
+.timestamp-container {
+  text-align: center;
+}
+
 button {
   display: flex;
   justify-content: center;
@@ -320,6 +324,15 @@ label {
   background-color: var(--primary-color);
   color: black;
   font-weight: bold;
+}
+
+th {
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    background-color: var(--primary-color-hover);
+  }
 }
 
 .table-style th,

@@ -107,7 +107,7 @@ function printCompetitionResult($competitionResults)
     global $classController;
 
     if (isset($_SESSION['results_competitionResultsTimestamp'])) {
-        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['results_competitionResultsTimestamp']) . "<br></p>";
+        echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['results_competitionResultsTimestamp']) . "<br></p>";
     }
 
     echo "<div id='result-message' class='result-message hidden'></div>";

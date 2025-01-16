@@ -55,7 +55,7 @@ function printCompetitionResult($competitionResults)
 {
     global $classController;
 
-    echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
+    echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
 
     // Gesamtpunkte pro Klasse berechnen
     $pointsByClass = aggregatePointsByClass($competitionResults);
