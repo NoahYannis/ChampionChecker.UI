@@ -134,7 +134,7 @@ include 'nav.php';
             const thead = document.createElement('thead');
             const headerRow = document.createElement('tr');
 
-            const headers = ['Name', 'Datum', 'Leiter', 'Art', 'Geschlecht', 'Teilnehmer'];
+            const headers = ['Name', 'Datum', 'Leiter', 'Art', 'Geschlecht', 'Teilnehmer', 'Status', 'Sonstiges'];
             headers.forEach((headerText, index) => {
                 const th = document.createElement('th');
                 th.textContent = headerText;
@@ -200,6 +200,15 @@ include 'nav.php';
                 }
 
                 row.appendChild(participantsCell);
+
+                const statusCell = document.createElement('td');
+                statusCell.textContent = competition.status ?? "-";
+                row.appendChild(statusCell);
+
+                const infoCell = document.createElement('td');
+                infoCell.textContent = competition.additionalInfo ?? "-";
+                row.appendChild(infoCell);
+
                 tbody.appendChild(row);
             }
 

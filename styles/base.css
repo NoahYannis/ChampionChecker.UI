@@ -396,7 +396,7 @@ th {
   .table-style th,
   .table-style td {
     padding: 4px 6px;
-    max-width: 55px;
+    max-width: 60px;
     max-height: 50px;
     overflow-x: auto;
     font-size: clamp(0.5rem, 1.5vw, 1rem);

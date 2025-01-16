@@ -5,6 +5,7 @@ namespace MVC\Controller;
 use MVC\Model\Competition;
 use RuntimeException;
 use DateTime;
+use MVC\Model\CompetitionStatus;
 
 /**
  * @implements IController<Competition>
@@ -53,6 +54,8 @@ class CompetitionController implements IController
                 date: $data['date'],
                 refereeId: $data['refereeId'],
                 referee: $data['referee'],
+                status: CompetitionStatus::from($data['status']),
+                additionalInfo: $data['additionalInfo']
             );
 
             $this->cachedCompetitions[$id] = $competition;
@@ -87,6 +90,8 @@ class CompetitionController implements IController
                 date: new DateTime($item['date']),
                 refereeId: $item['refereeId'],
                 referee: $item['referee'],
+                status: CompetitionStatus::from($item['status']),
+                additionalInfo: $item['additionalInfo']
             );
 
             $this->cachedCompetitions[$item['id']] = $competition;
@@ -113,7 +118,9 @@ class CompetitionController implements IController
             'studentParticipants' => $model->getStudentParticipants(),
             'date' => $model->getDate(),
             'refereeId' => $model->getRefereeId(),
-            'referee' => $model->getReferee()
+            'referee' => $model->getReferee(),
+            'status' => $model->getStatus(),
+            'additionalInfo' => $model->getAdditionalInfo()
         ];
 
         $createResult = $this->sendApiRequest('/api/competition', 'POST', $data);
@@ -136,7 +143,9 @@ class CompetitionController implements IController
             'studentParticipants' => $model->getStudentParticipants(),
             'date' => $model->getDate(),
             'refereeId' => $model->getRefereeId(),
-            'referee' => $model->getReferee()
+            'referee' => $model->getReferee(),
+            'status' => $model->getStatus(),
+            'additionalInfo' => $model->getAdditionalInfo()
         ];
 
         $updateResult = $this->sendApiRequest("/api/competition/{$model->getId()}", 'PUT', $data);
@@ -211,7 +220,7 @@ class CompetitionController implements IController
             $error = curl_error($curl);
             throw new RuntimeException('cURL error: ' . $error);
         }
-        
+
         if (curl_errno($curl)) {
             return [
                 'success' => false,

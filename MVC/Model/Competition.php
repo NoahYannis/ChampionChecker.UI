@@ -7,6 +7,16 @@ use InvalidArgumentException;
 use DateTime;
 use JsonSerializable;
 
+enum CompetitionStatus: int
+{
+    case Geplant = 0;
+    case Läuft = 1;
+    case Ausstehend = 2;
+    case Abgesagt = 3;
+    case Verschoben = 4;
+    case Beendet = 5;
+}
+
 class Competition implements JsonSerializable
 {
     public function __construct(
@@ -18,7 +28,9 @@ class Competition implements JsonSerializable
         private ?bool $isMale = null,
         private $date = null,
         private ?int $refereeId = null,
-        private ?Referee $referee = null
+        private ?Referee $referee = null,
+        private CompetitionStatus $status = CompetitionStatus::Geplant,
+        private ?string $additionalInfo = null,
     ) {
         $this->date = $date instanceof DateTime ? $date : new DateTime($date);
     }
@@ -35,9 +47,11 @@ class Competition implements JsonSerializable
             'date' => $this->date ? $this->date->format(DateTime::ATOM) : null,
             'refereeId' => $this->refereeId,
             'referee' => $this->referee,
+            'status' => $this->status->name,
+            'additionalInfo' => $this->additionalInfo
         ];
     }
-    
+
     public function getId(): ?int
     {
         return $this->id;
@@ -132,5 +146,31 @@ class Competition implements JsonSerializable
     public function setReferee(?Referee $referee): void
     {
         $this->referee = $referee;
+    }
+
+    public function getStatus(): CompetitionStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(CompetitionStatus $status): void
+    {
+        if (!in_array($status, CompetitionStatus::cases())) {
+            throw new InvalidArgumentException('Ungültiger Status-Wert.');
+        }
+        $this->status = $status;
+    }
+
+    public function getAdditionalInfo(): ?string
+    {
+        return $this->additionalInfo;
+    }
+
+    public function setAdditionalInfo(?string $additionalInfo): void
+    {
+        if ($additionalInfo !== null && strlen($additionalInfo) > 200) {
+            throw new InvalidArgumentException('Zusätzliche Informationen dürfen maximal 200 Zeichen lang sein.');
+        }
+        $this->additionalInfo = $additionalInfo;
     }
 }
