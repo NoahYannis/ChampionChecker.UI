@@ -22,10 +22,11 @@ body {
   border-bottom: 2px solid #009879;
 }
 
-@media screen and (width < 600px) {
+@media screen and (max-width: 37.5rem) {
   .competition-table th,
   .competition-table td {
-    padding: 8px 12px;
+    padding: 0.5rem 0.75rem;
     font-size: 0.8rem;
   }
 }
+

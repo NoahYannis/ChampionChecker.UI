@@ -1,6 +1,6 @@
 .button-container {
   display: flex;
-  gap: 10px;
+  gap: 0.625rem;
   justify-content: center;
   align-items: center;
   margin: 0;

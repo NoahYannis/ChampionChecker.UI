@@ -12,7 +12,7 @@
 }
 
 .nav-bar {
-  padding-inline: 15px;
+  padding-inline: 1rem;
   background-color: var(--primary-color);
   width: 100%;
   overflow: hidden;
@@ -46,7 +46,7 @@
         text-decoration: none;
         font-weight: 500;
         color: black;
-        padding: 10px 15px;
+        padding: 0.6125rem 1rem;
         word-break: break-word;
         transition: color 0.3s ease;
         transition: text-shadow 0.3s ease;
@@ -101,16 +101,16 @@
   z-index: 999;
 
   img {
-    height: 80px;
-    padding: 10px;
+    height: 5rem;
+    padding: 0.625rem;
     display: block;
   }
 }
 
 .profile {
-  height: 80px;
-  width: 80px;
-  border-radius: 50%;
+  height: 5rem;
+  width: 5rem;
+  border-radius: 0.5rem;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -118,11 +118,11 @@
   user-select: none;
 
   img {
-    max-height: 80px;
-    max-width: 80px;
+    max-height: 5rem;
+    max-width: 5rem;
     height: 100%;
-    border-radius: 16px;
-    padding: 10px;
+    border-radius: 1rem;
+    padding: 0.625rem;
 
     &:hover {
       filter: invert(0.1);
@@ -135,8 +135,8 @@
   font-size: 1.5rem;
   color: white;
   font-weight: bold;
-  width: 40px;
-  height: 40px;
+  width: 2.5rem;
+  height: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,7 +150,7 @@
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
-  width: 200px;
+  width: 25rem;
   padding: 0;
   border-radius: 8px;
 
@@ -160,7 +160,7 @@
     padding: 0;
 
     li {
-      padding: 10px 15px;
+      padding: 0.625rem 1rem;
       font-size: 1rem;
       color: #333;
       cursor: pointer;
@@ -171,7 +171,7 @@
         font-weight: bold;
         text-decoration: none;
         color: black;
-        padding: 10px 15px;
+        padding: 0.625rem 1rem;
         display: block;
         width: 100%;
       }
@@ -250,18 +250,22 @@
 /* ---------------------------------------- */
 
 .sidebar {
-  width: 250px;
+  width: 15.625rem;
   flex-direction: column;
   height: 100vh;
   background-color: var(--primary-color);
   position: fixed;
-  left: -250px;
+  left: -15.625rem;
   transition: left 0.3s ease;
   z-index: 2;
+
+  &.open {
+    left: 0;
+  }
 }
 
 /* Bei kleineren Bildschirmen das Hamburger-Menü anzeigen */
-@media (max-width: 800px) {
+@media (max-width: 50rem) {
   /* Nur Nav-Items im Hamburger-Menü anzeigen */
   .nav-items:not(.sidebar .nav-items) {
     display: none;
@@ -273,20 +277,20 @@
 
   .sidebar ul {
     flex-direction: column;
-    gap: 10px;
-    padding: 20px;
+    gap: 0.625rem;
+    padding: 1.25rem;
     margin-top: 15vh;
 
     li a {
       font-weight: bold;
       font-size: clamp(1rem, 4vw, 1.3rem);
-      padding: 10px;
+      padding: 0.625rem;
       text-align: left;
     }
   }
 }
 
-@media (min-width: 801px) {
+@media (min-width: 50rem) {
   .hamburger-menu,
   .sidebar {
     display: none;

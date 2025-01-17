@@ -101,7 +101,7 @@ $competitionResults = loadCompetitionResults();
         <h1>Klassenübersicht</h1>
     </header>
 
-    <p>Es wurden X von Y Wettbewerben ausgewertet.</p>
+    <p class="result-message neutral">Es wurden X von Y Wettbewerben ausgewertet.</p>
 
     <progress value="33" max="100" id="progress"></progress>
 

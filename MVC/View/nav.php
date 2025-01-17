@@ -110,14 +110,11 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
 
     // Sidebar bei Klick auf Hamburger-Icon toggeln
     hamburgerInput.addEventListener('change', function() {
-        if (this.checked) {
-            sideBar.style.left = '0';
-        } else {
-            sideBar.style.left = '-250px';
-        }
+        sideBar.classList.toggle("open")
     });
-
+    
     profilePic.addEventListener('click', function(event) {
+        event.preventDefault();
         if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
             profileMenu.style.display = 'none';
             return;
@@ -134,9 +131,9 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         }
 
         // Hamburger-Menü ausblenden, wenn außerhalb geklickt wird
-        if (!hamburgerMenu.contains(event.target)) {
-            sideBar.style.left = '-250px';
+        if (!hamburgerMenu.contains(event.target) && hamburgerInput.checked) {
             hamburgerInput.checked = false;
+            sideBar.classList.toggle("open");
         }
     });
 

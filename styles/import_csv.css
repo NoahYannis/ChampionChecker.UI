@@ -7,13 +7,13 @@
 .custom-file-upload {
   cursor: pointer;
   font-size: clamp(0.8rem, 1vw, 2rem);
-  margin: 20px auto;
+  margin: 1.25rem auto;
   border: 1px solid black;
   width: 60%;
   text-align: center;
   color: black;
   border-radius: 16px;
-  padding: 10px;
+  padding: 0.625rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: background-color 0.3s, box-shadow 0.3s;
 
@@ -37,32 +37,33 @@ table {
     top: 0;
     background-color: #f8d294;
     color: black;
-    padding: 10px;
+    padding: 0.625rem;
     font-weight: bold;
     z-index: 1;
   }
 
   td {
-    padding: 5px;
+    padding: 0.3125rem;
     border: 2px solid #ccc;
     text-align: center;
     z-index: 0;
   }
 }
 
-@media (width < 768px) {
+@media screen and (max-width: 48rem) {
   form.uploadForm {
     margin-top: 1rem;
     justify-content: center;
   }
 
   .resultMessage .error {
-    padding-inline: 10px;
+    padding-inline: 0.625rem;
   }
 
   fieldset {
     min-width: 90vw;
     max-height: 70vh;
+    margin: 1rem;
   }
 
   table {
@@ -82,7 +83,7 @@ table {
   }
 }
 
-@media (width > 768px) {
+@media screen and (min-width: 48rem) {
   form.uploadForm {
     margin-block: 1rem;
   }

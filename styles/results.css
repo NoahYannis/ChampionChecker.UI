@@ -1,6 +1,6 @@
 .button-container {
   display: flex;
-  gap: 10px;
+  gap: 0.625rem;
   justify-content: center;
   align-items: center;
   margin: 0;
@@ -12,5 +12,5 @@
 }
 
 .edit-input {
-  max-width: 70px;
+  max-width: 4.375rem;
 }
