@@ -1,7 +1,6 @@
 <?php
 // table_tischtennis.php
 
-
 // Number of rows for the table
 $numPlayers = 5;
 
@@ -83,9 +82,9 @@ foreach ($matches as $match) {
     echo '
         <tr>
             <td style="text-align: right;">' . $player1 . '</td>
-            <td><input type="text" name="player_' . $player1 . '" required style="text-align: left; width: 100%;" oninput="updateText(this)" /></td>
+            <td><input type="text" name="player_' . $player1 . '" required style="text-align: left; width: 100%;" oninput="updateText(this, ' . $player1 . ')" /></td>
             <td style="text-align: right;">' . $player2 . '</td>
-            <td><input type="text" name="player_' . $player2 . '" required style="text-align: left; width: 100%;" oninput="updateText(this)" /></td>
+            <td><input type="text" name="player_' . $player2 . '" required style="text-align: left; width: 100%;" oninput="updateText(this, ' . $player2 . ')" /></td>
             <td style="width: 120px;">
                 <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
                     <input type="number" name="pointsplayer_' . $player1 . '_round' . ($i + 1) . '" style="width: 50px; text-align: right;" maxlength="2" oninput="validateNumber(this)" />
@@ -120,7 +119,7 @@ for ($i = 1; $i <= $numPlayers; $i++) {
     echo '
             <tr>
                 <td>' . $i . '.</td>
-                <td colspan="2"><input type="text" name="name_' . $i . '" /></td>
+                <td colspan="2"><input type="text" name="player_' . $i . '" required style="text-align: left;" oninput="updateText(this, ' . $i . ')" /></td>
                 <td><input type="text" name="punkte_' . $i . '" /></td>
                 <td><input type="text" name="kl_punkte_' . $i . '" /></td>
                 <td><input type="text" name="platz_' . $i . '" /></td>
@@ -140,13 +139,12 @@ echo '
 
 <script>
 // JavaScript function to update all textboxes with the same name
-function updateText(input) {
+function updateText(input, player) {
     // Get the value from the changed input box
     var value = input.value;
     
-    // Find all inputs with the same name
-    var name = input.name;
-    var allInputs = document.querySelectorAll('input[name="' + name + '"]');
+    // Find all inputs with the same player identifier
+    var allInputs = document.querySelectorAll('[name="player_' + player + '"]');
     
     // Update all the inputs with the same name
     allInputs.forEach(function(inputElement) {
