@@ -57,63 +57,46 @@ echo '
         <tbody>
         ';
 
-$matches = [];
-$players = range(1, $numPlayers); // Generate a list of players
-$playedPairs = [];
-$playersInLastRound = [];
-// this generates the matchups
-while (count($matches) < ($numPlayers * ($numPlayers - 1)) / 2) { // Total possible unique matches
-
-    for ($round = 0; $round < $numPlayers - 1; $round++) {
-        for ($i = 0; $i < $numPlayers / 2; $i++) {
-            $player1 = $players[$i];
-            $player2 = $players[$numPlayers - 1 - $i];
-
-            // Check if this pair has already played
-            if (!in_array([$player1, $player2], $playedPairs) && !in_array([$player2, $player1], $playedPairs)) {
-                $matches[] = [
-                    'player1' => $player1 ,
-                    'player2' => $player2 ,
-                ];
-
-                // Add this pair to the played pairs list
-                $playedPairs[] = [$player1, $player2];
-
-                // Break to ensure only one match is scheduled at a time
-                break 2;
-            }
-        }
-    }
-
-    // Rotate players to ensure fairness
-    $firstPlayer = array_shift($players);
-    $players[] = $firstPlayer;
-}
-
+// Match order as per the desired sequence
+$matches = [
+    ['player1' => 2, 'player2' => 1],
+    ['player1' => 3, 'player2' => 4],
+    ['player1' => 5, 'player2' => 1],
+    ['player1' => 2, 'player2' => 3],
+    ['player1' => 4, 'player2' => 5],
+    ['player1' => 1, 'player2' => 3],
+    ['player1' => 2, 'player2' => 4],
+    ['player1' => 3, 'player2' => 5],
+    ['player1' => 1, 'player2' => 4],
+    ['player1' => 5, 'player2' => 2]
+];
 
 // Render the matches table
 echo '<table>';
 $i = 0;
 foreach ($matches as $match) {
+    // Safely encode player names
+    $player1 = htmlspecialchars($match['player1']);
+    $player2 = htmlspecialchars($match['player2']);
+    
+    // Construct the HTML for each match
     echo '
         <tr>
-            <td>' . $match['player1'] . '</td>
-            <td><input type="text" name="player_' .  $match['player1'] .  '" /></td>
-            <td>' . $match['player2'] . '</td>
-            <td><input type="text" name="player_' .  $match['player2'] .  '" /></td>
-            <td>
-                <div style="display: flex; gap: 10px; align-items: center;">
-                    <input type="text" name="pointsplayer_<?php echo '. $match['player1'] . '; ?>_round<?php echo $i; ?>" />
+            <td style="text-align: right;">' . $player1 . '</td>
+            <td><input type="text" name="player_' . $player1 . '" required style="text-align: left; width: 100%;" oninput="updateText(this)" /></td>
+            <td style="text-align: right;">' . $player2 . '</td>
+            <td><input type="text" name="player_' . $player2 . '" required style="text-align: left; width: 100%;" oninput="updateText(this)" /></td>
+            <td style="width: 120px;">
+                <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+                    <input type="number" name="pointsplayer_' . $player1 . '_round' . ($i + 1) . '" style="width: 50px; text-align: right;" maxlength="2" oninput="validateNumber(this)" />
                     :
-                    <input type="text" name="pointsplayer_<?php echo ' . $match['player2'] . '; ?>_round<?php echo $i; ?>" />
+                    <input type="number" name="pointsplayer_' . $player2 . '_round' . ($i + 1) . '" style="width: 50px; text-align: right;" maxlength="2" oninput="validateNumber(this)" />
                 </div>
             </td>
        </tr>';
-        $i++;
+    $i++;
 }
-echo '</table>';
-
-echo '
+echo '</table>
         </tbody>
     </table>
     
@@ -154,3 +137,31 @@ echo '
 </body>
 </html>';
 ?>
+
+<script>
+// JavaScript function to update all textboxes with the same name
+function updateText(input) {
+    // Get the value from the changed input box
+    var value = input.value;
+    
+    // Find all inputs with the same name
+    var name = input.name;
+    var allInputs = document.querySelectorAll('input[name="' + name + '"]');
+    
+    // Update all the inputs with the same name
+    allInputs.forEach(function(inputElement) {
+        inputElement.value = value;
+    });
+}
+
+// JavaScript function to restrict input to numbers only
+function validateNumber(input) {
+    // Remove any non-numeric characters from the input value
+    input.value = input.value.replace(/[^0-9]/g, '');
+
+    // Ensure the value does not exceed two digits (max 99)
+    if (input.value.length > 2) {
+        input.value = input.value.slice(0, 2); // Truncate to 2 digits
+    }
+}
+</script>
