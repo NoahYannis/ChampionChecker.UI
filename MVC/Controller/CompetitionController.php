@@ -138,17 +138,31 @@ class CompetitionController implements IController
         }
 
         $data = [
+            'id' => $model->getId(),
             'name' => $model->getName(),
             'classParticipants' => $model->getClassParticipants(),
             'studentParticipants' => $model->getStudentParticipants(),
-            'date' => $model->getDate(),
+            'isTeam' => $model->getIsTeam(),
+            'isMale' => $model-> getIsMale(),
+            'date' => $model->getDate()->format(DateTime::ATOM),
             'refereeId' => $model->getRefereeId(),
             'referee' => $model->getReferee(),
             'status' => $model->getStatus(),
             'additionalInfo' => $model->getAdditionalInfo()
         ];
 
-        $updateResult = $this->sendApiRequest("/api/competition/{$model->getId()}", 'PUT', $data);
+        $updateResult = $this->sendApiRequest("/api/competition", 'PUT', $data);
+        
+        if ($updateResult['success'] === true && isset($_SESSION['overview_competitions'])) {
+            foreach ($_SESSION['overview_competitions'] as $key => $comp) {
+                if ($comp->getId() === $model->getId()) {
+                    $_SESSION['overview_competitions'][$key] = $model;
+                    $_SESSION['overview_competitions_timestamp'] = time();
+                    break;
+                }
+            }
+        }
+        
         return $updateResult;
     }
 

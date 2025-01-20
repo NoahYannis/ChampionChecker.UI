@@ -15,6 +15,19 @@ enum CompetitionStatus: int
     case Abgesagt = 3;
     case Verschoben = 4;
     case Beendet = 5;
+
+    public static function fromString(string $value): self
+    {
+        return match ($value) {
+            'Geplant' => self::Geplant,
+            'Läuft' => self::Läuft,
+            'Ausstehend' => self::Ausstehend,
+            'Abgesagt' => self::Abgesagt,
+            'Verschoben' => self::Verschoben,
+            'Beendet' => self::Beendet,
+            default => throw new InvalidArgumentException("Ungültiger Status: $value"),
+        };
+    }
 }
 
 class Competition implements JsonSerializable
@@ -32,7 +45,7 @@ class Competition implements JsonSerializable
         private CompetitionStatus $status = CompetitionStatus::Geplant,
         private ?string $additionalInfo = null,
     ) {
-        $this->date = $date instanceof DateTime ? $date : new DateTime($date);
+        $this->date = $date instanceof DateTime ? $date : DateTime::createFromFormat('d.m.y, H:i:s', $date);
     }
 
     public function jsonSerialize(): array

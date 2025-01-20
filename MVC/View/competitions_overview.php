@@ -9,6 +9,8 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 
 
 use MVC\Controller\CompetitionController;
+use MVC\Model\CompetitionStatus;
+use MVC\Model\Competition;
 
 // Die GET-Anfrage wird zuerst serverseitig ausgeführt, die Daten sollen aber erst geladen und visualisiert werden sobald die Seite gerendert ist,
 // damit der Nutzer schneller etwas sieht und während des Ladens ein Spinner durch JavaScript angezeigt werden kann.Das Custom-Attribut wird
@@ -16,6 +18,73 @@ use MVC\Controller\CompetitionController;
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_SERVER['HTTP_X_CUSTOM_ATTRIBUTE'])) {
     $competitions = loadAllCompetitions(300);
     echo json_encode($competitions);
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    $putData = file_get_contents('php://input');
+    $competitionController = CompetitionController::getInstance();
+
+    if (empty($putData)) {
+        $response['success'] = false;
+        $response['message'] = 'Leere Anfrage erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+    $compData = json_decode($putData, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $response['success'] = false;
+        $response['message'] = 'Ungültiges JSON erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+
+    $changedComps = [];
+
+    foreach ($compData as $data) {
+        $isTeam = $data['type'] === 'Team';
+        // $classParticipants = $isTeam ? $data['participants'] : null;
+        // $studentParticipants = !$isTeam ? $data['participants'] : null;
+        $classParticipants = [];
+        $studentParticipants = [];
+
+        $comp = new Competition(
+            id: $data['id'],
+            name: trim($data['name']),
+            classParticipants: $classParticipants,
+            studentParticipants: $studentParticipants,
+            isTeam: $isTeam,
+            isMale: match ($data['gender']) {
+                'M' => true,
+                'W' => false,
+                'N' => null,
+                default => null,
+            },
+            date: $data['date'],
+            refereeId: 0,
+            referee: null, // TODO: Nur ID übergeben
+            status: CompetitionStatus::fromString($data['state']),
+            additionalInfo: trim($data['additionalInfo'])
+        );
+        $changedComps[] = $comp;
+    }
+
+    $putSuccess = true;
+
+    foreach ($changedComps as $comp) {
+        $updateResult = $competitionController->update($comp);
+        $putSuccess &= $updateResult['success'] === true;
+    }
+
+    $response = [
+        'success' => $putSuccess,
+        'message' => $putSuccess ? 'Änderungen erfolgreich gespeichert.' : 'Einige Änderungen konnten nicht übernommen werden.'
+    ];
+
+    echo json_encode($response);
     exit;
 }
 
@@ -41,11 +110,8 @@ function loadAllCompetitions($cacheDuration = 300): array
     return $competitions;
 }
 
-
-
 include 'nav.php';
 ?>
-
 
 <!DOCTYPE html>
 <html lang="de">
@@ -357,6 +423,7 @@ include 'nav.php';
 
                 if (checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
+                        id: row.cells[0].dataset.compId,
                         name: name,
                         date: date,
                         referee: referee,
@@ -432,7 +499,7 @@ include 'nav.php';
 
             try {
                 const response = await fetch('competitions_overview.php', {
-                    method: 'PATCH',
+                    method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
