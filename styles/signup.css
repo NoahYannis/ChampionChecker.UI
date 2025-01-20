@@ -5,12 +5,12 @@
 
 .signup-form {
   width: 100%;
-  max-width: 500px;
-  margin-top: 20px;
+  max-width: 31.25rem;
+  margin-top: 1.25rem;
 }
 
 .signup-fieldset {
-  max-height: 105vh;
+  max-height: 115vh;
 }
 
 input[type="submit"] {
@@ -20,8 +20,7 @@ input[type="submit"] {
   background-color: #6e7b8b;
   color: white;
   min-height: 2.5rem;
-  padding-inline: 40px;
-  padding-block: 10px;
+  padding: 0.625rem 2.5rem;
   align-items: center;
   font-weight: bold;
   font-size: clamp(1rem, 1.5rem, 2rem);
@@ -43,7 +42,7 @@ input[type="submit"] {
 .divider-container {
   width: 100%;
   text-align: center;
-  margin: 20px 0;
+  margin: 1.25rem 0;
   position: relative;
 }
 
@@ -74,11 +73,11 @@ input[type="submit"] {
 }
 
 .moodle-login {
-  max-height: 50px;
+  max-height: 3.125rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px 10px;
+  padding: 0.3125rem 0.625rem;
   background: transparent;
   border: 3px solid var(--primary-color);
 
@@ -112,24 +111,24 @@ input[type="password"].input-valid {
 }
 
 .toggle-password-icon {
-  margin-left: -30px;
-  margin-top: 15px;
+  margin-left: -1.875rem;
+  margin-top: 0.9375rem;
   position: relative;
   z-index: 2;
   cursor: pointer;
 }
 
-@media (width < 600px) {
+@media (max-width: 37.5rem) {
   .signup-form {
     width: 95%;
-    padding: 5px;
+    padding: 0.3125rem;
   }
 
   input[type="text"],
   input[type="email"],
   input[type="password"],
   input[type="submit"] {
-    padding: 5px;
+    padding: 0.3125rem;
     font-size: 0.8rem;
   }
 
@@ -141,7 +140,7 @@ input[type="password"].input-valid {
   .moodle-login {
     max-height: 2rem;
     overflow: hidden;
-    padding-block: 18px;
+    padding-block: 0.625rem;
 
     img {
       height: 4rem;
@@ -154,21 +153,20 @@ input[type="password"].input-valid {
 }
 
 .password-check-container {
-  margin-block: 10px;
+  margin-block: 0.625rem;
   border: 2px solid #6e7b8b;
   border-radius: 8px;
-  padding-inline: 10px;
-  padding-block: 5px;
+  padding: 0.3125rem 0.625rem;
 }
 
 .password-check-row {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: 0.3125rem;
 }
 
 .password-check-icon {
-  margin-right: 10px;
+  margin-right: 0.3125rem;
   color: red;
 
   &.valid {
@@ -186,18 +184,18 @@ input[type="password"].input-valid {
 
   &.visible {
     display: block;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
 }
 
-@media (width > 800px) {
+@media (min-width: 50rem) {
   .button-container {
     width: 30%;
-    padding-inline: 40px;
+    padding-inline: 2.5rem;
   }
 
   .divider-container {
-    margin-top: 40px;
+    margin-top: 2.5rem;
   }
 
   button {
@@ -207,12 +205,12 @@ input[type="password"].input-valid {
 
   .password-mismatch {
     &.visible {
-      font-size: 16px;
+      font-size: 1rem;
     }
   }
 
   .moodle-login {
-    max-height: 60px;
+    max-height: 3.75rem;
     font-size: 1.2rem;
 
     img {

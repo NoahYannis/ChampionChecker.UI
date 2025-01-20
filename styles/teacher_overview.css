@@ -1,6 +1,6 @@
 .button-container {
   display: flex;
-  gap: 10px;
+  gap: 0.625rem;
   justify-content: center;
   align-items: center;
   margin: 0;
@@ -21,8 +21,8 @@ th {
 
 .status-circle {
   display: inline-block;
-  width: 10px;
-  height: 10px;
+  width: 0.625rem;
+  height: 0.625rem;
   border-radius: 50%;
   margin: 0 auto;
 }
@@ -40,31 +40,30 @@ th {
   border-radius: 16px;
   background-color: var(--primary-color);
   color: black;
-  padding-inline: 3px;
-  padding-block: 3px;
+  padding: 0.1875rem;
   text-align: center;
   border: 1px solid #ccc;
-  margin: 5px 5px 10px 5px;
+  margin: 0.3125rem 0.3125rem 0.625rem 0.3125rem;
 
   .fas.fa-times {
     color: red;
     cursor: pointer;
-    margin-left: 5px;
+    margin-left: 0.3125rem;
   }
 }
 
 @media (width > 600px) {
   .table-style th,
   .table-style td {
-    max-width: 300px;
+    max-width: 18.75rem;
   }
 
   .class {
-    padding-inline: 10px;
+    padding-inline: 0.625rem;
   }
-  
+
   .status-circle {
-    height: 20px;
-    width: 20px;
+    height: 1.25rem;
+    width: 1.25rem;
   }
 }

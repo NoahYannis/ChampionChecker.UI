@@ -1,6 +1,7 @@
 .login-form {
   width: 100%;
-  max-width: 500px;
+  max-width: 31.25rem;
+  padding: 1rem;
 }
 
 input[type="password"] {
@@ -15,13 +16,13 @@ input[type="password"] {
   text-decoration: underline;
   cursor: pointer;
   transition: color 0.3s ease;
-  margin: 5px 0 20px 5px;
+  margin: 0.3125rem 0 1.25rem 0.3125rem;
 }
 
 .divider-container {
   width: 100%;
   text-align: center;
-  margin: 20px 0;
+  margin: 1.25rem 0;
   position: relative;
 }
 
@@ -35,11 +36,11 @@ input[type="password"] {
 
 .divider-text {
   position: absolute;
-  top: -10px;
+  top: -0.625rem;
   left: 50%;
   transform: translateX(-50%);
   background: white;
-  padding: 0 10px;
+  padding: 0 0.625rem;
   font-weight: bold;
   white-space: nowrap;
 }
@@ -50,7 +51,7 @@ input[type="password"] {
   justify-content: space-between;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .button-container input[type="submit"],
@@ -61,7 +62,7 @@ input[type="password"] {
 }
 
 .btn-register {
-  padding: 10px 20px;
+  padding: 0.625rem 1.25rem;
   border-radius: 8px;
   border: 3px solid var(--primary-color);
   background-color: transparent;
@@ -72,7 +73,7 @@ input[type="password"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 5px 10px;
+  padding: 0.3125rem 0.625rem;
   border: 1px solid black;
   border-radius: 8px;
   min-height: 2.5rem;
@@ -95,24 +96,24 @@ input[type="password"] {
 }
 
 .toggle-password-icon {
-  margin-left: -30px;
-  margin-top: 15px;
+  margin-left: -1.875rem;
+  margin-top: 0.9375rem;
   position: relative;
   z-index: 2;
   cursor: pointer;
 }
 
-@media (width < 600px) {
+@media (max-width: 37.5rem) {
   .signup-form {
     width: 95%;
-    padding: 5px;
+    padding: 0.3125rem;
   }
 
   input[type="text"],
   input[type="email"],
   input[type="password"],
   input[type="submit"] {
-    padding: 5px;
+    padding: 0.3125rem;
     font-size: 0.8rem;
   }
 
@@ -127,19 +128,19 @@ input[type="password"] {
   }
 
   .toggle-password-icon {
-    margin-top: 10px;
+    margin-top: 0.625rem;
   }
 }
 
-@media (width > 800px) {
+@media screen and (min-width: 50rem) {
   .divider-container {
-    margin-top: 40px;
+    margin-top: 2.5rem;
     width: 50%;
   }
 
   .divider-text {
     font-size: 1.25rem;
-    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
   }
 
   button {
@@ -152,7 +153,7 @@ input[type="password"] {
   }
 
   .moodle-login {
-    max-height: 60px;
+    max-height: 3.75rem;
     font-size: 1.2rem;
 
     img {
@@ -160,3 +161,4 @@ input[type="password"] {
     }
   }
 }
+

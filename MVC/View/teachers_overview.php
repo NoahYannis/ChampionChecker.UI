@@ -116,7 +116,7 @@ function printTeachers($teachers)
     echo "</table>";
 
     if (isset($_SESSION['overview_teachers_timestamp'])) {
-        echo "<p style='text-align: center;'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['overview_teachers_timestamp']) . "<br></p>";
+        echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['overview_teachers_timestamp']) . "<br></p>";
     }
 }
 
@@ -249,6 +249,7 @@ include 'nav.php';
         <button class="circle-button cancel-button hidden">
             <i class="fas fa-times"></i>
         </button>
+        <div class="spinner" id="spinner"></div>
     </div>
 
     <section>
@@ -268,6 +269,7 @@ include 'nav.php';
         const tbody = table.getElementsByTagName("tbody")[0];
         const headerRow = table.getElementsByTagName("tr")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"));
+        const spinner = document.getElementById('spinner');
 
         document.querySelector('.edit-button').addEventListener('click', function() {
             toggleEditState();
@@ -444,47 +446,63 @@ include 'nav.php';
         }
 
 
-        function saveChangedTeachers(changedTeachers) {
+        async function saveChangedTeachers(changedTeachers) {
             if (changedTeachers.length === 0) {
                 return;
             }
 
             const teacherJSON = JSON.stringify(changedTeachers);
+            spinner.style.display = 'inline-block';
+            editButton.parentElement.disabled = true;
 
-            fetch('teachers_overview.php', {
+            try {
+                const response = await fetch('teachers_overview.php', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: teacherJSON
-                }).then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showResultMessage('Alle Änderungen wurden erfolgreich gespeichert.');
-                    } else {
-                        showResultMessage('Einige Änderungen konnten nicht übernommen werden.', false);
-                        console.log(data.results);
-                    }
-                }).catch(error => console.error('Error:', error));
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    showResultMessage('Alle Änderungen wurden erfolgreich gespeichert.');
+                } else {
+                    showResultMessage('Einige Änderungen konnten nicht übernommen werden.', false);
+                    console.log(data.results);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+                editButton.parentElement.disabled = false;
+            }
         }
 
+        async function deleteTeacher(shortCode, rowIndex) {
+            spinner.style.display = 'inline-block';
+            editButton.parentElement.disabled = true;
 
-        function deleteTeacher(shortCode, rowIndex) {
-            fetch(`teachers_overview.php?shortCode=${shortCode}`, {
+            try {
+                const response = await fetch(`teachers_overview.php?shortCode=${shortCode}`, {
                     method: 'DELETE',
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        const row = table.rows[rowIndex];
-                        if (row) {
-                            row.remove();
-                            storedValues.splice(rowIndex, 1);
-                        }
+                });
+                const data = await response.json();
+
+                if (data.success) {
+                    const row = table.rows[rowIndex];
+                    if (row) {
+                        row.remove();
+                        storedValues.splice(rowIndex, 1);
                     }
-                    showResultMessage(data.message, data.success);
-                })
-                .catch(error => console.error('Error:', error));
+                }
+                showResultMessage(data.message, data.success);
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+                editButton.parentElement.disabled = true;
+            }
         }
 
 
@@ -558,6 +576,9 @@ include 'nav.php';
         }
 
         async function fetchAvailableClasses() {
+            spinner.style.display = 'inline-block';
+            editButton.parentElement.disabled = true;
+
             try {
                 const response = await fetch("../../Helper/get_available_classes.php");
                 const data = await response.json();
@@ -565,6 +586,9 @@ include 'nav.php';
             } catch (error) {
                 console.error("Error fetching classes:", error);
                 return [];
+            } finally {
+                spinner.style.display = 'none';
+                editButton.parentElement.disabled = false;
             }
         }
 

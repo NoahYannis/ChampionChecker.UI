@@ -21,9 +21,12 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         <div class="nav-items">
             <ul>
                 <li><a href="results.php">Ergebnisse</a></li>
-                <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                <?php if ($isAuthenticated): ?>
+                    <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
+                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
+                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                    <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                <?php endif; ?>
             </ul>
         </div>
     </aside>
@@ -40,10 +43,13 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         </div>
         <div class="nav-items">
             <ul>
-                <li><a href="results.php" data-text="Ergebnisse">Ergebnisse</a></li>
-                <li><a href="add_classresult.php" data-text="Klassenergebnis hinzufügen">Klassenergebnis hinzufügen</a></li>
-                <li><a href="add_soloresult.php" data-text="Soloergebnis hinzufügen">Soloergebnis hinzufügen</a></li>
-                <li><a href="teachers_overview.php" data-text="Lehrerverwaltung">Lehrerverwaltung</a></li>
+                <li><a href="results.php">Ergebnisse</a></li>
+                <?php if ($isAuthenticated): ?>
+                    <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
+                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
+                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                    <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                <?php endif; ?>
             </ul>
         </div>
         <div class="profile" id="profile">
@@ -104,14 +110,11 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
 
     // Sidebar bei Klick auf Hamburger-Icon toggeln
     hamburgerInput.addEventListener('change', function() {
-        if (this.checked) {
-            sideBar.style.left = '0';
-        } else {
-            sideBar.style.left = '-250px';
-        }
+        sideBar.classList.toggle("open")
     });
-
+    
     profilePic.addEventListener('click', function(event) {
+        event.preventDefault();
         if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
             profileMenu.style.display = 'none';
             return;
@@ -128,9 +131,9 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         }
 
         // Hamburger-Menü ausblenden, wenn außerhalb geklickt wird
-        if (!hamburgerMenu.contains(event.target)) {
-            sideBar.style.left = '-250px';
+        if (!hamburgerMenu.contains(event.target) && hamburgerInput.checked) {
             hamburgerInput.checked = false;
+            sideBar.classList.toggle("open");
         }
     });
 

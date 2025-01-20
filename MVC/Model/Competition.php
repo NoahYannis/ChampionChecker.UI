@@ -5,8 +5,32 @@ namespace MVC\Model;
 use RuntimeException;
 use InvalidArgumentException;
 use DateTime;
+use JsonSerializable;
 
-class Competition
+enum CompetitionStatus: int
+{
+    case Geplant = 0;
+    case Läuft = 1;
+    case Ausstehend = 2;
+    case Abgesagt = 3;
+    case Verschoben = 4;
+    case Beendet = 5;
+
+    public static function fromString(string $value): self
+    {
+        return match ($value) {
+            'Geplant' => self::Geplant,
+            'Läuft' => self::Läuft,
+            'Ausstehend' => self::Ausstehend,
+            'Abgesagt' => self::Abgesagt,
+            'Verschoben' => self::Verschoben,
+            'Beendet' => self::Beendet,
+            default => throw new InvalidArgumentException("Ungültiger Status: $value"),
+        };
+    }
+}
+
+class Competition implements JsonSerializable
 {
     public function __construct(
         private ?int $id = null,
@@ -17,10 +41,30 @@ class Competition
         private ?bool $isMale = null,
         private $date = null,
         private ?int $refereeId = null,
-        private ?Referee $referee = null
+        private ?Referee $referee = null,
+        private CompetitionStatus $status = CompetitionStatus::Geplant,
+        private ?string $additionalInfo = null,
     ) {
-        $this->date = $date instanceof DateTime ? $date : new DateTime($date);
+        $this->date = $date instanceof DateTime ? $date : DateTime::createFromFormat('d.m.y, H:i:s', $date);
     }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'classParticipants' => $this->classParticipants,
+            'studentParticipants' => $this->studentParticipants,
+            'isTeam' => $this->isTeam,
+            'isMale' => $this->isMale,
+            'date' => $this->date ? $this->date->format(DateTime::ATOM) : null,
+            'refereeId' => $this->refereeId,
+            'referee' => $this->referee,
+            'status' => $this->status->name,
+            'additionalInfo' => $this->additionalInfo
+        ];
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -115,5 +159,31 @@ class Competition
     public function setReferee(?Referee $referee): void
     {
         $this->referee = $referee;
+    }
+
+    public function getStatus(): CompetitionStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(CompetitionStatus $status): void
+    {
+        if (!in_array($status, CompetitionStatus::cases())) {
+            throw new InvalidArgumentException('Ungültiger Status-Wert.');
+        }
+        $this->status = $status;
+    }
+
+    public function getAdditionalInfo(): ?string
+    {
+        return $this->additionalInfo;
+    }
+
+    public function setAdditionalInfo(?string $additionalInfo): void
+    {
+        if ($additionalInfo !== null && strlen($additionalInfo) > 200) {
+            throw new InvalidArgumentException('Zusätzliche Informationen dürfen maximal 200 Zeichen lang sein.');
+        }
+        $this->additionalInfo = $additionalInfo;
     }
 }
