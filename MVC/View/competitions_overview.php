@@ -403,18 +403,20 @@ include 'nav.php';
                 let cells = row.getElementsByTagName("td");
                 let storedRow = storedValues[row.rowIndex];
 
-                let name = wasCanceled && storedRow ? storedRow[0] : cells[0].querySelector('input').value;
+                let name = wasCanceled ? storedRow[0] : cells[0].querySelector('input').value;
 
                 let dateInputValue = cells[1].querySelector('input').value;
-                let date = (wasCanceled && storedRow) || !dateInputValue ? storedRow[1] : dateInputValue;
+                let date = wasCanceled || !dateInputValue ? storedRow[1] : dateInputValue;
 
-                let referee = wasCanceled && storedRow ? storedRow[2] : cells[2].querySelector('input').value;
-                let type = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('select').value;
-                let gender = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('select').value;
-                let participants = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').value;
-                // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verewendet.
-                let state = wasCanceled && storedRow ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
-                let additionalInfo = wasCanceled && storedRow ? storedRow[7] : cells[7].querySelector('input').value;
+                let referee = wasCanceled ? storedRow[2] : cells[2].querySelector('input').value;
+                let type = wasCanceled ? storedRow[3] : cells[3].querySelector('select').value;
+                let gender = wasCanceled ? storedRow[4] : cells[4].querySelector('select').value;
+                let participants = wasCanceled ? storedRow[5] : cells[5].querySelector('input').value;
+
+                // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
+                let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
+                let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
+
 
                 if (checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
