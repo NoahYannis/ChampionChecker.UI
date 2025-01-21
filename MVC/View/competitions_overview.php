@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 'N' => null,
                 default => null,
             },
-            date: $data['date'],
+            date: DateTime::createFromFormat("Y-m-d\TH:i:s", $data['date']),
             refereeId: 0,
             referee: null, // TODO: Nur ID übergeben
             status: CompetitionStatus::fromString($data['state']),
@@ -351,10 +351,10 @@ include 'nav.php';
                 storedValues[row.rowIndex] = [name, date, referee, type, gender, participants, state, additionalInfo];
 
                 cells[0].innerHTML = `<input type="text" value="${name}">`;
-                
+
                 let dateValue = createISODateValueFromString(date);
                 cells[1].innerHTML = `<input type="datetime-local" value="${dateValue}">`;
-                
+
                 cells[2].innerHTML = `<input type="text" value="${referee}">`;
 
                 const typeSelect = createTypeSelect(type)
@@ -428,8 +428,9 @@ include 'nav.php';
                     changedCompetitions.push(changedComp);
                 }
 
+
                 cells[0].innerHTML = `<div class='td-content'>${name}</div>`;
-                cells[1].innerHTML = `<div class='td-content'>${date}</div>`;
+                cells[1].innerHTML = `<div class='td-content'>${wasCanceled ? date : createDateStringFromISOValue(date)}</div>`;
                 cells[2].innerHTML = `<div class='td-content'>${referee}</div>`;
                 cells[3].innerHTML = `<div class='td-content'>${type}</div>`;
 
@@ -520,10 +521,18 @@ include 'nav.php';
 
             // Kopfzeile überspringen
             for (let i = 0; i < cells.length - 1; i++) {
-                const inputElement = cells[i].querySelector('input') || cells[i].querySelector('select');
-                const storedValue = storedRow[i];
+                const inputElement = cells[i].querySelector('input') ||
+                    cells[i].querySelector('select') ||
+                    cells[i].querySelector('input[type="datetime-local"]');
 
-                if (inputElement.value !== storedValue) {
+                const storedValue = storedRow[i];
+                let currentValue = inputElement.value;
+
+                if (inputElement.type === 'datetime-local') {
+                    currentValue = createDateStringFromISOValue(inputElement.value);
+                }
+
+                if (currentValue !== storedValue) {
                     return true;
                 }
             }
@@ -603,13 +612,23 @@ include 'nav.php';
         function createISODateValueFromString(dateTimeString) {
             // Anzeigeformat: 09.10.24, 20:13:29 (dd-mm-yyyy)
             // Nötiges Format für datetime-local input: yyyy-MM-ddThh:mm
-            let dateParts = dateTimeString.split(",").map(parts => parts.trim());
+            let dateParts = dateTimeString.split(",").map(part => part.trim());
             let date = dateParts[0];
             let time = dateParts[1];
 
             let [day, month, year] = date.split(".");
             let isoString = `${year}-${month}-${day}T${time}`;
             return isoString;
+        }
+
+        function createDateStringFromISOValue(isoValue) {
+            let dateParts = isoValue.split("T").map(part => part.trim());
+            let date = dateParts[0];
+            let time = dateParts[1];
+
+            let [year, month, day] = date.split("-");
+            let dateString = `${day}.${month}.${year}, ${time}`;
+            return dateString;
         }
     </script>
 
