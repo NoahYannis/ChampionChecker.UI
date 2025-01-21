@@ -353,7 +353,10 @@ include 'nav.php';
                 cells[0].innerHTML = `<input type="text" value="${name}">`;
                 cells[1].innerHTML = `<input type="text" value="${date}">`;
                 cells[2].innerHTML = `<input type="text" value="${referee}">`;
-                cells[3].innerHTML = `<input type="text" value="${type}">`;
+
+                const typeSelect = createTypeSelect(type)
+                cells[3].innerHTML = typeSelect;
+
                 cells[4].innerHTML = createGenderSelect(gender);
                 cells[5].innerHTML = `<input type="text" value="${participants}">`;
 
@@ -400,7 +403,7 @@ include 'nav.php';
                 let name = wasCanceled && storedRow ? storedRow[0] : cells[0].querySelector('input').value;
                 let date = wasCanceled && storedRow ? storedRow[1] : cells[1].querySelector('input').value;
                 let referee = wasCanceled && storedRow ? storedRow[2] : cells[2].querySelector('input').value;
-                let type = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('input').value;
+                let type = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('select').value;
                 let gender = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('select').value;
                 let participants = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').value;
                 // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verewendet.
@@ -431,6 +434,7 @@ include 'nav.php';
                 let genderContent = document.createElement('div');
                 let genderIcon = document.createElement('i');
                 let genderIconClasses = mapGender(gender, true).split(" ");
+                genderContent.classList.add("td-content");
                 genderIcon.classList.add(...genderIconClasses);
                 genderContent.appendChild(genderIcon);
                 cells[4].appendChild(genderContent);
@@ -559,6 +563,15 @@ include 'nav.php';
                 <option value="M" ${gender === 'M' ? 'selected' : ''}>Männlich</option>
                 <option value="W" ${gender === 'W' ? 'selected' : ''}>Weiblich</option>
                 <option value="N" ${gender === 'N' ? 'selected' : ''}>Neutral</option>
+            </select>`;
+            return optionsHTML;
+        }
+
+        function createTypeSelect(type) {
+            const optionsHTML = `
+            <select id="type-select">
+                <option value="Einzel" ${type === 'Einzel' ? 'selected' : ''}>Einzel</option>
+                <option value="Team" ${type === 'Team' ? 'selected' : ''}>Team</option>
             </select>`;
             return optionsHTML;
         }
