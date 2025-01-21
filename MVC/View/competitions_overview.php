@@ -219,7 +219,7 @@ include 'nav.php';
             thead = document.createElement('thead');
             headerRow = document.createElement('tr');
 
-            const headers = ['Name', 'Datum', 'Leiter', 'Art', 'Geschlecht', 'Teilnehmer', 'Status', 'Sonstiges'];
+            const headers = ['Name', 'Zeit', 'Leiter', 'Art', 'Geschlecht', 'Teilnehmer', 'Status', 'Sonstiges'];
             headers.forEach((headerText, index) => {
                 const th = document.createElement('th');
                 th.textContent = headerText;
@@ -245,7 +245,7 @@ include 'nav.php';
                 const dateCell = document.createElement('td');
                 const date = new Date(competition.date);
                 const formattedDate = new Intl.DateTimeFormat('de-DE', {
-                    year: '2-digit',
+                    year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
                     hour: '2-digit',
@@ -351,7 +351,10 @@ include 'nav.php';
                 storedValues[row.rowIndex] = [name, date, referee, type, gender, participants, state, additionalInfo];
 
                 cells[0].innerHTML = `<input type="text" value="${name}">`;
-                cells[1].innerHTML = `<input type="text" value="${date}">`;
+                
+                let dateValue = createISODateValueFromString(date);
+                cells[1].innerHTML = `<input type="datetime-local" value="${dateValue}">`;
+                
                 cells[2].innerHTML = `<input type="text" value="${referee}">`;
 
                 const typeSelect = createTypeSelect(type)
@@ -594,6 +597,19 @@ include 'nav.php';
             } else {
                 return iconToGender[input] || '';
             }
+        }
+
+
+        function createISODateValueFromString(dateTimeString) {
+            // Anzeigeformat: 09.10.24, 20:13:29 (dd-mm-yyyy)
+            // Nötiges Format für datetime-local input: yyyy-MM-ddThh:mm
+            let dateParts = dateTimeString.split(",").map(parts => parts.trim());
+            let date = dateParts[0];
+            let time = dateParts[1];
+
+            let [day, month, year] = date.split(".");
+            let isoString = `${year}-${month}-${day}T${time}`;
+            return isoString;
         }
     </script>
 

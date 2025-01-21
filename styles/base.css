@@ -280,6 +280,7 @@ input[type="submit"] {
 input[type="text"],
 input[type="email"],
 input[type="password"],
+input[type="datetime-local"],
 textarea,
 select {
   width: 100%;
