@@ -404,7 +404,10 @@ include 'nav.php';
                 let storedRow = storedValues[row.rowIndex];
 
                 let name = wasCanceled && storedRow ? storedRow[0] : cells[0].querySelector('input').value;
-                let date = wasCanceled && storedRow ? storedRow[1] : cells[1].querySelector('input').value;
+
+                let dateInputValue = cells[1].querySelector('input').value;
+                let date = (wasCanceled && storedRow) || !dateInputValue ? storedRow[1] : dateInputValue;
+
                 let referee = wasCanceled && storedRow ? storedRow[2] : cells[2].querySelector('input').value;
                 let type = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('select').value;
                 let gender = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('select').value;
@@ -428,9 +431,11 @@ include 'nav.php';
                     changedCompetitions.push(changedComp);
                 }
 
-
                 cells[0].innerHTML = `<div class='td-content'>${name}</div>`;
-                cells[1].innerHTML = `<div class='td-content'>${wasCanceled ? date : createDateStringFromISOValue(date)}</div>`;
+
+                // Bei Abbruch oder gelöschtem Datum das gespeicherte Datum wiederherstellen
+                cells[1].innerHTML = `<div class='td-content'>${wasCanceled || !dateInputValue ? date : createDateStringFromISOValue(date)}</div>`;
+
                 cells[2].innerHTML = `<div class='td-content'>${referee}</div>`;
                 cells[3].innerHTML = `<div class='td-content'>${type}</div>`;
 
@@ -529,6 +534,10 @@ include 'nav.php';
                 let currentValue = inputElement.value;
 
                 if (inputElement.type === 'datetime-local') {
+                    if (!inputElement.value) {
+                        continue;
+                    }
+
                     currentValue = createDateStringFromISOValue(inputElement.value);
                 }
 
