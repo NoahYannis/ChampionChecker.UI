@@ -339,15 +339,9 @@ include 'nav.php';
                 let date = row.cells[1].innerText;
                 let referee = row.cells[2].innerText;
                 let type = row.cells[3].innerText;
-                let genderIcon = row.cells[4].querySelector("i");
-
-                if (genderIcon.classList.contains("fa-mars")) {
-                    gender = "M";
-                } else if (genderIcon.classList.contains("fa-venus")) {
-                    gender = "W";
-                } else {
-                    gender = "-";
-                }
+                let genderIcon = row.cells[4].querySelector("i").classList.value;
+                let gender = mapGender(genderIcon, false);
+                let genderSelect = createGenderSelect(gender);
 
                 let participants = row.cells[5].innerText;
                 let state = row.cells[6].innerText;
@@ -360,7 +354,7 @@ include 'nav.php';
                 cells[1].innerHTML = `<input type="text" value="${date}">`;
                 cells[2].innerHTML = `<input type="text" value="${referee}">`;
                 cells[3].innerHTML = `<input type="text" value="${type}">`;
-                cells[4].innerHTML = `<input type="text" value="${gender}">`;
+                cells[4].innerHTML = createGenderSelect(gender);
                 cells[5].innerHTML = `<input type="text" value="${participants}">`;
 
                 const statusSelect = document.createElement("select");
@@ -372,6 +366,9 @@ include 'nav.php';
                 statusSelect.appendChild(selectedOption);
 
                 for (const [statusName, statusValue] of Object.entries(statuses)) {
+                    if (statusName === state) {
+                        continue;
+                    }
                     const option = document.createElement('option');
                     option.value = statusValue;
                     option.textContent = statusName;
@@ -404,19 +401,8 @@ include 'nav.php';
                 let date = wasCanceled && storedRow ? storedRow[1] : cells[1].querySelector('input').value;
                 let referee = wasCanceled && storedRow ? storedRow[2] : cells[2].querySelector('input').value;
                 let type = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('input').value;
-                let gender = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('input').value;
-
-                let genderIcon = document.createElement('i');
-                if (gender === 'M') {
-                    genderIcon.className = 'fas fa-mars';
-                } else if (gender === 'W') {
-                    genderIcon.className = 'fas fa-venus';
-                } else {
-                    genderIcon.className = 'fas fa-user';
-                }
-
+                let gender = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('select').value;
                 let participants = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').value;
-
                 // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verewendet.
                 let state = wasCanceled && storedRow ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled && storedRow ? storedRow[7] : cells[7].querySelector('input').value;
@@ -443,7 +429,9 @@ include 'nav.php';
 
                 cells[4].innerHTML = ''; // Entfernt das Input-Element.
                 let genderContent = document.createElement('div');
-                genderContent.className = 'td-content';
+                let genderIcon = document.createElement('i');
+                let genderIconClasses = mapGender(gender, true).split(" ");
+                genderIcon.classList.add(...genderIconClasses);
                 genderContent.appendChild(genderIcon);
                 cells[4].appendChild(genderContent);
 
@@ -563,6 +551,36 @@ include 'nav.php';
             });
 
             rows.forEach(row => tbody.appendChild(row));
+        }
+
+        function createGenderSelect(gender) {
+            const optionsHTML = `
+            <select id="gender-select">
+                <option value="M" ${gender === 'M' ? 'selected' : ''}>Männlich</option>
+                <option value="W" ${gender === 'W' ? 'selected' : ''}>Weiblich</option>
+                <option value="N" ${gender === 'N' ? 'selected' : ''}>Neutral</option>
+            </select>`;
+            return optionsHTML;
+        }
+
+        function mapGender(input, toIcon) {
+            const genderToIcon = {
+                'M': 'fas fa-mars',
+                'W': 'fas fa-venus',
+                'N': 'fas fa-user',
+            };
+
+            const iconToGender = {
+                'fas fa-mars': 'M',
+                'fas fa-venus': 'W',
+                'fas fa-user': 'N'
+            };
+
+            if (toIcon) {
+                return genderToIcon[input] || '';
+            } else {
+                return iconToGender[input] || '';
+            }
         }
     </script>
 
