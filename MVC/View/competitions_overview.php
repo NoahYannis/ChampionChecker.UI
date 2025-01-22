@@ -337,12 +337,15 @@ include 'nav.php';
                 let gender = mapGender(genderIcon, false);
                 let genderSelect = createGenderSelect(gender);
 
-                let participants = row.cells[5].innerText;
+                let selector = type === "Team" ? '.name-badge.class' : '.name-badge.student';
+                let participants = Array.from(row.cells[5].querySelectorAll(selector))
+                    .map(element => element.textContent.trim());
+
                 let state = row.cells[6].innerText;
                 let additionalInfo = row.cells[7].innerText;
 
                 // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
-                storedValues[row.rowIndex] = [name, date, referee, type, gender, participants, state, additionalInfo];
+                storedValues[row.rowIndex] = [name, date, referee, type, gender, participants.join(","), state, additionalInfo];
 
                 cells[0].innerHTML = `<input type="text" value="${name}">`;
 
@@ -355,7 +358,13 @@ include 'nav.php';
                 cells[3].innerHTML = typeSelect;
 
                 cells[4].innerHTML = createGenderSelect(gender);
-                cells[5].innerHTML = `<input type="text" value="${participants}">`;
+                cells[5].innerHTML = participants.map(participant => {
+                    return `<span data-participant="${participant}"
+                     class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
+                    ${participant} 
+                    <i onclick="this.parentElement.remove()" class="fas fa-times"></i>
+                    </span>`
+                }).join(' ');
 
                 const statusSelect = document.createElement("select");
                 statusSelect.id = "status-select";
@@ -405,8 +414,11 @@ include 'nav.php';
                 let referee = wasCanceled ? storedRow[2] : cells[2].querySelector('input').value;
                 let type = wasCanceled ? storedRow[3] : cells[3].querySelector('select').value;
                 let gender = wasCanceled ? storedRow[4] : cells[4].querySelector('select').value;
-                let participants = wasCanceled ? storedRow[5] : cells[5].querySelector('input').value;
 
+                let selector = type === "Team" ? ".name-badge.class" : ".name-badge.student";
+                let participants = wasCanceled ? storedRow[5].split(",") : Array.from(cells[5].querySelectorAll(selector))
+                    .map(element => element.textContent.trim());
+                    
                 // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
                 let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
@@ -444,7 +456,14 @@ include 'nav.php';
                 genderContent.appendChild(genderIcon);
                 cells[4].appendChild(genderContent);
 
-                cells[5].innerHTML = `<div class='td-content'>${participants}</div>`;
+                // Teilnehmer-Anzeige
+                cells[5].innerHTML = participants.map(participant => {
+                    return `<span data-participant="${participant}"
+                        class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
+                        ${participant} 
+                    </span>`
+                }).join(' ');
+
                 cells[6].innerHTML = `<div class='td-content'>${state}</div>`;
                 cells[7].innerHTML = `<div class='td-content'>${additionalInfo}</div>`;
             });
@@ -522,19 +541,24 @@ include 'nav.php';
 
             // Kopfzeile überspringen
             for (let i = 0; i < cells.length - 1; i++) {
-                const inputElement = cells[i].querySelector('input') ||
-                    cells[i].querySelector('select') ||
-                    cells[i].querySelector('input[type="datetime-local"]');
+
+                let currentValue =
+                    (cells[i].querySelector('input')?.value) ||
+                    (cells[i].querySelector('select')?.value) ||
+                    (cells[i].querySelector('input[type="datetime-local"]')?.value) ||
+                    Array.from(cells[i].querySelectorAll('.name-badge')).map(el => el.textContent.trim()).join(',');
 
                 const storedValue = storedRow[i];
-                let currentValue = inputElement.value;
 
-                if (inputElement.type === 'datetime-local') {
-                    if (!inputElement.value) {
+                if (i === 5) {}
+
+                // Zeitpunkt
+                if (i === 1) {
+                    if (!currentValue) {
                         continue;
                     }
 
-                    currentValue = createDateStringFromISOValue(inputElement.value);
+                    currentValue = createDateStringFromISOValue(currentValue);
                 }
 
                 if (currentValue !== storedValue) {
@@ -643,8 +667,7 @@ include 'nav.php';
                 participantsHTML = comp.classParticipants.map(p => {
                     return `<span data-id="${p.id}" data-name="${p.name}" class="name-badge class">${p.name}</span>`;
                 }).join(' ');
-            }
-            else {
+            } else {
                 participantsHTML = comp.studentParticipants.map(p => {
                     return `<span data-id="${p.id}" data-name="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
                 }).join(' ');
