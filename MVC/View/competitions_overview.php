@@ -279,14 +279,8 @@ include 'nav.php';
                 row.appendChild(genderCell);
 
                 const participantsCell = document.createElement('td');
-
-                // Erstmal Teilnehmeranzahl anzeigen. Später alle Teilnehmer bei Klick in das td-Element.
-                if (competition.isTeam) {
-                    participantsCell.textContent = competition.classParticipants.length;
-                } else {
-                    participantsCell.textContent = competition.studentParticipants.length;
-                }
-
+                const participants = displayParticipants(competition)
+                participantsCell.innerHTML = participants;
                 row.appendChild(participantsCell);
 
                 const statusCell = document.createElement('td');
@@ -640,6 +634,19 @@ include 'nav.php';
             let [year, month, day] = date.split("-");
             let dateString = `${day}.${month}.${year}, ${time}`;
             return dateString;
+        }
+
+        function displayParticipants(comp) {
+            // Erstmal Anzeige der Klassen bei Team-Wettbewerben, anschließend Schülernamen
+            let participantsHTML = "";
+
+            if (comp.isTeam === true) {
+                participantsHTML = comp.classParticipants.map(p => {
+                    return `<span data-id="${p.id}" data-name="${p.name}" class="class">${p.name}</span>`;
+                }).join(' ');
+            }
+
+            return participantsHTML;
         }
     </script>
 
