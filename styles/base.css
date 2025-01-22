@@ -277,7 +277,7 @@ input[type="submit"] {
   }
 }
 
-.class {
+.name-badge {
   display: inline-block;
   border-radius: 16px;
   background-color: var(--primary-color);
@@ -291,6 +291,14 @@ input[type="submit"] {
     color: red;
     cursor: pointer;
     margin-left: 0.3125rem;
+  }
+
+  &.class {
+    background-color: #94bdf8;
+  }
+
+  &.student {
+    background-color: #94f8b0;
   }
 }
 
@@ -414,6 +422,10 @@ th {
   .table-style {
     margin: 0.625rem auto;
     width: 100%;
+  }
+
+  .name-badge {
+    padding-inline: 0.625rem;
   }
 
   .table-style th,

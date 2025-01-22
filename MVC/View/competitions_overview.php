@@ -641,12 +641,12 @@ include 'nav.php';
 
             if (comp.isTeam === true) {
                 participantsHTML = comp.classParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-name="${p.name}" class="class">${p.name}</span>`;
+                    return `<span data-id="${p.id}" data-name="${p.name}" class="name-badge class">${p.name}</span>`;
                 }).join(' ');
             }
             else {
                 participantsHTML = comp.studentParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-name="${p.firstName} ${p.lastName}" class="class">${p.firstName} ${p.lastName}</span>`;
+                    return `<span data-id="${p.id}" data-name="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
                 }).join(' ');
             }
 
