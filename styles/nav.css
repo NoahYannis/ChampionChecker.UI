@@ -42,7 +42,7 @@
 
       a {
         position: relative;
-        font-size: clamp(1rem, 2vw, 1.5rem);
+        font-size: clamp(1rem, 2vw, 1.2rem);
         text-decoration: none;
         font-weight: 500;
         color: black;

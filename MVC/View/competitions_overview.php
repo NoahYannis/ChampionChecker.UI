@@ -637,12 +637,16 @@ include 'nav.php';
         }
 
         function displayParticipants(comp) {
-            // Erstmal Anzeige der Klassen bei Team-Wettbewerben, anschließend Schülernamen
             let participantsHTML = "";
 
             if (comp.isTeam === true) {
                 participantsHTML = comp.classParticipants.map(p => {
                     return `<span data-id="${p.id}" data-name="${p.name}" class="class">${p.name}</span>`;
+                }).join(' ');
+            }
+            else {
+                participantsHTML = comp.studentParticipants.map(p => {
+                    return `<span data-id="${p.id}" data-name="${p.firstName} ${p.lastName}" class="class">${p.firstName} ${p.lastName}</span>`;
                 }).join(' ');
             }
 

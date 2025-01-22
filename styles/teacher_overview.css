@@ -35,7 +35,8 @@ th {
   background-color: red;
 }
 
-@media (width > 600px) {
+
+@media (min-width: 37.5rem) {
   .table-style th,
   .table-style td {
     max-width: 18.75rem;
