@@ -100,7 +100,7 @@ function printTeachers($teachers)
             $className = $class->getName();
             if ($className) {
                 $escapedName = htmlspecialchars($className);
-                $classNames[] = "<span class='class'>{$escapedName}</span>";
+                $classNames[] = "<span class='name-badge class'>{$escapedName}</span>";
             }
         }
 
@@ -339,7 +339,7 @@ include 'nav.php';
 
                 cells[3].innerHTML = classes.map(className => {
                     return className !== "-" ?
-                        `<span data-class="${className}" class="class" title="Klasse entfernen">
+                        `<span data-class="${className}" class="name-badge class" title="Klasse entfernen">
                         ${className} 
                         <i onclick="removeClassElement(this.parentElement, '${className}')" class="fas fa-times"></i>
                         </span>` :
@@ -393,7 +393,7 @@ include 'nav.php';
 
                 let classes = wasCanceled && storedRow ?
                     storedRow[3] :
-                    Array.from(cells[3].querySelectorAll('.class')).map(c => c.innerText.trim());
+                    Array.from(cells[3].querySelectorAll('.name-badge')).map(c => c.innerText.trim());
 
                 let additionalInfo = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('input').value;
                 let isParticipating = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').checked;
@@ -426,7 +426,7 @@ include 'nav.php';
                     classElements = "-";
                 } else {
                     classElements = classes
-                        .map(className => `<span class='class'>${className.trim()}</span>`)
+                        .map(className => `<span class='name-badge class'>${className.trim()}</span>`)
                         .join(" ");
                 }
 
@@ -526,7 +526,7 @@ include 'nav.php';
 
                 // Klassen
                 if (i === 3) {
-                    let classElements = Array.from(cells[3].querySelectorAll('.class')).map(c => c.innerText);
+                    let classElements = Array.from(cells[3].querySelectorAll('.name-badge')).map(c => c.innerText);
                     inputValue = classElements.length > 0 ? classElements : "-";
                 }
 
@@ -628,7 +628,7 @@ include 'nav.php';
 
             select.addEventListener("change", function() {
                 const selectedOptions = Array.from(select.selectedOptions);
-                const classElementsCount = cells[3].querySelectorAll('.class').length;
+                const classElementsCount = cells[3].querySelectorAll('.name-badge').length;
 
                 if (classElementsCount >= 2) {
                     alert("Es können höchstens 2 Klassen gleichzeitig zugewiesen werden. Bitte entfernen Sie eine Klasse, um eine neue hinzuzufügen.");
@@ -650,7 +650,7 @@ include 'nav.php';
                         }
 
                         const classElement = document.createElement("span");
-                        classElement.classList.add("class");
+                        classElement.classList.add("name-badge", "class");
                         classElement.setAttribute("data-class", classItem.name);
                         classElement.textContent = `${classItem.name}`;
                         classElement.setAttribute("title", "Klasse entfernen");

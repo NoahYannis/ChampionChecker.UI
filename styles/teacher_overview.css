@@ -35,24 +35,8 @@ th {
   background-color: red;
 }
 
-.class {
-  display: inline-block;
-  border-radius: 16px;
-  background-color: var(--primary-color);
-  color: black;
-  padding: 0.1875rem;
-  text-align: center;
-  border: 1px solid #ccc;
-  margin: 0.3125rem 0.3125rem 0.625rem 0.3125rem;
 
-  .fas.fa-times {
-    color: red;
-    cursor: pointer;
-    margin-left: 0.3125rem;
-  }
-}
-
-@media (width > 600px) {
+@media (min-width: 37.5rem) {
   .table-style th,
   .table-style td {
     max-width: 18.75rem;

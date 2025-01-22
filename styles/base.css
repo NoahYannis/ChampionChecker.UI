@@ -277,9 +277,35 @@ input[type="submit"] {
   }
 }
 
+.name-badge {
+  display: inline-block;
+  border-radius: 16px;
+  background-color: var(--primary-color);
+  color: black;
+  padding: 0.1875rem;
+  text-align: center;
+  border: 1px solid #ccc;
+  margin: 0.3125rem 0.3125rem 0.625rem 0.3125rem;
+
+  .fas.fa-times {
+    color: red;
+    cursor: pointer;
+    margin-left: 0.3125rem;
+  }
+
+  &.class {
+    background-color: #94bdf8;
+  }
+
+  &.student {
+    background-color: #94f8b0;
+  }
+}
+
 input[type="text"],
 input[type="email"],
 input[type="password"],
+input[type="datetime-local"],
 textarea,
 select {
   width: 100%;
@@ -396,6 +422,10 @@ th {
   .table-style {
     margin: 0.625rem auto;
     width: 100%;
+  }
+
+  .name-badge {
+    padding-inline: 0.625rem;
   }
 
   .table-style th,

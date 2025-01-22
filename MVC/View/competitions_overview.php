@@ -63,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 'N' => null,
                 default => null,
             },
-            date: $data['date'],
+            date: DateTime::createFromFormat("Y-m-d\TH:i:s", $data['date']),
             refereeId: 0,
             referee: null, // TODO: Nur ID übergeben
             status: CompetitionStatus::fromString($data['state']),
@@ -219,7 +219,7 @@ include 'nav.php';
             thead = document.createElement('thead');
             headerRow = document.createElement('tr');
 
-            const headers = ['Name', 'Datum', 'Leiter', 'Art', 'Geschlecht', 'Teilnehmer', 'Status', 'Sonstiges'];
+            const headers = ['Name', 'Zeit', 'Leiter', 'Art', 'Geschlecht', 'Teilnehmer', 'Status', 'Sonstiges'];
             headers.forEach((headerText, index) => {
                 const th = document.createElement('th');
                 th.textContent = headerText;
@@ -245,7 +245,7 @@ include 'nav.php';
                 const dateCell = document.createElement('td');
                 const date = new Date(competition.date);
                 const formattedDate = new Intl.DateTimeFormat('de-DE', {
-                    year: '2-digit',
+                    year: 'numeric',
                     month: '2-digit',
                     day: '2-digit',
                     hour: '2-digit',
@@ -279,14 +279,8 @@ include 'nav.php';
                 row.appendChild(genderCell);
 
                 const participantsCell = document.createElement('td');
-
-                // Erstmal Teilnehmeranzahl anzeigen. Später alle Teilnehmer bei Klick in das td-Element.
-                if (competition.isTeam) {
-                    participantsCell.textContent = competition.classParticipants.length;
-                } else {
-                    participantsCell.textContent = competition.studentParticipants.length;
-                }
-
+                const participants = displayParticipants(competition)
+                participantsCell.innerHTML = participants;
                 row.appendChild(participantsCell);
 
                 const statusCell = document.createElement('td');
@@ -351,9 +345,15 @@ include 'nav.php';
                 storedValues[row.rowIndex] = [name, date, referee, type, gender, participants, state, additionalInfo];
 
                 cells[0].innerHTML = `<input type="text" value="${name}">`;
-                cells[1].innerHTML = `<input type="text" value="${date}">`;
+
+                let dateValue = createISODateValueFromString(date);
+                cells[1].innerHTML = `<input type="datetime-local" value="${dateValue}">`;
+
                 cells[2].innerHTML = `<input type="text" value="${referee}">`;
-                cells[3].innerHTML = `<input type="text" value="${type}">`;
+
+                const typeSelect = createTypeSelect(type)
+                cells[3].innerHTML = typeSelect;
+
                 cells[4].innerHTML = createGenderSelect(gender);
                 cells[5].innerHTML = `<input type="text" value="${participants}">`;
 
@@ -397,15 +397,20 @@ include 'nav.php';
                 let cells = row.getElementsByTagName("td");
                 let storedRow = storedValues[row.rowIndex];
 
-                let name = wasCanceled && storedRow ? storedRow[0] : cells[0].querySelector('input').value;
-                let date = wasCanceled && storedRow ? storedRow[1] : cells[1].querySelector('input').value;
-                let referee = wasCanceled && storedRow ? storedRow[2] : cells[2].querySelector('input').value;
-                let type = wasCanceled && storedRow ? storedRow[3] : cells[3].querySelector('input').value;
-                let gender = wasCanceled && storedRow ? storedRow[4] : cells[4].querySelector('select').value;
-                let participants = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').value;
-                // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verewendet.
-                let state = wasCanceled && storedRow ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
-                let additionalInfo = wasCanceled && storedRow ? storedRow[7] : cells[7].querySelector('input').value;
+                let name = wasCanceled ? storedRow[0] : cells[0].querySelector('input').value;
+
+                let dateInputValue = cells[1].querySelector('input').value;
+                let date = wasCanceled || !dateInputValue ? storedRow[1] : dateInputValue;
+
+                let referee = wasCanceled ? storedRow[2] : cells[2].querySelector('input').value;
+                let type = wasCanceled ? storedRow[3] : cells[3].querySelector('select').value;
+                let gender = wasCanceled ? storedRow[4] : cells[4].querySelector('select').value;
+                let participants = wasCanceled ? storedRow[5] : cells[5].querySelector('input').value;
+
+                // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
+                let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
+                let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
+
 
                 if (checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
@@ -423,7 +428,10 @@ include 'nav.php';
                 }
 
                 cells[0].innerHTML = `<div class='td-content'>${name}</div>`;
-                cells[1].innerHTML = `<div class='td-content'>${date}</div>`;
+
+                // Bei Abbruch oder gelöschtem Datum das gespeicherte Datum wiederherstellen
+                cells[1].innerHTML = `<div class='td-content'>${wasCanceled || !dateInputValue ? date : createDateStringFromISOValue(date)}</div>`;
+
                 cells[2].innerHTML = `<div class='td-content'>${referee}</div>`;
                 cells[3].innerHTML = `<div class='td-content'>${type}</div>`;
 
@@ -431,6 +439,7 @@ include 'nav.php';
                 let genderContent = document.createElement('div');
                 let genderIcon = document.createElement('i');
                 let genderIconClasses = mapGender(gender, true).split(" ");
+                genderContent.classList.add("td-content");
                 genderIcon.classList.add(...genderIconClasses);
                 genderContent.appendChild(genderIcon);
                 cells[4].appendChild(genderContent);
@@ -513,10 +522,22 @@ include 'nav.php';
 
             // Kopfzeile überspringen
             for (let i = 0; i < cells.length - 1; i++) {
-                const inputElement = cells[i].querySelector('input') || cells[i].querySelector('select');
-                const storedValue = storedRow[i];
+                const inputElement = cells[i].querySelector('input') ||
+                    cells[i].querySelector('select') ||
+                    cells[i].querySelector('input[type="datetime-local"]');
 
-                if (inputElement.value !== storedValue) {
+                const storedValue = storedRow[i];
+                let currentValue = inputElement.value;
+
+                if (inputElement.type === 'datetime-local') {
+                    if (!inputElement.value) {
+                        continue;
+                    }
+
+                    currentValue = createDateStringFromISOValue(inputElement.value);
+                }
+
+                if (currentValue !== storedValue) {
                     return true;
                 }
             }
@@ -563,6 +584,15 @@ include 'nav.php';
             return optionsHTML;
         }
 
+        function createTypeSelect(type) {
+            const optionsHTML = `
+            <select id="type-select">
+                <option value="Einzel" ${type === 'Einzel' ? 'selected' : ''}>Einzel</option>
+                <option value="Team" ${type === 'Team' ? 'selected' : ''}>Team</option>
+            </select>`;
+            return optionsHTML;
+        }
+
         function mapGender(input, toIcon) {
             const genderToIcon = {
                 'M': 'fas fa-mars',
@@ -581,6 +611,46 @@ include 'nav.php';
             } else {
                 return iconToGender[input] || '';
             }
+        }
+
+
+        function createISODateValueFromString(dateTimeString) {
+            // Anzeigeformat: 09.10.24, 20:13:29 (dd-mm-yyyy)
+            // Nötiges Format für datetime-local input: yyyy-MM-ddThh:mm
+            let dateParts = dateTimeString.split(",").map(part => part.trim());
+            let date = dateParts[0];
+            let time = dateParts[1];
+
+            let [day, month, year] = date.split(".");
+            let isoString = `${year}-${month}-${day}T${time}`;
+            return isoString;
+        }
+
+        function createDateStringFromISOValue(isoValue) {
+            let dateParts = isoValue.split("T").map(part => part.trim());
+            let date = dateParts[0];
+            let time = dateParts[1];
+
+            let [year, month, day] = date.split("-");
+            let dateString = `${day}.${month}.${year}, ${time}`;
+            return dateString;
+        }
+
+        function displayParticipants(comp) {
+            let participantsHTML = "";
+
+            if (comp.isTeam === true) {
+                participantsHTML = comp.classParticipants.map(p => {
+                    return `<span data-id="${p.id}" data-name="${p.name}" class="name-badge class">${p.name}</span>`;
+                }).join(' ');
+            }
+            else {
+                participantsHTML = comp.studentParticipants.map(p => {
+                    return `<span data-id="${p.id}" data-name="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
+                }).join(' ');
+            }
+
+            return participantsHTML;
         }
     </script>
 
