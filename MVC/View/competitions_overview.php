@@ -363,8 +363,12 @@ include 'nav.php';
                      class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
                     ${participant} 
                     <i onclick="this.parentElement.remove()" class="fas fa-times"></i>
-                    </span>`
+                    </span>` // TODO: Clickhandler in eigene Methode auslagern, bei Entfernen der Klasse die Selektoptionen aktualisieren.
                 }).join(' ');
+
+                let allClasses = <?php echo json_encode($_SESSION['classes']); ?>;
+                let classSelect = createClassSelect(type, allClasses, participants);
+                cells[5].appendChild(classSelect);
 
                 const statusSelect = document.createElement("select");
                 statusSelect.id = "status-select";
@@ -418,7 +422,7 @@ include 'nav.php';
                 let selector = type === "Team" ? ".name-badge.class" : ".name-badge.student";
                 let participants = wasCanceled ? storedRow[5].split(",") : Array.from(cells[5].querySelectorAll(selector))
                     .map(element => element.textContent.trim());
-                    
+
                 // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
                 let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
@@ -674,6 +678,32 @@ include 'nav.php';
             }
 
             return participantsHTML;
+        }
+
+
+        function createClassSelect(type, classes, currentParticipants) {
+            let classSelect = document.createElement("select");
+            classSelect.multiple = type === "Team";
+            classSelect.setAttribute("title",
+                type === "Team" ?
+                "Wählen Sie die teilnehmenden KLassen aus" :
+                "Wählen Sie eine Klasse aus, um deren Schüler auszuwählen."
+            )
+
+            let defaultOption = document.createElement("option");
+            defaultOption.textContent = "Klassenauswahl";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            classSelect.appendChild(defaultOption);
+
+            classes.forEach(c => {
+                let option = document.createElement("option");
+                option.value = option.textContent = c.name;
+                option.dataset.id = c.id;
+                classSelect.appendChild(option);
+            });
+
+            return classSelect;
         }
     </script>
 
