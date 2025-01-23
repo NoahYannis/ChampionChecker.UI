@@ -110,36 +110,32 @@
 .profile {
   height: 5rem;
   width: 5rem;
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   display: flex;
   align-items: center;
   cursor: pointer;
   margin-right: 1vw;
   user-select: none;
-
-  img {
-    max-height: 5rem;
-    max-width: 5rem;
-    height: 100%;
-    border-radius: 1rem;
-    padding: 0.625rem;
-
-    &:hover {
+  &:hover {
       filter: invert(0.1);
     }
-  }
 }
-
-.profile-initials {
-  transform: translate(-173%, 0%);
-  font-size: 1.5rem;
-  color: white;
-  font-weight: bold;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#profile {
+  position: relative;
+  background-clip: content-box;
+  padding: .5rem;
+  &::after {
+    content: attr(data-content-initials);
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+    width: fit-content;
+    height: fit-content;
+    display: inline-block;
+    }
 }
 
 .profile-menu {
