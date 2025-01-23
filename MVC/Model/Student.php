@@ -4,8 +4,9 @@ namespace MVC\Model;
 
 use RuntimeException;
 use InvalidArgumentException;
+use JsonSerializable;
 
-class Student
+class Student implements JsonSerializable
 {
     public function __construct(
         private ?int $id = null,
@@ -16,6 +17,20 @@ class Student
         private ?array $competitions = [],
         private ?array $competitionResults = []
     ) {}
+
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'firstName' => $this->firstName,
+            'lastName' => $this->lastName,
+            'isMale' => $this->isMale,
+            'classId' => $this->classId,
+            'competitions' => $this->competitions,
+            'competitionResults' => $this->competitionResults,
+        ];
+    }
 
     public function getId(): ?int
     {

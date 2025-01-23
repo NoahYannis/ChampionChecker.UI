@@ -9,6 +9,7 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 
 
 use MVC\Controller\CompetitionController;
+use MVC\Controller\ClassController;
 use MVC\Model\CompetitionStatus;
 use MVC\Model\Competition;
 
@@ -366,29 +367,18 @@ include 'nav.php';
                     </span>` // TODO: Clickhandler in eigene Methode auslagern, bei Entfernen der Klasse die Selektoptionen aktualisieren.
                 }).join(' ');
 
-                let allClasses = <?php echo json_encode($_SESSION['classes']); ?>;
-                let classSelect = createClassSelect(type, allClasses, participants);
+                let allClasses =
+                    <?php
+                    if (isset($_SESSION['classes'])) {
+                        echo json_encode($_SESSION['classes']);
+                    } else {
+                        $allClasses = ClassController::getInstance()->getAll();
+                        echo json_encode($allClasses);
+                    }
+                    ?>;
+
+                let classSelect = createClassSelect(type, allClasses, cells[5]);
                 cells[5].appendChild(classSelect);
-
-                if (type === 'Einzel') {
-                    let allStudents =
-                        <?php
-                        if (isset($_SESSION['classes'])) {
-                            $students = [];
-                            foreach ($_SESSION['classes'] as $class) {
-                                if ($class instanceof \MVC\Model\ClassModel) {
-                                    $students = array_merge($students, $class->getStudents());
-                                }
-                            }
-                            echo json_encode($students);
-                        } else {
-                            echo "[]";
-                        }
-                        ?>;
-
-                    let studentSelect = createStudentSelect(allStudents);
-                    cells[5].appendChild(studentSelect);
-                }
 
                 const statusSelect = document.createElement("select");
                 statusSelect.id = "status-select";
@@ -481,12 +471,14 @@ include 'nav.php';
                 cells[4].appendChild(genderContent);
 
                 // Teilnehmer-Anzeige
-                cells[5].innerHTML = participants.map(participant => {
-                    return `<span data-participant="${participant}"
+                cells[5].innerHTML = participants.length === 0 ?
+                    '-' :
+                    participants.map(participant => {
+                        return `<span data-participant="${participant}"
                         class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
-                        ${participant} 
-                    </span>`
-                }).join(' ');
+                        ${participant}
+                        </span>`;
+                    }).join(' ');
 
                 cells[6].innerHTML = `<div class='td-content'>${state}</div>`;
                 cells[7].innerHTML = `<div class='td-content'>${additionalInfo}</div>`;
@@ -568,13 +560,11 @@ include 'nav.php';
 
                 let currentValue =
                     (cells[i].querySelector('input')?.value) ||
-                    (cells[i].querySelector('select')?.value) ||
+                    (cells[i].querySelector('select:not(#class-select):not(#student-select)')?.value) ||
                     (cells[i].querySelector('input[type="datetime-local"]')?.value) ||
                     Array.from(cells[i].querySelectorAll('.name-badge')).map(el => el.textContent.trim()).join(',');
 
                 const storedValue = storedRow[i];
-
-                if (i === 5) {}
 
                 // Zeitpunkt
                 if (i === 1) {
@@ -586,6 +576,7 @@ include 'nav.php';
                 }
 
                 if (currentValue !== storedValue) {
+                    console.log(`Vorher: ${storedValue} vs currentValue: ${currentValue}`);
                     return true;
                 }
             }
@@ -701,7 +692,7 @@ include 'nav.php';
         }
 
 
-        function createClassSelect(type, classes) {
+        function createClassSelect(type, classes, participantCell) {
             let classSelect = document.createElement("select");
             classSelect.id = "class-select";
             classSelect.multiple = type === "Team";
@@ -723,6 +714,27 @@ include 'nav.php';
                 option.value = option.textContent = c.name;
                 option.dataset.id = c.id;
                 classSelect.appendChild(option);
+            });
+
+            classSelect.addEventListener('change', () => {
+                let selectedClass = classSelect.selectedOptions[0];
+                let classId = selectedClass.dataset.id;
+
+                if (type === 'Einzel') {
+                    fetch(`../../Helper/get_students_by_class.php?classId=${classId}`)
+                        .then(response => {
+                            return response.json();
+                        })
+                        .then(classStudents => {
+                            let previousSelect = participantCell.querySelector('#student-select');
+                            if (previousSelect) {
+                                previousSelect.remove();
+                            }
+                            let studentSelect = createStudentSelect(classStudents);
+                            participantCell.appendChild(studentSelect);
+                        })
+                        .catch(error => console.error('Error fetching students:', error));
+                }
             });
 
             return classSelect;
@@ -753,7 +765,6 @@ include 'nav.php';
             return studentSelect;
         }
     </script>
-
 </body>
 
 </html>

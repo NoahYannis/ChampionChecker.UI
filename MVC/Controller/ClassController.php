@@ -164,6 +164,8 @@ class ClassController implements IController
             // Klasse im Cache speichern
             $this->cachedClasses[$item['id']] = $classModel;
         }
+
+        $_SESSION['classes'] = $classes;
         return $classes;
     }
 
