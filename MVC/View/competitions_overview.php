@@ -363,8 +363,8 @@ include 'nav.php';
                     return `<span data-participant="${participant}"
                      class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
                     ${participant} 
-                    <i onclick="this.parentElement.remove()" class="fas fa-times"></i>
-                    </span>` // TODO: Clickhandler in eigene Methode auslagern, bei Entfernen der Klasse die Selektoptionen aktualisieren.
+                    <i onclick="handleNameBadgeRemoval(this.parentElement, '', this.parentElement.parentElement)" class="fas fa-times"></i>
+                    </span>`
                 }).join(' ');
 
                 let allClasses =
@@ -699,7 +699,7 @@ include 'nav.php';
             classSelect.setAttribute("data-type", type === "Team" ? "Team" : "Einzel");
             classSelect.setAttribute("title",
                 type === "Team" ?
-                "Wählen Sie die teilnehmenden Klassen aus" :
+                "Wählen Sie die teilnehmenden Klassen aus. Drücken Sie STRG, um mehrere Klassen gleichzeitig auszuwählen." :
                 "Wählen Sie eine Klasse aus, um deren Schüler auszuwählen."
             )
 
@@ -709,6 +709,7 @@ include 'nav.php';
             defaultOption.selected = true;
             classSelect.appendChild(defaultOption);
 
+            // Alle Klassennamen als Option hinzufügen
             classes.forEach(c => {
                 let option = document.createElement("option");
                 option.value = option.textContent = c.name;
@@ -716,11 +717,28 @@ include 'nav.php';
                 classSelect.appendChild(option);
             });
 
-            classSelect.addEventListener('change', () => {
-                let selectedClass = classSelect.selectedOptions[0];
-                let classId = selectedClass.dataset.id;
+            // Alle bereits zugewiesenen Klassen vorselektieren
+            const nameBadge = participantCell.querySelectorAll('.name-badge.class');
+            const participantNames = Array.from(nameBadge).map(badge => badge.dataset.participant);
+            for (const option of classSelect.options) {
+                if (participantNames.includes(option.text)) {
+                    option.selected = true;
+                }
+            }
 
-                if (type === 'Einzel') {
+            // Vorherige Selektion speichern, um diese bei Deselektion zu entfernen
+            let previousSelectedOptions = Array.from(classSelect.selectedOptions);
+
+            classSelect.addEventListener('change', () => {
+                const selectedOptions = Array.from(classSelect.selectedOptions);
+
+                if (type === "Team") {
+                    toggleClassNameBadge(classes, classSelect, selectedOptions, previousSelectedOptions, participantCell);
+                } else {
+                    // Zweites Select mit allen Schülern der ausgewählten Klasse anzeigen
+                    // TODO: Für Einzelwettbewerbe toggleStudentNameBadge() implementieren.
+                    let classId = classSelect.selectedOptions[0].dataset.id;
+
                     fetch(`../../Helper/get_students_by_class.php?classId=${classId}`)
                         .then(response => {
                             return response.json();
@@ -735,6 +753,8 @@ include 'nav.php';
                         })
                         .catch(error => console.error('Error fetching students:', error));
                 }
+
+                previousSelectedOptions = selectedOptions;
             });
 
             return classSelect;
@@ -763,6 +783,64 @@ include 'nav.php';
             });
 
             return studentSelect;
+        }
+
+        function handleNameBadgeRemoval(nameBadge, correspondingParticipantOption, participantCell) {
+            if (correspondingParticipantOption) {
+                correspondingParticipantOption.selected = false;
+            } else {
+                // Die Teilnehmer-Selects werden erst im Bearbeitungsmodus angezeigt. Daher kann die passende Option 
+                // für bereits vorher zugewiesene Teilnehmer erst hier ermittelt werden. Für alle im Bearbeitungsmodus
+                // hinzugefügten Teilnehmer kann die Option hier direkt als Argument übergeben werden.
+                const optionValue = nameBadge.textContent.trim();
+                correspondingParticipantOption = participantCell.querySelector(`option[value="${optionValue}"]`);
+
+                if (correspondingParticipantOption) {
+                    correspondingParticipantOption.selected = false;
+                } else {
+                    // Derzeit der Fall für Schülernamen.
+                    console.warn(`Option mit value="${optionValue}" nicht gefunden.`);
+                }
+            }
+
+            nameBadge.remove();
+        }
+
+        // Verantwortlich für das Hinzufügen und Entfernen der Klassen-Anzeigeelemente je nach Selektionsstatus.
+        function toggleClassNameBadge(classes, classSelect, selectedOptions, previousSelectedOptions, participantCell) {
+            classes.forEach(classItem => {
+                const option = classSelect.querySelector(`option[value="${classItem.name}"]`);
+                const isSelected = selectedOptions.some(option => option.value === classItem.name);
+                const wasSelected = previousSelectedOptions.some(option => option.value === classItem.name);
+
+                if (isSelected && !wasSelected) {
+                    const classElement = document.createElement("span");
+                    classElement.classList.add("name-badge", "class");
+                    classElement.setAttribute("data-class", classItem.name);
+                    classElement.textContent = `${classItem.name}`;
+                    classElement.setAttribute("title", "Klasse entfernen");
+
+                    const removeIcon = document.createElement("i");
+                    removeIcon.classList.add("fas", "fa-times");
+                    removeIcon.onclick = () => handleNameBadgeRemoval(classElement, option, participantCell);
+
+                    // Klassennamen über das Select einfügen
+                    classElement.appendChild(removeIcon);
+                    participantCell.insertBefore(classElement, classSelect);
+
+                } else if (!isSelected && wasSelected) {
+                    // TODO: Vorher bereits selektierte Klassen haben data-participants statt data-class gesetzt => angleichen.
+                    const classElement = participantCell.querySelector(
+                        `span[data-class="${classItem.name}"]`
+                    );
+
+                    if (classElement) {
+                        classElement.remove();
+                    }
+                }
+
+                option.textContent = classItem.name;
+            });
         }
     </script>
 </body>
