@@ -370,6 +370,26 @@ include 'nav.php';
                 let classSelect = createClassSelect(type, allClasses, participants);
                 cells[5].appendChild(classSelect);
 
+                if (type === 'Einzel') {
+                    let allStudents =
+                        <?php
+                        if (isset($_SESSION['classes'])) {
+                            $students = [];
+                            foreach ($_SESSION['classes'] as $class) {
+                                if ($class instanceof \MVC\Model\ClassModel) {
+                                    $students = array_merge($students, $class->getStudents());
+                                }
+                            }
+                            echo json_encode($students);
+                        } else {
+                            echo "[]";
+                        }
+                        ?>;
+
+                    let studentSelect = createStudentSelect(allStudents);
+                    cells[5].appendChild(studentSelect);
+                }
+
                 const statusSelect = document.createElement("select");
                 statusSelect.id = "status-select";
 
@@ -681,12 +701,14 @@ include 'nav.php';
         }
 
 
-        function createClassSelect(type, classes, currentParticipants) {
+        function createClassSelect(type, classes) {
             let classSelect = document.createElement("select");
+            classSelect.id = "class-select";
             classSelect.multiple = type === "Team";
+            classSelect.setAttribute("data-type", type === "Team" ? "Team" : "Einzel");
             classSelect.setAttribute("title",
                 type === "Team" ?
-                "Wählen Sie die teilnehmenden KLassen aus" :
+                "Wählen Sie die teilnehmenden Klassen aus" :
                 "Wählen Sie eine Klasse aus, um deren Schüler auszuwählen."
             )
 
@@ -704,6 +726,31 @@ include 'nav.php';
             });
 
             return classSelect;
+        }
+
+        function createStudentSelect(allStudents) {
+            let studentSelect = document.createElement("select");
+            studentSelect.id = "student-select";
+            studentSelect.multiple = true;
+            studentSelect.setAttribute("title",
+                "Wählen Sie die teilnehmenden Schüler aus"
+            );
+
+            let defaultOption = document.createElement("option");
+            defaultOption.textContent = "Schülerauswahl";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            studentSelect.appendChild(defaultOption);
+
+            allStudents.forEach(s => {
+                let option = document.createElement("option");
+                option.textContent = `${s.firstName} ${s.lastName}`;
+                option.value = s.id;
+                option.dataset.classId = s.classId;
+                studentSelect.appendChild(option);
+            });
+
+            return studentSelect;
         }
     </script>
 

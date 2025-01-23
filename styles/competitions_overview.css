@@ -10,3 +10,28 @@
     margin: 0;
   }
 }
+
+
+#class-select {
+  &[data-type="Einzel"] {
+    height: 3rem;
+  }
+
+  &[data-type="Team"] {
+    height: 5.25rem;
+    transition: height 0.3s ease;
+
+    &:focus {
+      height: 12.5rem;
+    }
+  }
+}
+
+#student-select {
+  height: 5.25rem;
+  transition: height 0.3s ease;
+
+  &:focus {
+    height: 12.5rem;
+  }
+}
