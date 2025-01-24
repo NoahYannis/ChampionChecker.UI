@@ -816,7 +816,7 @@ include 'nav.php';
                 if (isSelected && !wasSelected) {
                     const classElement = document.createElement("span");
                     classElement.classList.add("name-badge", "class");
-                    classElement.setAttribute("data-class", classItem.name);
+                    classElement.setAttribute("data-participant", classItem.name);
                     classElement.textContent = `${classItem.name}`;
                     classElement.setAttribute("title", "Klasse entfernen");
 
@@ -829,9 +829,8 @@ include 'nav.php';
                     participantCell.insertBefore(classElement, classSelect);
 
                 } else if (!isSelected && wasSelected) {
-                    // TODO: Vorher bereits selektierte Klassen haben data-participants statt data-class gesetzt => angleichen.
                     const classElement = participantCell.querySelector(
-                        `span[data-class="${classItem.name}"]`
+                        `span[data-participant="${classItem.name}"]`
                     );
 
                     if (classElement) {
