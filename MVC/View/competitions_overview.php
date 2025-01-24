@@ -96,9 +96,9 @@ function loadAllCompetitions($cacheDuration = 300): array
 
     // Gecachte Daten für die Dauer des Cache zurückgeben.
     if (isset($_SESSION['overview_competitions']) && isset($_SESSION['overview_competitions_timestamp'])) {
-        if ((time() - $_SESSION['overview_competitions_timestamp']) < $cacheDuration) {
-            return $_SESSION['overview_competitions'];
-        }
+        // if ((time() - $_SESSION['overview_competitions_timestamp']) < $cacheDuration) {
+        //     return $_SESSION['overview_competitions'];
+        // }
     }
 
     // Daten aus der DB laden und im Cache speichern
@@ -680,11 +680,11 @@ include 'nav.php';
 
             if (comp.isTeam === true) {
                 participantsHTML = comp.classParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-name="${p.name}" class="name-badge class">${p.name}</span>`;
+                    return `<span data-id="${p.id}" data-participant="${p.name}" class="name-badge class">${p.name}</span>`;
                 }).join(' ');
             } else {
                 participantsHTML = comp.studentParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-name="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
+                    return `<span data-id="${p.id}" data-participant="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
                 }).join(' ');
             }
 
@@ -736,7 +736,6 @@ include 'nav.php';
                     toggleClassNameBadge(classes, classSelect, selectedOptions, previousSelectedOptions, participantCell);
                 } else {
                     // Zweites Select mit allen Schülern der ausgewählten Klasse anzeigen
-                    // TODO: Für Einzelwettbewerbe toggleStudentNameBadge() implementieren.
                     let classId = classSelect.selectedOptions[0].dataset.id;
 
                     fetch(`../../Helper/get_students_by_class.php?classId=${classId}`)
@@ -748,7 +747,7 @@ include 'nav.php';
                             if (previousSelect) {
                                 previousSelect.remove();
                             }
-                            let studentSelect = createStudentSelect(classStudents);
+                            let studentSelect = createStudentSelect(classStudents, participantCell);
                             participantCell.appendChild(studentSelect);
                         })
                         .catch(error => console.error('Error fetching students:', error));
@@ -760,7 +759,7 @@ include 'nav.php';
             return classSelect;
         }
 
-        function createStudentSelect(allStudents) {
+        function createStudentSelect(allStudents, participantCell) {
             let studentSelect = document.createElement("select");
             studentSelect.id = "student-select";
             studentSelect.multiple = true;
@@ -777,9 +776,26 @@ include 'nav.php';
             allStudents.forEach(s => {
                 let option = document.createElement("option");
                 option.textContent = `${s.firstName} ${s.lastName}`;
-                option.value = s.id;
+                option.value = option.textContent;
                 option.dataset.classId = s.classId;
                 studentSelect.appendChild(option);
+            });
+
+            // Alle bereits zugewiesenen Schüler vorselektieren
+            const nameBadge = participantCell.querySelectorAll('.name-badge.student');
+            const participantNames = Array.from(nameBadge).map(badge => badge.dataset.participant);
+            for (const option of studentSelect.options) {
+                if (participantNames.includes(option.text)) {
+                    option.selected = true;
+                }
+            }
+
+            let previousSelection = Array.from(studentSelect.selectedOptions);
+
+            studentSelect.addEventListener('change', () => {
+                const selectedStudents = Array.from(studentSelect.selectedOptions);
+                toggleStudentNameBadge(allStudents, studentSelect, selectedStudents, previousSelection, participantCell);
+                previousSelection = selectedStudents;
             });
 
             return studentSelect;
@@ -810,6 +826,8 @@ include 'nav.php';
         function toggleClassNameBadge(classes, classSelect, selectedOptions, previousSelectedOptions, participantCell) {
             classes.forEach(classItem => {
                 const option = classSelect.querySelector(`option[value="${classItem.name}"]`);
+                option.textContent = classItem.name;
+                
                 const isSelected = selectedOptions.some(option => option.value === classItem.name);
                 const wasSelected = previousSelectedOptions.some(option => option.value === classItem.name);
 
@@ -838,7 +856,47 @@ include 'nav.php';
                     }
                 }
 
-                option.textContent = classItem.name;
+            });
+        }
+
+        function toggleStudentNameBadge(students, studentSelect, selectedOptions, previousSelectedOptions, participantCell) {
+            students.forEach(s => {
+                let name = `${s.firstName} ${s.lastName}`;
+                const option = studentSelect.querySelector(`option[value="${name}"]`);
+                option.textContent = name;
+                const isSelected = selectedOptions.some(option => option.value === name);
+                const wasSelected = previousSelectedOptions.some(option => option.value === name);
+
+                if (isSelected && !wasSelected) {
+                    const nameBadge = document.createElement("span");
+                    nameBadge.classList.add("name-badge", "student");
+                    nameBadge.setAttribute("data-participant", name);
+                    nameBadge.textContent = name;
+                    nameBadge.setAttribute("title", "Schüler entfernen");
+
+                    const removeIcon = document.createElement("i");
+                    removeIcon.classList.add("fas", "fa-times");
+                    removeIcon.onclick = () => handleNameBadgeRemoval(nameBadge, option, participantCell);
+
+                    // Schülernamen über das Select einfügen
+                    nameBadge.appendChild(removeIcon);
+                    classSelect = document.getElementById("class-select");
+
+                    if (classSelect) {
+                        const lastNameBadge = participantCell.querySelector('.name-badge:last-of-type') ?? participantCell.firstChild;
+                        participantCell.insertBefore(nameBadge, lastNameBadge.nextSibling);
+                    }
+
+                } else if (!isSelected && wasSelected) {
+                    const nameBadge = participantCell.querySelector(
+                        `span[data-participant="${name}"]`
+                    );
+
+                    if (nameBadge) {
+                        nameBadge.remove();
+                    }
+                }
+
             });
         }
     </script>
