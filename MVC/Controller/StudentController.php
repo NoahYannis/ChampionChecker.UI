@@ -58,7 +58,7 @@ class StudentController implements IController
     {
         foreach ($this->cachedStudents as $studentModel) {
             if ($studentModel->getFirstName() === $name || $studentModel->getLastName() === $name) {
-                return $studentModel; // Gecachten Studenten zurückgeben
+                return $studentModel; // Gecachten Schüler zurückgeben
             }
         }
 
@@ -219,7 +219,7 @@ class StudentController implements IController
             $error = curl_error($curl);
             throw new RuntimeException('cURL error: ' . $error);
         }
-  
+
         if (curl_errno($curl)) {
             return [
                 'success' => false,

@@ -10,6 +10,7 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 
 use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
+use MVC\Controller\StudentController;
 use MVC\Model\CompetitionStatus;
 use MVC\Model\Competition;
 
@@ -45,12 +46,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     $changedComps = [];
 
+    $classParticipants = [];
+    $studentParticipants = [];
+
+    $studentController = StudentController::getInstance();
+    $classController = ClassController::getInstance();
+
     foreach ($compData as $data) {
         $isTeam = $data['type'] === 'Team';
-        // $classParticipants = $isTeam ? $data['participants'] : null;
-        // $studentParticipants = !$isTeam ? $data['participants'] : null;
-        $classParticipants = [];
-        $studentParticipants = [];
+
+        if ($isTeam && isset($data['participants'])) {
+            $classParticipants = getClassObjectsFromId($data['participants']);
+        } else if (isset($data['participants'])) {
+            $studentParticipants = getStudentObjectsFromId($data['participants']);
+        }
 
         $comp = new Competition(
             id: $data['id'],
@@ -89,6 +98,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     exit;
 }
 
+function getStudentObjectsFromId(array $studentIds): array
+{
+    global $studentController;
+
+    $studentObjects = array_map(function ($studentId) use ($studentController) {
+        return $studentController->getById($studentId);
+    }, $studentIds);
+
+    return $studentObjects;
+}
+
+function getClassObjectsFromId(array $classIds): array
+{
+    global $classController;
+
+    $classObjects = array_map(function ($classId) use ($classController) {
+        return $classController->getById($classId);
+    }, $classIds);
+
+    return $classObjects;
+}
+
 
 function loadAllCompetitions($cacheDuration = 300): array
 {
@@ -96,9 +127,9 @@ function loadAllCompetitions($cacheDuration = 300): array
 
     // Gecachte Daten für die Dauer des Cache zurückgeben.
     if (isset($_SESSION['overview_competitions']) && isset($_SESSION['overview_competitions_timestamp'])) {
-        // if ((time() - $_SESSION['overview_competitions_timestamp']) < $cacheDuration) {
-        //     return $_SESSION['overview_competitions'];
-        // }
+        if ((time() - $_SESSION['overview_competitions_timestamp']) < $cacheDuration) {
+            return $_SESSION['overview_competitions'];
+        }
     }
 
     // Daten aus der DB laden und im Cache speichern
@@ -437,6 +468,10 @@ include 'nav.php';
                 let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
 
+                // Nötig, um aus der Option das zugehörige Class bzw. Schüler-Objekt zu finden.
+                let participantIds = Array.from(cells[5].querySelectorAll(selector))
+                    .map(element => element.dataset.id)
+                    .filter(id => id != null);
 
                 if (checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
@@ -446,7 +481,7 @@ include 'nav.php';
                         referee: referee,
                         type: type,
                         gender: gender,
-                        participants: participants,
+                        participants: participantIds,
                         state: state,
                         additionalInfo: additionalInfo
                     };
@@ -827,7 +862,7 @@ include 'nav.php';
             classes.forEach(classItem => {
                 const option = classSelect.querySelector(`option[value="${classItem.name}"]`);
                 option.textContent = classItem.name;
-                
+
                 const isSelected = selectedOptions.some(option => option.value === classItem.name);
                 const wasSelected = previousSelectedOptions.some(option => option.value === classItem.name);
 
@@ -835,6 +870,7 @@ include 'nav.php';
                     const classElement = document.createElement("span");
                     classElement.classList.add("name-badge", "class");
                     classElement.setAttribute("data-participant", classItem.name);
+                    classElement.setAttribute("data-id", classItem.id);
                     classElement.textContent = `${classItem.name}`;
                     classElement.setAttribute("title", "Klasse entfernen");
 
@@ -871,6 +907,7 @@ include 'nav.php';
                     const nameBadge = document.createElement("span");
                     nameBadge.classList.add("name-badge", "student");
                     nameBadge.setAttribute("data-participant", name);
+                    nameBadge.setAttribute("data-id", s.id);
                     nameBadge.textContent = name;
                     nameBadge.setAttribute("title", "Schüler entfernen");
 
