@@ -371,13 +371,16 @@ include 'nav.php';
 
                 let selector = type === "Team" ? '.name-badge.class' : '.name-badge.student';
                 let participants = Array.from(row.cells[5].querySelectorAll(selector))
-                    .map(element => element.textContent.trim());
+                    .map(element => ({
+                        id: element.dataset.id,
+                        name: element.textContent.trim()
+                    }));
 
                 let state = row.cells[6].innerText;
                 let additionalInfo = row.cells[7].innerText;
 
                 // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
-                storedValues[row.rowIndex] = [name, date, referee, type, gender, participants.join(","), state, additionalInfo];
+                storedValues[row.rowIndex] = [name, date, referee, type, gender, participants.map(p => p.name).join(","), state, additionalInfo];
 
                 cells[0].innerHTML = `<input type="text" value="${name}">`;
 
@@ -391,11 +394,13 @@ include 'nav.php';
 
                 cells[4].innerHTML = createGenderSelect(gender);
                 cells[5].innerHTML = participants.map(participant => {
-                    return `<span data-participant="${participant}"
-                     class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
-                    ${participant} 
-                    <i onclick="handleNameBadgeRemoval(this.parentElement, '', this.parentElement.parentElement)" class="fas fa-times"></i>
-                    </span>`
+                    return `<span data-id="${participant.id}" data-participant="${participant.name}"
+                            class="name-badge ${type === "Team" ? "class" : "student"}" 
+                            title="Teilnehmer entfernen">
+                                ${participant.name}
+                            <i onclick="handleNameBadgeRemoval(this.parentElement, '', this.parentElement.parentElement)" 
+                            class="fas fa-times"></i>
+                            </span>`;
                 }).join(' ');
 
                 let allClasses =
@@ -461,7 +466,9 @@ include 'nav.php';
                 let gender = wasCanceled ? storedRow[4] : cells[4].querySelector('select').value;
 
                 let selector = type === "Team" ? ".name-badge.class" : ".name-badge.student";
-                let participants = wasCanceled ? storedRow[5].split(",") : Array.from(cells[5].querySelectorAll(selector))
+                let participants = wasCanceled ?
+                    storedRow[5].split(",").filter(participant => participant.trim() !== "") :
+                    Array.from(cells[5].querySelectorAll(selector))
                     .map(element => element.textContent.trim());
 
                 // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
@@ -611,7 +618,7 @@ include 'nav.php';
                 }
 
                 if (currentValue !== storedValue) {
-                    console.log(`Vorher: ${storedValue} vs currentValue: ${currentValue}`);
+                    console.log(`Vorher: ${storedValue} vs Nachher: ${currentValue}`);
                     return true;
                 }
             }
@@ -714,13 +721,17 @@ include 'nav.php';
             let participantsHTML = "";
 
             if (comp.isTeam === true) {
-                participantsHTML = comp.classParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-participant="${p.name}" class="name-badge class">${p.name}</span>`;
-                }).join(' ');
+                participantsHTML = comp.classParticipants.length === 0 ?
+                    '-' :
+                    comp.classParticipants.map(p => {
+                        return `<span data-id="${p.id}" data-participant="${p.name}" class="name-badge class">${p.name}</span>`;
+                    }).join(' ');
             } else {
-                participantsHTML = comp.studentParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-participant="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
-                }).join(' ');
+                participantsHTML = comp.studentParticipants.length === 0 ?
+                    '-' :
+                    comp.studentParticipants.map(p => {
+                        return `<span data-id="${p.id}" data-participant="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
+                    }).join(' ');
             }
 
             return participantsHTML;
