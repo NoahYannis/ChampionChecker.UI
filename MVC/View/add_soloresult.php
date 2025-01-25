@@ -2,10 +2,7 @@
 
 	require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 
-	use MVC\Model\CompetitionResult;
 	use MVC\Controller\CompetitionController;
-	use MVC\Controller\CompetitionResultController;
-	use MVC\Controller\ClassController;
 
 	session_start();
     

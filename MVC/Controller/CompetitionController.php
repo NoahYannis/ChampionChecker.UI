@@ -143,7 +143,7 @@ class CompetitionController implements IController
             'classParticipants' => $model->getClassParticipants(),
             'studentParticipants' => $model->getStudentParticipants(),
             'isTeam' => $model->getIsTeam(),
-            'isMale' => $model-> getIsMale(),
+            'isMale' => $model->getIsMale(),
             'date' => $model->getDate()->format(DateTime::ATOM),
             'refereeId' => $model->getRefereeId(),
             'referee' => $model->getReferee(),
@@ -152,17 +152,24 @@ class CompetitionController implements IController
         ];
 
         $updateResult = $this->sendApiRequest("/api/competition", 'PUT', $data);
-        
+
         if ($updateResult['success'] === true && isset($_SESSION['overview_competitions'])) {
             foreach ($_SESSION['overview_competitions'] as $key => $comp) {
                 if ($comp->getId() === $model->getId()) {
                     $_SESSION['overview_competitions'][$key] = $model;
                     $_SESSION['overview_competitions_timestamp'] = time();
+
+                    if ($comp->getIsTeam()) {
+                        unset($_SESSION['classresult_competitions']);
+                    } else {
+                        unset($_SESSION['soloresult_competitions']);
+                    }
+                    
                     break;
                 }
             }
         }
-        
+
         return $updateResult;
     }
 
