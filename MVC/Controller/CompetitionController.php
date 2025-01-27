@@ -53,7 +53,7 @@ class CompetitionController implements IController
                 studentParticipants: $data['studentParticipants'] ?? [],
                 date: $data['date'],
                 refereeId: $data['refereeId'],
-                referee: $data['referee'],
+                referee: $data['referee'] ?? null,
                 status: CompetitionStatus::from($data['status']),
                 additionalInfo: $data['additionalInfo']
             );
@@ -83,13 +83,13 @@ class CompetitionController implements IController
             $competition = new Competition(
                 id: $item['id'],
                 name: $item['name'],
-                classParticipants: $item['classParticipants'] ?? [],
-                studentParticipants: $item['studentParticipants'] ?? [],
+                classParticipants: $item['classParticipantIds'] ?? [],
+                studentParticipants: $item['studentParticipantIds'] ?? [],
                 isTeam: $item['isTeam'],
                 isMale: $item['isMale'],
                 date: new DateTime($item['date']),
                 refereeId: $item['refereeId'],
-                referee: $item['referee'],
+                referee: $item['referee'] ?? null,
                 status: CompetitionStatus::from($item['status']),
                 additionalInfo: $item['additionalInfo']
             );
@@ -97,6 +97,8 @@ class CompetitionController implements IController
             $this->cachedCompetitions[$item['id']] = $competition;
             $competitions[] = $competition;
         }
+
+        $_SESSION["overview_competitions"] = $competitions;
 
         // Wettbewerbe Sortieren
         return $competitions;

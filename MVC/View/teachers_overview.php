@@ -89,15 +89,16 @@ function printTeachers($teachers)
         $classes = $teacher->getClasses() ?? [];
         $classNames = [];
 
-        if (is_array($classes)) {
-            $classes = array_map(function ($class) {
-                return $class instanceof ClassModel ? $class : ClassModel::mapToModel($class);
-            }, $classes);
-        }
+        // if ($classes != null && is_array($classes)) {
+        //     $classes = array_map(function ($class) {
+        //         return $class instanceof ClassModel ? $class : ClassModel::mapToModel($class);
+        //     }, $classes);
+        // }
 
 
         foreach ($classes as $class) {
-            $className = $class->getName();
+            // $className = $class->getName();
+            $className = $class;
             if ($className) {
                 $escapedName = htmlspecialchars($className);
                 $classNames[] = "<span class='name-badge class'>{$escapedName}</span>";
