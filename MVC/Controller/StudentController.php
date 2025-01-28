@@ -42,7 +42,7 @@ class StudentController implements IController
                 firstName: $data['firstName'],
                 lastName: $data['lastName'],
                 isMale: $data['isMale'],
-                classId: $data['classId'],
+                classId: key($data['class']),
                 competitions: $data['competitions'] ?? [],
                 competitionResults: $data['competitionResults'] ?? []
             );
@@ -124,9 +124,11 @@ class StudentController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'isMale' => $model->getIsMale(),
-            'classId' => $model->getClassId(),
-            'competitions' => $model->getCompetitions(),
-            'competitionResults' => $model->getCompetitionResults()
+            'class' => [
+                $model->getClassId() => ClassController::getInstance()->getClassName($model->getClassId())
+            ],
+            'competitions' => empty($model->getCompetitions) ? null : $model->getCompetitions(),
+            'competitionResults' => empty($model->getCompetitionResults()) ? null : $model->getCompetitionResults(),
         ];
 
         $createResult = $this->sendApiRequest('/api/student', 'POST', $data);

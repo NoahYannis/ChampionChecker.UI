@@ -491,7 +491,7 @@ include 'nav.php';
                 console.error('Error:', error);
             } finally {
                 spinner.style.display = 'none';
-                editButton.parentElement.disabled = true;
+                editButton.parentElement.disabled = false;
             }
         }
 

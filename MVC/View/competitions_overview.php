@@ -56,9 +56,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $isTeam = $data['type'] === 'Team';
 
         if ($isTeam && isset($data['participants'])) {
-            $classParticipants = getClassObjectsFromId($data['participants']);
+            $classParticipants = getClassDictionary($data['participants']);
         } else if (isset($data['participants'])) {
-            $studentParticipants = getStudentObjectsFromId($data['participants']);
+            $studentParticipants = getStudentDictionary($data['participants']);
         }
 
         $comp = new Competition(
@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     exit;
 }
 
-function getStudentObjectsFromId(array $studentIds): array
+function getStudentDictionary(array $studentIds): array
 {
     global $studentController;
 
@@ -106,18 +106,27 @@ function getStudentObjectsFromId(array $studentIds): array
         return $studentController->getById($studentId);
     }, $studentIds);
 
-    return $studentObjects;
+    $studentDictionary = [];
+    foreach ($studentObjects as $student) {
+        $studentDictionary[$student->getId()] = [
+            'firstName' => $student->getFirstName(),
+            'lastName' => $student->getLastName()
+        ];
+    }
+
+    return $studentDictionary;
 }
 
-function getClassObjectsFromId(array $classIds): array
+function getClassDictionary(array $classIds): array
 {
     global $classController;
 
-    $classObjects = array_map(function ($classId) use ($classController) {
-        return $classController->getById($classId);
-    }, $classIds);
+    $classIdNameMap = [];
+    foreach ($classIds as $classId) {
+        $classIdNameMap[$classId] = $classController->getClassName($classId);
+    }
 
-    return $classObjects;
+    return $classIdNameMap;
 }
 
 
@@ -731,7 +740,7 @@ include 'nav.php';
                 participantsHTML = Object.entries(comp.studentParticipants).length === 0 ?
                     '-' :
                     Object.entries(comp.studentParticipants).map(([id, student]) => {
-                        return `<span data-id="${id}" data-participant="${student}" class="name-badge student">${student}</span>`;
+                        return `<span data-id="${id}" data-participant="${student.firstName} ${student.lastName}" class="name-badge student">${student.firstName} ${student.lastName}</span>`;
                     }).join(' ');
             }
 

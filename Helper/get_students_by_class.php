@@ -21,13 +21,15 @@ if (isset($_SESSION['classes']) && isset($_GET['classId'])) {
     }
 }
 
-$filteredStudents = array_map(function ($student) {
+$filteredStudents = array_map(function ($values, $studentId) {
     return [
-        'id' => $student['id'],
-        'firstName' => $student['firstName'],
-        'lastName' => $student['lastName'],
+        'id' => $studentId,
+        'classId' => $_GET['classId'],
+        'firstName' => $values['firstName'],
+        'lastName' => $values['lastName'],
     ];
-}, $classStudents);
+}, $classStudents, array_keys($classStudents));
+
 
 $encoded = json_encode($filteredStudents);
 echo $encoded;

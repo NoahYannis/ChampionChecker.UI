@@ -48,7 +48,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             firstName: trim($data['firstName']),
             lastName: trim($data['lastName']),
             isMale: filter_var($data['isMale'], FILTER_VALIDATE_BOOLEAN),
-            classId: $classController->getIdFromName(trim($data['className']))
+            classId: $classController->getIdFromName(trim($data['className'])),
+            competitions: null,
+            competitionResults: null
         );
 
         $result = $studentController->create($student);

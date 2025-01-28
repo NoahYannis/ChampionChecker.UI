@@ -142,8 +142,8 @@ class CompetitionController implements IController
         $data = [
             'id' => $model->getId(),
             'name' => $model->getName(),
-            'classParticipants' => $model->getClassParticipants(),
-            'studentParticipants' => $model->getStudentParticipants(),
+            'classParticipants' => empty($model->getClassParticipants()) ? null : $model->getClassParticipants(),
+            'studentParticipants' => empty($model->getStudentParticipants()) ? null : $model->getStudentParticipants(),
             'isTeam' => $model->getIsTeam(),
             'isMale' => $model->getIsMale(),
             'date' => $model->getDate()->format(DateTime::ATOM),
