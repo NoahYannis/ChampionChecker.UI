@@ -83,8 +83,8 @@ class CompetitionController implements IController
             $competition = new Competition(
                 id: $item['id'],
                 name: $item['name'],
-                classParticipants: $item['classParticipantIds'] ?? [],
-                studentParticipants: $item['studentParticipantIds'] ?? [],
+                classParticipants: $item['classParticipants'] ?? [],
+                studentParticipants: $item['studentParticipants'] ?? [],
                 isTeam: $item['isTeam'],
                 isMale: $item['isMale'],
                 date: new DateTime($item['date']),

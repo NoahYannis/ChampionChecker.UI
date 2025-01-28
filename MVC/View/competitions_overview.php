@@ -721,16 +721,17 @@ include 'nav.php';
             let participantsHTML = "";
 
             if (comp.isTeam === true) {
-                participantsHTML = comp.classParticipants.length === 0 ?
+                participantsHTML = Object.entries(comp.classParticipants).length === 0 ?
                     '-' :
-                    comp.classParticipants.map(p => {
-                        return `<span data-id="${p.id}" data-participant="${p.name}" class="name-badge class">${p.name}</span>`;
+                    Object.entries(comp.classParticipants).map(([id, name]) => {
+                        return `<span data-id="${id}" data-participant="${name}" class="name-badge class">${name}</span>`;
                     }).join(' ');
             } else {
-                participantsHTML = comp.studentParticipants.length === 0 ?
+                console.log(comp.studentParticipants);
+                participantsHTML = Object.entries(comp.studentParticipants).length === 0 ?
                     '-' :
-                    comp.studentParticipants.map(p => {
-                        return `<span data-id="${p.id}" data-participant="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
+                    Object.entries(comp.studentParticipants).map(([id, student]) => {
+                        return `<span data-id="${id}" data-participant="${student}" class="name-badge student">${student}</span>`;
                     }).join(' ');
             }
 

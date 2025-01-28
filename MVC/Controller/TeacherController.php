@@ -62,7 +62,6 @@ class TeacherController implements IController
      */
     public function getAll(): array
     {
-        // Überprüfen, ob die Lehrer bereits im Cache sind
         if (!empty($this->cachedTeachers)) {
             return $this->cachedTeachers;
         }
@@ -71,18 +70,24 @@ class TeacherController implements IController
         $teachers = [];
 
         foreach ($data as $item) {
+            $classesDictionary = [];
+            if (isset($item['classes']) && is_array($item['classes'])) {
+                foreach ($item['classes'] as $id => $name) {
+                    $classesDictionary[$id] = $name;
+                }
+            }
+        
             $teacher = new Teacher(
                 id: $item['id'],
                 firstName: $item['firstName'],
                 lastName: $item['lastName'],
                 shortCode: $item['shortCode'],
                 isParticipating: $item['isParticipating'],
-                classes: $item['classIds'] ?? [],
+                classes: $classesDictionary,
                 additionalInfo: $item['additionalInfo'] ?? null
             );
+        
             $teachers[] = $teacher;
-
-            // Lehrer im Cache speichern
             $this->cachedTeachers[$item['id']] = $teacher;
         }
         return $teachers;

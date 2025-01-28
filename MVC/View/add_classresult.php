@@ -91,7 +91,7 @@
 			$classParticipants = $selectedCompetition->getClassParticipants();
 
 			foreach ($classParticipants as $class) {
-				$participantClassesNames[] = $class['name'];
+				$participantClassesNames[] = $class;
 			}
 		}
 	}
@@ -100,7 +100,7 @@
 
 	if ($classSelected) {
 		foreach ($classParticipants as $class) {
-			if ($class['name'] === $_POST['classes']) {
+			if ($class === $_POST['classes']) {
 				$classController = ClassController::getInstance();
 				$_SESSION['classresult_selectedClass'] = $classController->getByName($_POST['classes']);
 				break; // Selektierte Klasse in Sitzung speichern

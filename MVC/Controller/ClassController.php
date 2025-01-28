@@ -154,10 +154,10 @@ class ClassController implements IController
             $classModel = new ClassModel(
                 id: $item['id'],
                 name: $item['name'],
-                students: $item['studentIds'] ?? [],
-                competitions: $item['competitionIds'] ?? [],
-                competitionResults: $item['competitionResultIds'] ?? [],
-                teachers: $item['teacherIds'] ?? []
+                students: $item['students'] ?? [],
+                competitions: $item['competitions'] ?? [],
+                competitionResults: $item['competitionResult'] ?? [],
+                teachers: $item['teachers'] ?? []
             );
             $classes[] = $classModel;
 
