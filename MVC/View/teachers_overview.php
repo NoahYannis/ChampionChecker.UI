@@ -11,7 +11,6 @@ if (!isset($_COOKIE['ChampionCheckerCookie'])) {
 use MVC\Controller\TeacherController;
 use MVC\Controller\ClassController;
 use MVC\Model\Teacher;
-use MVC\Model\ClassModel;
 
 $teacherController = TeacherController::getInstance();
 $classController = ClassController::getInstance();
@@ -137,17 +136,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         exit;
     }
 
-
     $changedTeachers = [];
 
     foreach ($teachersData as $data) {
-        $classes = $data['classes'];
-
-        $classObjects = [];
-        foreach ($classes as $class) {
-            $classObjects[] = $classController->getByName($class);
+        $classDictionary = [];
+        $classNames = $data['classes'];
+        foreach ($classNames as $class) {
+            $classId = $classController->getIdFromName($class);
+            $classDictionary[(int)$classId] = (string)$class;
         }
-
 
         $additionalInfo = trim($data['additionalInfo']) === '-' ? null : trim($data['additionalInfo']);
         $shortCode = trim($data['shortCode']);
@@ -159,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             shortCode: $shortCode,
             isParticipating: isset($data['isParticipating']) ? (bool)$data['isParticipating'] : false,
             additionalInfo: $additionalInfo,
-            classes: $classObjects,
+            classes: $classDictionary,
         );
         $changedTeachers[] = $teacher;
     }
