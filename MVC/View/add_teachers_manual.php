@@ -31,9 +31,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $shortcode = htmlspecialchars(trim($_POST['shortcode']), ENT_QUOTES, 'UTF-8');
     $additionalInfo = isset($_POST['additional-info']) ? htmlspecialchars(trim($_POST['additional-info']), ENT_QUOTES, 'UTF-8') : null;
     $isParticipating = isset($_POST['participationToggle']) && $_POST['participationToggle'] === 'on';
-    $classes = isset($_POST['classes']) ? array_map(function ($className) use ($classController) {
-        return $classController->getByName($className);
-    }, $_POST['classes']) : [];
+    $classes = [];
+
+    if (isset($_POST['classes'])) {
+        foreach ($_POST['classes'] as $class) {
+            list($classId, $className) = explode(':', $class);
+            $classes[(int)$classId] = (string)$className;
+        }
+    }
 
 
     $teacher = new Teacher(

@@ -76,7 +76,7 @@ class TeacherController implements IController
                     $classesDictionary[$id] = $name;
                 }
             }
-        
+
             $teacher = new Teacher(
                 id: $item['id'],
                 firstName: $item['firstName'],
@@ -86,7 +86,7 @@ class TeacherController implements IController
                 classes: $classesDictionary,
                 additionalInfo: $item['additionalInfo'] ?? null
             );
-        
+
             $teachers[] = $teacher;
             $this->cachedTeachers[$item['id']] = $teacher;
         }
@@ -103,13 +103,19 @@ class TeacherController implements IController
             throw new \InvalidArgumentException('Model must be an instance of Teacher.');
         }
 
+        $classes = $model->getClasses() ?? [];
+        $classDictionary = [];
+        foreach ($classes as $id => $name) {
+            $classDictionary[(int)$id] = (string)$name;
+        }
+
         $data = [
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'shortCode' => $model->getShortCode(),
             'isParticipating' => $model->getIsParticipating(),
             'additionalInfo' => $model->getAdditionalInfo() ?? "",
-            'classes' => $model->getClasses() ?? []
+            'classes' => empty($classDictionary) ? null : $classDictionary
         ];
 
         $createResult = $this->sendApiRequest('/api/teacher', 'POST', $data);
@@ -126,6 +132,12 @@ class TeacherController implements IController
             throw new \InvalidArgumentException('Model must be an instance of Teacher.');
         }
 
+        $classes = $model->getClasses() ?? [];
+        $classDictionary = [];
+        foreach ($classes as $id => $name) {
+            $classDictionary[(int)$id] = (string)$name;
+        }
+
         $data = [
             'id' => $model->getId(),
             'firstName' => $model->getFirstName(),
@@ -133,7 +145,7 @@ class TeacherController implements IController
             'shortCode' => $model->getShortCode(),
             'isParticipating' => $model->getIsParticipating(),
             'additionalInfo' => $model->getAdditionalInfo() ?? "",
-            'classes' => $model->getClasses() ?? []
+            'classes' => empty($classDictionary) ? null : $classDictionary
         ];
 
         $updateResult = $this->sendApiRequest("/api/teacher", 'PUT', $data);

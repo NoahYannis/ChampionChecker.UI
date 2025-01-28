@@ -31,7 +31,8 @@
         .then((data) => {
           data.forEach((classItem) => {
             const option = document.createElement("option");
-            option.value = classItem.name;
+            option.dataset.id = classItem.id;
+            option.value = `${classItem.id}:${classItem.name}`; // ID und Namen gemeinsam speichern
             option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
 
             if (!classItem.available) {

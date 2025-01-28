@@ -604,6 +604,7 @@ include 'nav.php';
 
             classData.forEach(classItem => {
                 let option = document.createElement("option");
+                option.dataset.id = classItem.id;
                 option.value = classItem.name;
                 option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
 

@@ -9,6 +9,7 @@ $classes = $controller->getAll();
 
 $result = array_map(function ($class) {
     return [
+        'id' => $class->getId(),
         'name' => $class->getName(),
         'teacherCount' => count($class->getTeachers()),
         'available' => count($class->getTeachers()) < 2,
