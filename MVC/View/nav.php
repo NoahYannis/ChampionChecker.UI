@@ -1,5 +1,8 @@
 <?php
 $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
+$profileImageUrl = $isAuthenticated
+    ? '../../resources/profile-authenticated.png'
+    : '../../resources/profile.webp';
 ?>
 
 <!DOCTYPE html>
@@ -53,11 +56,8 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
             </ul>
         </div>
         <div class="profile" id="profile"
-             style="background-image: url('<?= ($isAuthenticated)
-				 ? '../../resources/profile-authenticated.png'
-				 : '../../resources/profile.webp'
-			 ;?>');"
-             data-content-initials="">
+            style="background-image: url('<?= $profileImageUrl; ?>');"
+            data-content-initials="">
         </div>
 
         <div class="profile-menu" id="profile-menu" style="display: none;">
@@ -110,7 +110,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
     hamburgerInput.addEventListener('change', function() {
         sideBar.classList.toggle("open")
     });
-    
+
     profilePic.addEventListener('click', function(event) {
         event.preventDefault();
         if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {
