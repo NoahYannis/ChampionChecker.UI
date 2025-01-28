@@ -76,6 +76,13 @@ class CompetitionResultController implements IController
         ];
 
         $createResult = $this->sendApiRequest('/api/competitionresult', 'POST', $data);
+
+        if ($createResult['success'] === true) {
+            $compResult = json_decode($createResult['response']);
+            $model->setId($compResult->id);
+            $_SESSION['results_competitionResults'][] = $model;
+        }
+
         return $createResult;
     }
 
@@ -107,7 +114,7 @@ class CompetitionResultController implements IController
     public function delete(int $id): array
     {
         $deleteResult = $this->sendApiRequest("/api/competitionresult/$id", 'DELETE');
-        
+
         if (!$deleteResult['success'] || !isset($_SESSION['results_competitionResults'])) {
             return $deleteResult;
         }
@@ -119,7 +126,7 @@ class CompetitionResultController implements IController
                 break;
             }
         }
-        
+
         return $deleteResult;
     }
 
@@ -247,7 +254,8 @@ class CompetitionResultController implements IController
 
         return [
             'success' => true,
-            'error' => null
+            'error' => null,
+            'response' => $response
         ];
     }
 }
