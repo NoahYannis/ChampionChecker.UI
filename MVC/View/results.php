@@ -238,7 +238,7 @@ include 'nav.php';
                 const rowIndex = cell.parentElement.rowIndex;
                 const compResId = cell.parentElement.querySelector("td[data-id]").dataset.id;
                 storedValues[rowIndex] = [compResId, currentPoints];
-                cell.innerHTML = `<input type="text" value="${currentPoints}" class="edit-input">`;
+                cell.innerHTML = `<input type="text" value="${currentPoints}" class="edit-input" maxlength="2">`;
 
                 let deleteColumn = document.createElement("td");
                 deleteColumn.innerHTML = `
@@ -290,7 +290,7 @@ include 'nav.php';
         }
 
         async function deleteCompResult(compResId, rowIndex) {
-            spinner.style.display = 'inline-block'; 
+            spinner.style.display = 'inline-block';
             editButton.disabled = true;
 
             try {
@@ -329,7 +329,15 @@ include 'nav.php';
             rows.sort((rowA, rowB) => {
                 let cellA = rowA.getElementsByTagName("td")[columnIndex].innerText.trim();
                 let cellB = rowB.getElementsByTagName("td")[columnIndex].innerText.trim();
-                return sortOrder === "asc" ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+
+                let numA = parseInt(cellA);
+                let numB = parseInt(cellB);
+
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return sortOrder === "asc" ? numA - numB : numB - numA;
+                } else {
+                    return sortOrder === "asc" ? cellA.localeCompare(cellB) : cellB.localeCompare(cellA);
+                }
             });
 
             rows.forEach(row => tbody.appendChild(row));
