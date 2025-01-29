@@ -480,14 +480,15 @@ include 'nav.php';
                     Array.from(cells[5].querySelectorAll(selector))
                     .map(element => element.textContent.trim());
 
-                // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
-                let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
-                let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
-
                 // Nötig, um aus der Option das zugehörige Class bzw. Schüler-Objekt zu finden.
                 let participantIds = Array.from(cells[5].querySelectorAll(selector))
                     .map(element => element.dataset.id)
                     .filter(id => id != null);
+
+                // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
+                let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
+                let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
+
 
                 if (checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
@@ -521,13 +522,18 @@ include 'nav.php';
                 genderContent.appendChild(genderIcon);
                 cells[4].appendChild(genderContent);
 
+                let participantObjects = participants.map((name, index) => ({
+                    id: participantIds[index] || "",
+                    name: name
+                }));
+
                 // Teilnehmer-Anzeige
                 cells[5].innerHTML = participants.length === 0 ?
                     '-' :
-                    participants.map(participant => {
-                        return `<span data-participant="${participant}"
+                    participantObjects.map(obj => {
+                        return `<span data-id="${obj.id}" data-participant="${obj.name}"
                         class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
-                        ${participant}
+                        ${obj.name}
                         </span>`;
                     }).join(' ');
 
@@ -736,7 +742,6 @@ include 'nav.php';
                         return `<span data-id="${id}" data-participant="${name}" class="name-badge class">${name}</span>`;
                     }).join(' ');
             } else {
-                console.log(comp.studentParticipants);
                 participantsHTML = Object.entries(comp.studentParticipants).length === 0 ?
                     '-' :
                     Object.entries(comp.studentParticipants).map(([id, student]) => {
