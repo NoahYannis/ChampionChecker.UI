@@ -5,7 +5,10 @@ include 'nav.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\ClassController;
+use MVC\Controller\UserController;
 use MVC\Model\CompetitionResult;
+
+$role = UserController::getInstance()->getRole();
 
 
 $classController = new ClassController();

@@ -3,6 +3,8 @@
 namespace MVC\Controller;
 
 use MVC\Model\User;
+use MVC\Model\Role;
+
 use RuntimeException;
 use Exception;
 
@@ -23,6 +25,29 @@ class UserController
             self::$instance = new self();
         }
         return self::$instance;
+    }
+
+    public function getRole(): Role
+    {
+        if (isset($_SESSION['user_role'])) {
+            return $_SESSION['user_role'];
+        }
+
+        $roleResult = $this->getApiData('/api/auth/role');
+
+        if (!isset($roleResult['response'])) {
+            throw new Exception('Die Nutzerrolle konnte nicht abgefragt werden');
+        }
+
+        $roleValue = json_decode($roleResult['response']);
+
+        try {
+            $role = Role::from($roleValue->role);
+            $_SESSION['user_role'] = $role;
+            return $role;
+        } catch (Exception $e) {
+            throw new RuntimeException('Ungültiger Rollenwert: ' . $roleValue->role);
+        }
     }
 
 
@@ -144,6 +169,36 @@ class UserController
         echo "<script>
         localStorage.setItem('Initials', '" . addslashes(string: $initials) . "');
       </script>";
+    }
+
+
+    private function getApiData(string $endpoint)
+    {
+        $curl = curl_init($this->apiUrl . $endpoint);
+        $cookieValue = $_COOKIE['ChampionCheckerCookie'] ?? null;
+
+
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ],
+            CURLOPT_USERAGENT => 'PHP API Request',
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_COOKIE => $cookieValue !== null ? "ChampionCheckerCookie={$cookieValue}" : null,
+        ]);
+
+        $response = curl_exec($curl);
+
+        if ($response === false) {
+            $error = curl_error($curl);
+            throw new RuntimeException('cURL error: ' . $error);
+        }
+
+        return ['response' => $response];
     }
 
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
