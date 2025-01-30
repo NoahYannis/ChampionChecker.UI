@@ -1,6 +1,7 @@
 <?php
 
 use MVC\Controller\UserController;
+use MVC\Model\Role;
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
@@ -41,11 +42,13 @@ $profileImageUrl = $isAuthenticated
         <div class="nav-items">
             <ul>
                 <li><a href="results.php">Ergebnisse</a></li>
-                <?php if ($isAuthenticated): ?>
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
                     <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
                     <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
                     <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                <?php endif; ?>
+                <?php if (UserController::getInstance()->getRole() === Role::Admin): ?>
+                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
                 <?php endif; ?>
             </ul>
         </div>
@@ -64,11 +67,13 @@ $profileImageUrl = $isAuthenticated
         <div class="nav-items">
             <ul>
                 <li><a href="results.php">Ergebnisse</a></li>
-                <?php if ($isAuthenticated): ?>
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
                     <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
                     <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
                     <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                <?php endif; ?>
+                <?php if (UserController::getInstance()->getRole() === Role::Admin): ?>
+                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
                 <?php endif; ?>
             </ul>
         </div>
