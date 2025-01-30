@@ -73,7 +73,7 @@ class UserController
 
 
                 if (session_status() !== PHP_SESSION_ACTIVE) {
-                    session_start(); // Session nur starten, wenn keine läuft
+                    session_start();
                 }
                 
                 $_SESSION['user_role'] = match ($userRole) {

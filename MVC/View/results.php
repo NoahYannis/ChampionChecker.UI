@@ -5,7 +5,9 @@ session_start();
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
+use MVC\Controller\UserController;
 use MVC\Model\CompetitionResult;
+use MVC\Model\Role;
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
@@ -112,7 +114,7 @@ function printCompetitionResult($competitionResults)
 
     echo "<div id='result-message' class='result-message hidden'></div>";
 
-    if (isset($_COOKIE['ChampionCheckerCookie'])) {
+    if (UserController::getInstance()->getRole() === Role::Admin) {
         echo
         '<div class="button-container">
         <button class="circle-button edit-button" id="edit-button">
@@ -124,8 +126,6 @@ function printCompetitionResult($competitionResults)
         <div class="spinner" id="spinner"></div>
         </div>';
     }
-
-
 
     echo "<table id='results-table' class='table-style'>";
     echo "<thead>";
