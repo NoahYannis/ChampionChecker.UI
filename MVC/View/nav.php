@@ -1,4 +1,21 @@
 <?php
+
+use MVC\Controller\UserController;
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+$userRole = UserController::getInstance()->getRole();
+
+$icon = match ($userRole->name) {
+    'Gast' => 'fas fa-eye',
+    'Schüler' => 'fas fa-user-graduate',
+    'Lehrkraft' => 'fas fa-chalkboard-teacher',
+    'Admin' => 'fas fa-user-shield',
+    default => 'fas fa-question-circle',
+};
+
 $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
 $profileImageUrl = $isAuthenticated
     ? '../../resources/profile-authenticated.png'
@@ -70,7 +87,7 @@ $profileImageUrl = $isAuthenticated
                     </li>
                     <li>
                         <a href="#">
-                            <i class="fas fa-cog"></i> Einstellungen
+                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
                         </a>
                     </li>
                 <?php else: ?>
@@ -82,6 +99,11 @@ $profileImageUrl = $isAuthenticated
                     <li>
                         <a href="login.php">
                             <i class="fas fa-sign-in-alt"></i> Anmelden
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
                         </a>
                     </li>
                 <?php endif; ?>

@@ -29,6 +29,10 @@ class UserController
 
     public function getRole(): Role
     {
+        if (!isset($_COOKIE['ChampionCheckerCookie'])) {
+            return Role::Gast;
+        }
+
         if (isset($_SESSION['user_role'])) {
             return $_SESSION['user_role'];
         }
@@ -39,14 +43,14 @@ class UserController
             throw new Exception('Die Nutzerrolle konnte nicht abgefragt werden');
         }
 
-        $roleValue = json_decode($roleResult['response']);
+        $roleValue = json_decode($roleResult['response'], true);
 
         try {
-            $role = Role::from($roleValue->role);
+            $role = Role::from($roleValue['role']);
             $_SESSION['user_role'] = $role;
             return $role;
         } catch (Exception $e) {
-            throw new RuntimeException('Ungültiger Rollenwert: ' . $roleValue->role);
+            throw new RuntimeException('Ungültiger Rollenwert: ' . $roleValue['role']);
         }
     }
 
@@ -63,12 +67,29 @@ class UserController
             $success = $apiResult['statusCode'] < 400;
 
             if ($success) {
-                $this->extractUserInitials($apiResult['response']);
+                $userName = explode(',', $apiResult['response'])[0];
+                $userRole = explode(',', $apiResult['response'])[1];
+                $this->extractUserInitials($userName);
+
+
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start(); // Session nur starten, wenn keine läuft
+                }
+                
+                $_SESSION['user_role'] = match ($userRole) {
+                    'Spectator' => Role::Gast,
+                    'Student' => Role::Schüler,
+                    'Supervisor' => Role::Lehrkraft,
+                    'Admin' => Role::Admin,
+                    default => throw new RuntimeException(message: 'Ungültiger Rollenwert: ' . $userRole),
+                };
             }
+
+            $response = $success ? $userName : $apiResult['response'];
 
             return [
                 'success' => $success,
-                'response' => $apiResult['response']
+                'response' => $response
             ];
         } catch (Exception $e) {
             return [
