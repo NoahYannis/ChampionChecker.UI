@@ -39,8 +39,9 @@ class UserController
 
         $roleResult = $this->getApiData('/api/auth/role');
 
-        if (!isset($roleResult['response'])) {
-            throw new Exception('Die Nutzerrolle konnte nicht abgefragt werden');
+        if ($roleResult['success'] === false) {
+            error_log("Die Nutzerrolle konnte nicht abgefragt werden: " . json_encode($roleResult));
+            return Role::Gast;
         }
 
         $roleValue = json_decode($roleResult['response'], true);
@@ -75,7 +76,7 @@ class UserController
                 if (session_status() !== PHP_SESSION_ACTIVE) {
                     session_start();
                 }
-                
+
                 $_SESSION['user_role'] = match ($userRole) {
                     'Spectator' => Role::Gast,
                     'Student' => Role::Schüler,
@@ -213,13 +214,15 @@ class UserController
         ]);
 
         $response = curl_exec($curl);
+        $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $success = $statusCode < 400;
 
         if ($response === false) {
             $error = curl_error($curl);
             throw new RuntimeException('cURL error: ' . $error);
         }
 
-        return ['response' => $response];
+        return ['response' => $response, 'success' => $success];
     }
 
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
