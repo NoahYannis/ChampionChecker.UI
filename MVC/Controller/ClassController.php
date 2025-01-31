@@ -86,7 +86,7 @@ class ClassController implements IController
     {
         if (isset($_SESSION['classes'])) {
             foreach ($_SESSION['classes'] as $class) {
-                if ($class->getId() === $classId) {
+                if ($class->getId() == $classId) {
                     return $class->getName();
                 }
             }

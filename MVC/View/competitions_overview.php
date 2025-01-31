@@ -1,12 +1,20 @@
 <?php
+
+use MVC\Controller\UserController;
+use MVC\Model\Role;
+
 require '../../vendor/autoload.php';
 session_start();
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
+$userRole = UserController::getInstance()->getRole();
+
+// Für Zugriff mindestens Rolle Lehrkraft
+if ($userRole->value < 2) {
     header("Location: login.php");
     exit();
 }
 
+$isAdmin = $userRole == Role::Admin;
 
 use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
@@ -175,9 +183,12 @@ include 'nav.php';
     <div id="result-message" class="result-message hidden"></div>
     <div id="timestamp-container" class="timestamp-container"></div>
     <div class="button-container">
-        <button class="circle-button add-button" id="" onclick="window.location.href='#'">
-            <i class="fas fa-plus"></i>
-        </button>
+
+        <?php if ($isAdmin): ?>
+            <button class="circle-button add-button" id="" onclick="window.location.href='#'">
+                <i class="fas fa-plus"></i>
+            </button>
+        <?php endif; ?>
         <button class="circle-button edit-button" id="edit-button">
             <i class="fas fa-pencil-alt"></i>
         </button>
@@ -192,6 +203,7 @@ include 'nav.php';
 
     <script>
         let isEditing = false;
+        let isAdmin = <?php echo $isAdmin ? 'true' : 'false'; ?>;
         let sortDirections = {};
         let storedValues = [];
         let changedCompetitions = [];
@@ -228,7 +240,9 @@ include 'nav.php';
         async function loadCompetitionData() {
             spinner.style.display = "block";
             editButton.disabled = true;
-            addButton.disabled = true;
+
+            if (isAdmin)
+                addButton.disabled = true;
 
             try {
                 const response = await fetch('competitions_overview.php', {
@@ -243,7 +257,9 @@ include 'nav.php';
             } finally {
                 spinner.style.display = "none";
                 editButton.disabled = false;
-                addButton.disabled = false;
+
+                if (isAdmin)
+                    addButton.disabled = false;
             }
         }
 
@@ -359,16 +375,21 @@ include 'nav.php';
         }
 
         async function enterEditState() {
-            let deleteHeader = document.createElement("th");
+            if (isAdmin) {
+                let deleteHeader = document.createElement("th");
+            }
 
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
-                let deleteColumn = document.createElement("td");
-                deleteColumn.innerHTML = `
-                <button class="circle-button delete-button">
-                    <i class="fas fa-trash"></i>
-                </button>`;
-                row.appendChild(deleteColumn);
+
+                if (isAdmin) {
+                    let deleteColumn = document.createElement("td");
+                    deleteColumn.innerHTML = `
+                    <button class="circle-button delete-button">
+                        <i class="fas fa-trash"></i>
+                    </button>`;
+                    row.appendChild(deleteColumn);
+                }
 
                 let name = row.cells[0].innerText;
                 let date = row.cells[1].innerText;
@@ -391,12 +412,12 @@ include 'nav.php';
                 // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
                 storedValues[row.rowIndex] = [name, date, referee, type, gender, participants.map(p => p.name).join(","), state, additionalInfo];
 
-                cells[0].innerHTML = `<input type="text" value="${name}">`;
+                cells[0].innerHTML = `<input type="text" value="${name}" ${!isAdmin ? 'readonly' : ''}>`;
 
                 let dateValue = createISODateValueFromString(date);
-                cells[1].innerHTML = `<input type="datetime-local" value="${dateValue}">`;
+                cells[1].innerHTML = `<input type="datetime-local" value="${dateValue}" ${!isAdmin ? 'readonly' : ''}>`;
 
-                cells[2].innerHTML = `<input type="text" value="${referee}">`;
+                cells[2].innerHTML = `<input type="text" value="${referee}" ${!isAdmin ? 'readonly' : ''}>`;
 
                 const typeSelect = createTypeSelect(type)
                 cells[3].innerHTML = typeSelect;
@@ -427,6 +448,7 @@ include 'nav.php';
 
                 const statusSelect = document.createElement("select");
                 statusSelect.id = "status-select";
+                statusSelect.disabled = !isAdmin;
 
                 let selectedOption = document.createElement("option");
                 selectedOption.textContent = state;
@@ -448,16 +470,19 @@ include 'nav.php';
                 cells[6].appendChild(statusSelect);
                 cells[7].innerHTML = `<input type="text" value="${additionalInfo}">`;
 
-                let deleteButton = row.querySelector('.delete-button');
-                deleteButton.addEventListener('click', () => {
-                    const confirmation = confirm('Sind Sie sicher, dass Sie diese Station löschen möchten?');
-                    if (confirmation) {
-                        deleteCompetition(row.cells[0].dataset.compId, row.rowIndex);
-                    }
-                });
+                if (isAdmin) {
+                    let deleteButton = row.querySelector('.delete-button');
+                    deleteButton.addEventListener('click', () => {
+                        const confirmation = confirm('Sind Sie sicher, dass Sie diese Station löschen möchten?');
+                        if (confirmation) {
+                            deleteCompetition(row.cells[0].dataset.compId, row.rowIndex);
+                        }
+                    });
+                }
             });
 
-            headerRow.appendChild(deleteHeader);
+            if (isAdmin)
+                headerRow.appendChild(deleteHeader);
         }
 
         function exitEditState(wasCanceled = false) {
@@ -488,7 +513,6 @@ include 'nav.php';
                 // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
                 let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
-
 
                 if (checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
@@ -544,11 +568,16 @@ include 'nav.php';
             storedValues = [];
 
             // Löschen-Spalte & -Knöpfe entfernen.
-            headerRow.querySelector("th:last-child").remove();
-            document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
+            if (isAdmin) {
+                headerRow.querySelector("th:last-child").remove();
+                document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
+            }
         }
 
         async function deleteCompetition(compId, rowIndex) {
+            if (!isAdmin)
+                return;
+
             spinner.style.display = 'inline-block';
             editButton.disabled = true;
 
@@ -672,7 +701,7 @@ include 'nav.php';
 
         function createGenderSelect(gender) {
             const optionsHTML = `
-            <select id="gender-select">
+            <select id="gender-select" ${!isAdmin ? 'disabled' : ''}>
                 <option value="M" ${gender === 'M' ? 'selected' : ''}>Männlich</option>
                 <option value="W" ${gender === 'W' ? 'selected' : ''}>Weiblich</option>
                 <option value="N" ${gender === 'N' ? 'selected' : ''}>Neutral</option>
@@ -682,7 +711,7 @@ include 'nav.php';
 
         function createTypeSelect(type) {
             const optionsHTML = `
-            <select id="type-select">
+            <select id="type-select" ${!isAdmin ? 'disabled' : ''}>
                 <option value="Einzel" ${type === 'Einzel' ? 'selected' : ''}>Einzel</option>
                 <option value="Team" ${type === 'Team' ? 'selected' : ''}>Team</option>
             </select>`;

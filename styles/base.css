@@ -322,6 +322,10 @@ select {
   &:not(.readonly-input) {
     border: 2px solid #999;
   }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
 }
 
 textarea {
@@ -405,7 +409,7 @@ th {
   }
 
   &.neutral {
-    color:black
+    color: black;
   }
 }
 
