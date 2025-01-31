@@ -1,8 +1,11 @@
 <?php
 require '../../vendor/autoload.php';
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
+use MVC\Controller\UserController;
+use MVC\Model\Role;
+
+if (UserController::getInstance()->getRole() !== Role::Admin) {
+    header("Location: home.php");
     exit();
 }
 

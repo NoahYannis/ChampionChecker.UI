@@ -1,16 +1,21 @@
 <?php
 require '../../vendor/autoload.php';
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
-    exit();
-}
-
 use MVC\Model\Student;
 use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
+use MVC\Controller\UserController;
 
 session_start();
+
+$userRole = UserController::getInstance()->getRole();
+
+// Für Zugriff mindestens Rolle Lehrkraft
+if ($userRole->value < 2) {
+    header("Location: home.php");
+    exit();
+}
+
 
 $response = [
     'success' => true,

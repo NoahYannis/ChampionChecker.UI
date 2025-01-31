@@ -2,15 +2,16 @@
 require '../../vendor/autoload.php';
 session_start();
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
-    exit();
-}
-
-
+use MVC\Controller\UserController;
 use MVC\Controller\TeacherController;
 use MVC\Controller\ClassController;
+use MVC\Model\Role;
 use MVC\Model\Teacher;
+
+if (UserController::getInstance()->getRole() !== Role::Admin) {
+    header("Location: home.php");
+    exit();
+}
 
 $teacherController = TeacherController::getInstance();
 $classController = ClassController::getInstance();

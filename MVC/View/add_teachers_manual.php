@@ -4,10 +4,12 @@ session_start();
 
 use MVC\Controller\TeacherController;
 use MVC\Controller\ClassController;
+use MVC\Controller\UserController;
 use MVC\Model\Teacher;
+use MVC\Model\Role;
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
+if (UserController::getInstance()->getRole() !== Role::Admin) {
+    header("Location: home.php");
     exit();
 }
 

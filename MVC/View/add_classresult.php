@@ -6,11 +6,15 @@
 	use MVC\Controller\CompetitionController;
 	use MVC\Controller\CompetitionResultController;
 	use MVC\Controller\ClassController;
+	use MVC\Controller\UserController;
 
 	session_start();
 
-	if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-		header("Location: login.php");
+	$userRole = UserController::getInstance()->getRole();
+
+	// Für Zugriff mindestens Rolle Lehrkraft
+	if ($userRole->value < 2) {
+		header("Location: home.php");
 		exit();
 	}
 
@@ -185,7 +189,7 @@
 				let value = input.value;
 
 				// Input auf zwei Zahlen begrenzen.
-				if(value.length > 2) {
+				if (value.length > 2) {
 					input.value = value.slice(0, 2);
 					return;
 				}
@@ -198,7 +202,7 @@
 
 				// Wert darf nur zwischen 0 und 99 liegen.
 				if (value < 0 || value > 99 || value === '' || isNaN(value)) {
-					input.value = value.slice(0, -1); 
+					input.value = value.slice(0, -1);
 					return;
 				}
 			}

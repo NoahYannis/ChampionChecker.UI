@@ -10,7 +10,7 @@ $userRole = UserController::getInstance()->getRole();
 
 // Für Zugriff mindestens Rolle Lehrkraft
 if ($userRole->value < 2) {
-    header("Location: login.php");
+    header("Location: home.php");
     exit();
 }
 
