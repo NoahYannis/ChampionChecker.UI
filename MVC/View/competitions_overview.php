@@ -640,9 +640,10 @@ include 'nav.php';
             }
 
             let cells = row.getElementsByTagName("td");
+            let columnLength = isAdmin ? cells.length - 1 : cells.length; // Delete-Zelle im Fall von Admin rausrechnen.
 
             // Kopfzeile überspringen
-            for (let i = 0; i < cells.length - 1; i++) {
+            for (let i = 0; i < columnLength; i++) {
 
                 let currentValue =
                     (cells[i].querySelector('input')?.value) ||
