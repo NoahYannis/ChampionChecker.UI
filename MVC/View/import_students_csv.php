@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($importSuccess) {
         $response['message'] = 'Schüler erfolgreich importiert.';
+        unset($_SESSION['overview_students_timestamp']);
     }
 
     echo json_encode($response);

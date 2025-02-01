@@ -97,6 +97,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $putSuccess &= $updateResult['success'] === true;
     }
 
+    if ($putSuccess) {
+        unset($_SESSION['overview_students_timestamp']); // Teilnehmer könnten sich geändert haben.
+    }
+
     $response = [
         'success' => $putSuccess,
         'message' => $putSuccess ? 'Änderungen erfolgreich gespeichert.' : 'Einige Änderungen konnten nicht übernommen werden.'
