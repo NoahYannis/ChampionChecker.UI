@@ -52,6 +52,7 @@
         transition: text-shadow 0.3s ease;
         display: inline-block;
         align-items: center;
+        text-align: center;
 
         &:hover {
           font-weight: bold;
@@ -89,6 +90,38 @@
         }
       }
     }
+
+    li:has(> .dropdown-menu) {
+      display: block;
+      text-align: center;
+    }
+  }
+}
+
+.dropdown {
+  display: inline-block;
+
+  a {
+    display: block;
+    color: black;
+  }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: hsl(0, 0%, 95%);
+    box-shadow: 2px 2px 5px hsla(0, 0%, 0%, 0.8);
+
+    li {
+      display: block;
+      margin-right: 0;
+    }
+  }
+
+  &:hover {
+    .dropdown-menu {
+      display: block;
+    }
   }
 }
 
@@ -125,7 +158,7 @@
 #profile {
   position: relative;
   background-clip: content-box;
-  padding: .5rem;
+  padding: 0.5rem;
 
   &::after {
     content: attr(data-content-initials);
@@ -266,7 +299,6 @@
 
 /* Bei kleineren Bildschirmen das Hamburger-Menü anzeigen */
 @media (max-width: 50rem) {
-
   /* Nur Nav-Items im Hamburger-Menü anzeigen */
   .nav-items:not(.sidebar .nav-items) {
     display: none;
@@ -292,7 +324,6 @@
 }
 
 @media (min-width: 50rem) {
-
   .hamburger-menu,
   .sidebar {
     display: none;

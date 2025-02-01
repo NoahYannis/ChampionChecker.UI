@@ -50,7 +50,7 @@ include 'nav.php';
             const mode = urlParams.get('mode');
             const toggleSwitch = document.getElementById('toggleSwitch');
             toggleSwitch.checked = mode === 'manual';
-            loadForm(mode === 'manual' ? 'add_teachers_manual.php' : 'import_teachers_csv.php');
+            loadForm(mode === 'manual' ? 'add_teachers_manual.php?mode=manual' : 'import_teachers_csv.php?mode=csv');
         });
 
         function showForm() {
@@ -59,7 +59,7 @@ include 'nav.php';
             const url = new URL(window.location.href);
             url.searchParams.set('mode', mode); // 'mode' in der URL setzen
             history.pushState({}, '', url);
-            loadForm(mode === 'manual' ? 'add_teachers_manual.php' : 'import_teachers_csv.php');
+            loadForm(mode === 'manual' ? 'add_teachers_manual.php?mode=manual' : 'import_teachers_csv.php?mode=csv');
         }
 
         function loadForm(url) {

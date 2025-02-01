@@ -74,6 +74,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo $response['message'];
     exit;
 }
+
+$mode = $_GET['mode'] ?? null;
+
+// Seite wurde direkt aufgerufen statt über die Lehrerverwaltung, Nav-Menü für die Seite einbinden.
+if (!isset($mode)) {
+    include 'nav.php';
+}
 ?>
 
 <!DOCTYPE html>

@@ -70,7 +70,7 @@ include 'nav.php';
 <body>
 
 	<header>
-		<h1>Solopunkte</h1>
+		<h1>Einzelpunkte</h1>
 	</header>
 
 	<main class="main-content">

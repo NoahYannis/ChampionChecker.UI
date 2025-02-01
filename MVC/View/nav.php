@@ -44,12 +44,21 @@ $profileImageUrl = $isAuthenticated
                 <li><a href="results.php">Ergebnisse</a></li>
                 <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
                     <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
+                    <li><a href="add_soloresult.php">Einzelergebnis hinzufügen</a></li>
+                    <hr />
                     <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
                 <?php endif; ?>
+
                 <?php if (UserController::getInstance()->getRole() === Role::Admin): ?>
                     <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                    <li><a href="add_teachers_manual.php">Lehrer hinzufügen</a></li>
+                    <li><a href="import_teachers_csv.php">CSV-Import Lehrer</a></li>
                 <?php endif; ?>
+
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
+                    <li><a href="import_students_csv.php">CSV-Import Schüler</a></li>
+                <?php endif; ?>
+
             </ul>
         </div>
     </aside>
@@ -66,17 +75,48 @@ $profileImageUrl = $isAuthenticated
         </div>
         <div class="nav-items">
             <ul>
-                <li><a href="results.php">Ergebnisse</a></li>
+                <li class="dropdown">
+                    <a href="results.php">Ergebnisse</a>
+                    <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
+                        <ul class="dropdown-menu">
+                            <li><a href="results.php">Ergebnisse ansehen</a></li>
+                            <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
+                            <li><a href="add_soloresult.php">Einzelgebnis hinzufügen</a></li>
+                        </ul>
+                    <?php endif; ?>
+                </li>
+
                 <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
-                    <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                    <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                    <li class="dropdown">
+                        <a href="competitions_overview.php">Stationen</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                        </ul>
+                    </li>
                 <?php endif; ?>
+
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
+                    <li class="dropdown">
+                        <a href="import_students_csv.php">Schüler</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="import_students_csv.php">CSV-Import Schüler</a></li>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+
                 <?php if (UserController::getInstance()->getRole() === Role::Admin): ?>
-                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                    <li class="dropdown">
+                        <a href="teachers_overview.php">Lehrer</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                            <li><a href="add_teachers_manual.php">Lehrer hinzufügen</a></li>
+                            <li><a href="import_teachers_csv.php">CSV-Import Lehrer</a></li>
+                        </ul>
+                    </li>
                 <?php endif; ?>
             </ul>
         </div>
+
         <div class="profile" id="profile"
             style="background-image: url('<?= $profileImageUrl; ?>');"
             data-content-initials="">

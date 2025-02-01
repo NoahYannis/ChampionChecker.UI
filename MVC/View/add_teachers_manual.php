@@ -78,6 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<script>window.location.href = 'add_teachers_overview.php?mode=manual'</script>";
     }
 }
+
+$mode = $_GET['mode'] ?? null;
+
+// Seite wurde direkt aufgerufen statt über die Lehrerverwaltung, Nav-Menü für die Seite einbinden.
+if (!isset($mode)) {
+    include 'nav.php';
+}
 ?>
 
 <!DOCTYPE html>
