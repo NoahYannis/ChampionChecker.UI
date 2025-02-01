@@ -51,12 +51,10 @@ $profileImageUrl = $isAuthenticated
 
                 <?php if (UserController::getInstance()->getRole() === Role::Admin): ?>
                     <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
-                    <li><a href="add_teachers_manual.php">Lehrer hinzufügen</a></li>
-                    <li><a href="import_teachers_csv.php">CSV-Import Lehrer</a></li>
                 <?php endif; ?>
 
                 <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
-                    <li><a href="import_students_csv.php">CSV-Import Schüler</a></li>
+                    <li><a href="students_overview.php">Schülerübersicht</a></li>
                 <?php endif; ?>
 
             </ul>
@@ -97,8 +95,9 @@ $profileImageUrl = $isAuthenticated
 
                 <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
                     <li class="dropdown">
-                        <a href="import_students_csv.php">Schüler</a>
+                        <a href="students_overview.php">Schüler</a>
                         <ul class="dropdown-menu">
+                            <li><a href="students_overview.php">Schülerübersicht</a></li>
                             <li><a href="import_students_csv.php">CSV-Import Schüler</a></li>
                         </ul>
                     </li>

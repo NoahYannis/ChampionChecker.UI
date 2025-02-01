@@ -102,7 +102,7 @@ class StudentController implements IController
                 firstName: $item['firstName'],
                 lastName: $item['lastName'],
                 isMale: $item['isMale'],
-                classId: $item['classId'],
+                classId: key($item['class']),
                 competitions: $item['competitions'] ?? [],
                 competitionResults: $item['competitionResults'] ?? []
             );

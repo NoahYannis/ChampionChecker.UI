@@ -52,6 +52,13 @@ abbr {
   }
 }
 
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .submitButton {
   display: flex;
   justify-content: center;
@@ -302,6 +309,12 @@ input[type="submit"] {
   &.student {
     background-color: #94f8b0;
   }
+
+  &.competition {
+    background-color: white;
+    padding: 8px;
+    border: 2px solid black;
+  }
 }
 
 input[type="text"],
@@ -432,6 +445,11 @@ th {
 
   .name-badge {
     padding-inline: 0.625rem;
+
+    &.competition {
+      padding: 2px;
+      text-overflow: ellipsis;
+    }
   }
 
   .table-style th,
