@@ -85,7 +85,7 @@ table {
 
 @media screen and (min-width: 48rem) {
   form.uploadForm {
-    margin-block: 1rem;
+    margin-block: 5rem;
   }
 
   table {
