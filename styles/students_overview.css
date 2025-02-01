@@ -1,3 +1,8 @@
+.competition-warning {
+  float: right;
+  cursor: pointer;
+}
+
 @media (max-width: 37.5rem) {
   .table-style th,
   .table-style td {

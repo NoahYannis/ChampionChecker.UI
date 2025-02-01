@@ -206,13 +206,18 @@ include 'nav.php';
                 row.appendChild(genderCell);
 
                 const competitionCell = document.createElement('td');
-                if (studentCompetitions[student.id]) {
-                    const competitions = Object.values(studentCompetitions[student.id]);
-                    competitionCell.innerHTML = competitions.map(competition => {
-                        return `<span class='name-badge competition'>${competition}</span>`;
-                    }).join(' ');
+                const competitions = studentCompetitions[student.id] ? Object.values(studentCompetitions[student.id]) : [];
+
+                if (competitions.length > 0) {
+                    competitionCell.innerHTML = competitions.map(competition =>
+                        `<span class='name-badge competition'>${competition}</span>`
+                    ).join(' ');
                 } else {
                     competitionCell.textContent = "-";
+                }
+
+                if (competitions.length < 3) {
+                    lastNameCell.innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Wettbewerben zugeordnet."></i></span>';
                 }
 
                 row.appendChild(competitionCell);
