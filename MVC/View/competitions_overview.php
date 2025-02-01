@@ -379,8 +379,9 @@ include 'nav.php';
         }
 
         async function enterEditState() {
+            let deleteHeader;
             if (isAdmin) {
-                let deleteHeader = document.createElement("th");
+                deleteHeader = document.createElement("th");
             }
 
             rows.forEach(row => {
@@ -485,8 +486,9 @@ include 'nav.php';
                 }
             });
 
-            if (isAdmin)
+            if (isAdmin) {
                 headerRow.appendChild(deleteHeader);
+            }
         }
 
         function exitEditState(wasCanceled = false) {

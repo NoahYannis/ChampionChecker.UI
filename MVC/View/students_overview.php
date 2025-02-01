@@ -7,6 +7,7 @@ use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
 use MVC\Controller\CompetitionController;
 use MVC\Model\Role;
+use MVC\Model\Student;
 
 $userRole = UserController::getInstance()->getRole();
 
@@ -25,6 +26,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_SERVER['HTTP_X_CUSTOM_ATTRIB
     echo json_encode($students);
     exit;
 }
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
+    $putData = file_get_contents('php://input');
+
+    if (empty($putData)) {
+        $response['success'] = false;
+        $response['message'] = 'Leere Anfrage erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+    $studentData = json_decode($putData, true);
+
+    if (json_last_error() !== JSON_ERROR_NONE) {
+        $response['success'] = false;
+        $response['message'] = 'Ungültiges JSON erhalten.';
+        echo json_encode($response);
+        exit;
+    }
+
+
+    $changedStudents = [];
+    foreach ($studentData as $data) {
+        $student = StudentController::getInstance()->getById($data['id']);
+        setStudentCompetitions($student, $data['competitions']);
+        $changedStudents[] = $student;
+    }
+
+    $putSuccess = true;
+
+    foreach ($changedStudents as $student) {
+        $updateResult = StudentController::getInstance()->update($student);
+        $putSuccess &= $updateResult['success'] === true;
+        $updateResults[] = $updateResult;
+    }
+
+    echo json_encode([
+        'success' => $putSuccess,
+        'results' => $updateResults ?? []
+    ]);
+    exit;
+}
+
 
 $isAdmin = $userRole == Role::Admin;
 
@@ -88,6 +133,16 @@ function loadAllCompetitionNames(): array
     return $studentCompetitions;
 }
 
+function setStudentCompetitions($student, $competitions): void
+{
+    $competitionArray = [];
+    foreach ($competitions as $competition) {
+        $competitionArray[$competition['id']] = $competition['name'];
+    }
+
+    $student->setCompetitions($competitionArray);
+}
+
 
 include 'nav.php';
 ?>
@@ -116,18 +171,128 @@ include 'nav.php';
         <button title="Neue Schüler im CSV-Format importieren" class="circle-button add-button" onclick="window.location.href='import_students_csv.php'">
             <i class="fas fa-plus"></i>
         </button>
+        <button class="circle-button edit-button" id="edit-button">
+            <i class="fas fa-pencil-alt"></i>
+        </button>
+        <button class="circle-button cancel-button hidden" id="cancel-button">
+            <i class="fas fa-times"></i>
+        </button>
         <div class="spinner" id="spinner"></div>
     </div>
 
     <section></section>
 
     <script>
+        let isEditing = false;
         let sortDirections = {};
+        let storedValues = [];
+        let changedStudents = [];
         let table, tbody, rows;
-        const spinner = document.getElementById('spinner');
 
+        const spinner = document.getElementById('spinner');
+        const editButton = document.getElementById("edit-button");
+        const editButtonIcon = document.querySelector(".edit-button i");
+        const cancelButton = document.querySelector(".cancel-button");
 
         document.addEventListener("DOMContentLoaded", () => loadStudentData());
+
+        document.querySelector('.edit-button').addEventListener('click', function() {
+            toggleEditState();
+        });
+
+        document.querySelector('.cancel-button').addEventListener('click', function() {
+            const confirmation = confirm('Alle Änderungen gehen verloren. Bearbeitung abbrechen?');
+            if (confirmation) {
+                toggleEditState(true);
+                this.classList.toggle("hidden");
+            }
+        });
+
+        function toggleEditState(wasCanceled = false) {
+            isEditing = !isEditing;
+            editButtonIcon.classList.toggle('fa-pencil-alt');
+            editButtonIcon.classList.toggle('fa-save');
+            cancelButton.classList.toggle("hidden");
+
+            if (isEditing) {
+                enterEditState();
+            } else {
+                exitEditState(wasCanceled);
+                if (!wasCanceled) {
+                    saveChangedStudents(changedStudents);
+                }
+                changedStudents = [];
+            }
+        }
+
+        async function enterEditState() {
+            rows.forEach(row => {
+                let cells = row.getElementsByTagName("td");
+
+                let selector = '.name-badge.competition';
+                let competitions = Array.from(row.cells[4].querySelectorAll(selector))
+                    .map(element => ({
+                        id: element.dataset.id,
+                        name: element.textContent.trim()
+                    }));
+
+                // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
+                storedValues[row.rowIndex] = competitions.map(p => p.name.trim()).join(",");
+
+                cells[4].innerHTML = competitions.map(comp => {
+                    return `<span data-id="${comp.id}" data-competition="${comp.name}"
+                            class="name-badge competition" 
+                            title="Station entfernen">
+                                ${comp.name}
+                            <i onclick="handleNameBadgeRemoval(this.parentElement, '', this.parentElement.parentElement)" 
+                            class="fas fa-times"></i>
+                            </span>`;
+                }).join(' ');
+            });
+        }
+
+        async function exitEditState(wasCanceled = false) {
+            rows.forEach(row => {
+                let cells = row.getElementsByTagName("td");
+                let storedCompetitions = storedValues[row.rowIndex];
+
+                let selector = ".name-badge.competition";
+                let competitions = wasCanceled ?
+                    storedCompetitions.split(",").map(comp => comp.trim()) :
+                    Array.from(cells[4].querySelectorAll(selector))
+                    .map(element => element.textContent.trim());
+
+
+                let compIds = Array.from(cells[4].querySelectorAll(selector))
+                    .map(element => element.dataset.id)
+                    .filter(id => id != null);
+
+                let competitionObjects = competitions.map((name, index) => ({
+                    id: compIds[index] || "",
+                    name: name
+                }));
+
+                if (checkIfStudentCompetitionsChanged(competitions, storedCompetitions)) {
+                    let changedStudent = {
+                        id: row.cells[1].dataset.id, // Schüler-ID hängt an der LastName-Zelle mit dran
+                        competitions: competitionObjects
+                    };
+                    changedStudents.push(changedStudent);
+                }
+
+                // Stationen-Anzeige
+                cells[4].innerHTML = competitions.length === 0 ?
+                    '-' :
+                    competitionObjects.map(obj => {
+                        return `<span data-id="${obj.id}" data-competition="${obj.name}"
+                        class="name-badge competition">
+                        ${obj.name}
+                        </span>`;
+                    }).join(' ');
+            });
+
+            storedValues = [];
+        }
 
         async function loadStudentData() {
             spinner.style.display = "block";
@@ -206,11 +371,11 @@ include 'nav.php';
                 row.appendChild(genderCell);
 
                 const competitionCell = document.createElement('td');
-                const competitions = studentCompetitions[student.id] ? Object.values(studentCompetitions[student.id]) : [];
+                const competitions = studentCompetitions[student.id] ? studentCompetitions[student.id] : {};
 
-                if (competitions.length > 0) {
-                    competitionCell.innerHTML = competitions.map(competition =>
-                        `<span class='name-badge competition'>${competition}</span>`
+                if (Object.keys(competitions).length > 0) {
+                    competitionCell.innerHTML = Object.entries(competitions).map(([competitionKey, competitionName]) =>
+                        `<span data-id="${competitionKey}" class='name-badge competition'>${competitionName}</span>`
                     ).join(' ');
                 } else {
                     competitionCell.textContent = "-";
@@ -227,6 +392,35 @@ include 'nav.php';
             rows = Array.from(tbody.getElementsByTagName("tr"));
             table.appendChild(tbody);
             document.querySelector('section').appendChild(table);
+        }
+
+
+        async function saveChangedStudents(changedStudents) {
+            if (changedStudents.length === 0) {
+                return;
+            }
+
+            const studentJson = JSON.stringify(changedStudents);
+            spinner.style.display = 'inline-block';
+            editButton.disabled = true;
+
+            try {
+                const response = await fetch('students_overview.php', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: studentJson
+                });
+
+                const data = await response.json();
+                showResultMessage(data.message, data.success);
+            } catch (error) {
+                console.error('Error:', error);
+            } finally {
+                spinner.style.display = 'none';
+                editButton.disabled = false;
+            }
         }
 
         function filterTable(columnIndex) {
@@ -253,6 +447,41 @@ include 'nav.php';
             setTimeout(() => {
                 resultMessage.classList.add('hidden');
             }, 5000);
+        }
+
+
+        function checkIfStudentCompetitionsChanged(currentCompetitions, storedCompetitions) {
+            if (!storedCompetitions) {
+                return false;
+            }
+
+            const cleanedCurrentCompetitions = currentCompetitions
+                .map(comp => comp.trim().replace(/\s+/g, ''))
+                .sort();
+
+            const cleanedStoredCompetitions = storedCompetitions
+                .split(",")
+                .map(comp => comp.trim().replace(/\s+/g, ''))
+                .sort();
+
+            let competitionsEqual = true;
+            if (cleanedCurrentCompetitions.length === cleanedStoredCompetitions.length) {
+                for (let i = 0; i < cleanedCurrentCompetitions.length; i++) {
+                    if (cleanedCurrentCompetitions[i] !== cleanedStoredCompetitions[i]) {
+                        competitionsEqual = false;
+                        break;
+                    }
+                }
+            } else {
+                competitionsEqual = false;
+            }
+
+            return !competitionsEqual;
+        }
+
+
+        function handleNameBadgeRemoval(nameBadge, correspondingOption, competitionCell) {
+            nameBadge.remove();
         }
     </script>
 

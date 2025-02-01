@@ -150,7 +150,7 @@ class StudentController implements IController
             'competitionResults' => $model->getCompetitionResults()
         ];
 
-        $updateResult = $this->sendApiRequest("/api/student/{$model->getId()}", 'PUT', $data);
+        $updateResult = $this->sendApiRequest("/api/student", 'PUT', $data);
         return $updateResult;
     }
 
