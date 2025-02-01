@@ -89,10 +89,6 @@ function loadAllCompetitionNames(): array
 }
 
 
-
-
-
-
 include 'nav.php';
 ?>
 
@@ -114,9 +110,13 @@ include 'nav.php';
     <header>
         <h1>Schülerübersicht</h1>
     </header>
-    <div class="flex-container">
+
+    <div id="timestamp-container" class="timestamp-container"></div>
+    <div class="button-container">
+        <button title="Neue Schüler im CSV-Format importieren" class="circle-button add-button" onclick="window.location.href='import_students_csv.php'">
+            <i class="fas fa-plus"></i>
+        </button>
         <div class="spinner" id="spinner"></div>
-        <div id="timestamp-container" class="timestamp-container"></div>
     </div>
 
     <section></section>
