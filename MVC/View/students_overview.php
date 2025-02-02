@@ -185,15 +185,15 @@ include 'nav.php';
 
         document.addEventListener("DOMContentLoaded", () => loadStudentData());
 
-        document.querySelector('.edit-button').addEventListener('click', function() {
+        editButton.addEventListener('click', function() {
             toggleEditState();
         });
 
-        document.querySelector('.cancel-button').addEventListener('click', function() {
+        cancelButton.addEventListener('click', function() {
             const confirmation = confirm('Alle Änderungen gehen verloren. Bearbeitung abbrechen?');
             if (confirmation) {
                 toggleEditState(true);
-                this.classList.toggle("hidden");
+                cancelButton.classList.add("hidden");
             }
         });
 
@@ -260,10 +260,10 @@ include 'nav.php';
 
                 let selector = ".name-badge.competition";
                 let competitions = wasCanceled ?
-                    storedCompetitions.split(",").map(comp => comp.trim()) :
+                    storedCompetitions.split(",").map(comp => comp.trim()).filter(comp => comp !== "") :
                     Array.from(cells[4].querySelectorAll(selector))
-                    .map(element => element.textContent.trim());
-
+                    .map(element => element.textContent.trim())
+                    .filter(comp => comp !== "");
 
                 let compIds = Array.from(cells[4].querySelectorAll(selector))
                     .map(element => element.dataset.id)
