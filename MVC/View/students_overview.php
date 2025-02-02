@@ -291,6 +291,14 @@ include 'nav.php';
                         ${obj.name}
                         </span>`;
                     }).join(' ');
+
+                let warningElement = cells[1].querySelector('.competition-warning');
+
+                if (competitions.length < 3 && !warningElement) {
+                    cells[1].innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Wettbewerben zugeordnet."></i></span>';
+                } else if (competitions.length >= 3 && warningElement) {
+                    warningElement.remove();
+                }
             });
 
             storedValues = [];
@@ -415,7 +423,7 @@ include 'nav.php';
                 row.appendChild(genderCell);
 
                 const competitionCell = document.createElement('td');
-                const competitions = studentCompetitions[student.id] ? studentCompetitions[student.id] : {};
+                const competitions = studentCompetitions[student.id] ? studentCompetitions[student.id] : [];
 
                 if (Object.keys(competitions).length > 0) {
                     competitionCell.innerHTML = Object.entries(competitions).map(([competitionKey, competitionName]) =>
@@ -425,7 +433,7 @@ include 'nav.php';
                     competitionCell.textContent = "-";
                 }
 
-                if (competitions.length < 3) {
+                if (Object.keys(competitions).length < 3) {
                     lastNameCell.innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Wettbewerben zugeordnet."></i></span>';
                 }
 
