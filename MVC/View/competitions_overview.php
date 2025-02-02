@@ -861,7 +861,7 @@ include 'nav.php';
             studentSelect.id = "student-select";
             studentSelect.multiple = true;
             studentSelect.setAttribute("title",
-                "Wählen Sie die teilnehmenden Schüler aus"
+                "Wählen Sie die teilnehmenden Schüler aus. Halten Sie STRG gedrückt, um mehrere Schüler auszuwählen."
             );
 
             let defaultOption = document.createElement("option");

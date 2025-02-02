@@ -131,7 +131,6 @@ function setStudentCompetitions($student, $competitions): void
     $student->setCompetitions($competitionArray);
 }
 
-
 include 'nav.php';
 ?>
 
@@ -208,7 +207,11 @@ include 'nav.php';
             } else {
                 exitEditState(wasCanceled);
                 if (!wasCanceled) {
-                    saveChangedStudents(changedStudents);
+                    saveChangedStudents(changedStudents).then(() => {
+                        setTimeout(() => {
+                            location.reload(); // Neu laden, um neue Zeitkonflikte anzuzeigen.
+                        }, 300);
+                    });
                 }
                 changedStudents = [];
             }
@@ -291,14 +294,6 @@ include 'nav.php';
                         ${obj.name}
                         </span>`;
                     }).join(' ');
-
-                let warningElement = cells[1].querySelector('.competition-warning');
-
-                if (competitions.length < 3 && !warningElement) {
-                    cells[1].innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Wettbewerben zugeordnet."></i></span>';
-                } else if (competitions.length >= 3 && warningElement) {
-                    warningElement.remove();
-                }
             });
 
             storedValues = [];
@@ -328,7 +323,7 @@ include 'nav.php';
             competitionSelect.id = "competition-select";
             competitionSelect.multiple = true;
             competitionSelect.setAttribute("title",
-                "Wählen Sie alle Stationen aus, an denen der Schüler teilnimmt."
+                "Wählen Sie alle Stationen aus, an denen der Schüler teilnimmt. Halten Sie STRG gedrückt, um mehrere Stationen auszuwählen."
             );
 
             let defaultOption = document.createElement("option");
@@ -393,6 +388,7 @@ include 'nav.php';
             tbody = document.createElement('tbody');
             const classNames = <?php echo json_encode(loadAllClassNames(300)); ?>;
             const studentCompetitions = <?php echo json_encode(loadAllCompetitionNames()); ?>;
+            const timeCollisions = await fetch("../../Helper/check_time_collisions.php").then(r => r.json());
 
             for (const student of studentJSON) {
                 const row = document.createElement('tr');
@@ -435,6 +431,10 @@ include 'nav.php';
 
                 if (Object.keys(competitions).length < 3) {
                     lastNameCell.innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Wettbewerben zugeordnet."></i></span>';
+                }
+
+                if (timeCollisions.hasOwnProperty(student.id)) {
+                    lastNameCell.innerHTML += ' <span class="time-collision"><i class="fas fa-exclamation-circle" title="Warnung: Es gibt zeitliche Kollisionen bei den Stationen des Schülers"></i></span>';
                 }
 
                 row.appendChild(competitionCell);

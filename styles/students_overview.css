@@ -3,6 +3,12 @@
   cursor: pointer;
 }
 
+.time-collision {
+  float: right;
+  cursor: pointer;
+  color: red;
+}
+
 .button-container {
   display: flex;
   gap: 0.625rem;
@@ -13,6 +19,15 @@
 
   & > button {
     margin: 0;
+  }
+}
+
+#competition-select {
+  height: 5.25rem;
+  transition: height 0.3s ease;
+
+  &:focus {
+    height: 12.5rem;
   }
 }
 
