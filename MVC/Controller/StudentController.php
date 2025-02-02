@@ -164,6 +164,36 @@ class StudentController implements IController
         return $deleteResult;
     }
 
+
+    public function patch(int $id, array $data, string $operation): array
+    {
+        $patchDocument = [];
+        foreach ($data as $key => $value) {
+            $patchDocument[] = [
+                "op" => $operation,
+                "path" => "/$key",
+                "value" => $value
+            ];
+        }
+
+        $patchResult = $this->sendApiRequest(
+            "/api/student/$id",
+            'PATCH',
+            $patchDocument,
+            "application/json-patch+json"
+        );
+
+        if (!$patchResult['success']) {
+            return $patchResult;
+        }
+
+        unset($_SESSION['overview_competitions_timestamp']);
+        unset($_SESSION['overview_students_timestamp']);
+
+        return $patchResult;
+    }
+
+
     /**
      * @param string $endpoint
      * @return mixed
@@ -198,7 +228,7 @@ class StudentController implements IController
      * @param array $data
      * @return array
      */
-    protected function sendApiRequest(string $endpoint, string $method, array $data = []): array
+    protected function sendApiRequest(string $endpoint, string $method, array $data = [], string $contentType = 'application/json'): array
     {
         $curl = curl_init();
 
@@ -208,7 +238,7 @@ class StudentController implements IController
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_POSTFIELDS => json_encode($data),
             CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json'
+                'Content-Type: ' . $contentType
             ],
             CURLOPT_USERAGENT => 'PHP API Request',
             CURLOPT_SSL_VERIFYPEER => false,

@@ -7,7 +7,6 @@ use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
 use MVC\Controller\CompetitionController;
 use MVC\Model\Role;
-use MVC\Model\Student;
 
 $userRole = UserController::getInstance()->getRole();
 
@@ -28,17 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_SERVER['HTTP_X_CUSTOM_ATTRIB
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    $putData = file_get_contents('php://input');
-
-    if (empty($putData)) {
-        $response['success'] = false;
-        $response['message'] = 'Leere Anfrage erhalten.';
-        echo json_encode($response);
-        exit;
-    }
-
-    $studentData = json_decode($putData, true);
+if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+    $patchData = file_get_contents('php://input');
+    $changedStudents = json_decode($patchData, true);
 
     if (json_last_error() !== JSON_ERROR_NONE) {
         $response['success'] = false;
@@ -47,25 +38,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         exit;
     }
 
-
-    $changedStudents = [];
-    foreach ($studentData as $data) {
-        $student = StudentController::getInstance()->getById($data['id']);
-        setStudentCompetitions($student, $data['competitions']);
-        $changedStudents[] = $student;
-    }
-
-    $putSuccess = true;
+    $patchSuccess = true;
 
     foreach ($changedStudents as $student) {
-        $updateResult = StudentController::getInstance()->update($student);
-        $putSuccess &= $updateResult['success'] === true;
-        $updateResults[] = $updateResult;
+        $competitions = [];
+        foreach ($student['competitions'] as $competition) {
+            $competitions[(int)$competition['id']] = $competition['name'];
+        }
+
+        $data = ['competitions' => $competitions];
+        $patchResult = StudentController::getInstance()->patch($student['id'], $data, "replace");
+        $patchSuccess &= $patchResult['success'] === true;
     }
 
     echo json_encode([
-        'success' => $putSuccess,
-        'results' => $updateResults ?? []
+        'success' => $patchSuccess,
+        'message' => $patchSuccess ? 'Änderungen erfolgreich gespeichert.' : 'Einige Änderungen konnten nicht übernommen werden.'
     ]);
     exit;
 }
@@ -166,6 +154,7 @@ include 'nav.php';
         <h1>Schülerübersicht</h1>
     </header>
 
+    <div id="result-message" class="result-message hidden"></div>
     <div id="timestamp-container" class="timestamp-container"></div>
     <div class="button-container">
         <button title="Neue Schüler im CSV-Format importieren" class="circle-button add-button" onclick="window.location.href='import_students_csv.php'">
@@ -248,6 +237,19 @@ include 'nav.php';
                             class="fas fa-times"></i>
                             </span>`;
                 }).join(' ');
+
+                let allCompetitions =
+                    <?php
+                    if (isset($_SESSION['overview_competitions'])) {
+                        echo json_encode($_SESSION['overview_competitions']);
+                    } else {
+                        $allComps = CompetitionController::getInstance()->getAll();
+                        echo json_encode($allComps);
+                    }
+                    ?>;
+
+                let competitionSelect = createCompetitionSelect(allCompetitions, cells[4]);
+                cells[4].appendChild(competitionSelect);
             });
         }
 
@@ -310,6 +312,48 @@ include 'nav.php';
             } finally {
                 spinner.style.display = "none";
             }
+        }
+
+
+        function createCompetitionSelect(allCompetitions, participantCell) {
+            let competitionSelect = document.createElement("select");
+            competitionSelect.id = "competition-select";
+            competitionSelect.multiple = true;
+            competitionSelect.setAttribute("title",
+                "Wählen Sie alle Stationen aus, an denen der Schüler teilnimmt."
+            );
+
+            let defaultOption = document.createElement("option");
+            defaultOption.textContent = "Stationenauswahl";
+            defaultOption.disabled = true;
+            defaultOption.selected = true;
+            competitionSelect.appendChild(defaultOption);
+
+            allCompetitions.forEach(comp => {
+                let option = document.createElement("option");
+                option.textContent = comp.name;
+                option.value = option.textContent;
+                option.dataset.id = comp.id;
+                competitionSelect.appendChild(option);
+            });
+
+            const nameBadges = participantCell.querySelectorAll('.name-badge.competition');
+            const compNames = Array.from(nameBadges).map(badge => badge.dataset.competition);
+            for (const option of competitionSelect.options) {
+                if (compNames.includes(option.text)) {
+                    option.selected = true;
+                }
+            }
+
+            let previousSelection = Array.from(competitionSelect.selectedOptions);
+
+            competitionSelect.addEventListener('change', () => {
+                const selectedComps = Array.from(competitionSelect.selectedOptions);
+                toggleCompetitionBadge(allCompetitions, competitionSelect, selectedComps, previousSelection, participantCell);
+                previousSelection = selectedComps;
+            });
+
+            return competitionSelect;
         }
 
 
@@ -406,7 +450,7 @@ include 'nav.php';
 
             try {
                 const response = await fetch('students_overview.php', {
-                    method: 'PUT',
+                    method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -438,6 +482,44 @@ include 'nav.php';
         }
 
 
+        function toggleCompetitionBadge(competitions, competitionSelect, selectedOptions, previousSelectedOptions, participantCell) {
+            competitions.forEach(comp => {
+                const option = competitionSelect.querySelector(`option[value="${comp.name}"]`);
+                option.textContent = comp.name;
+
+                const isSelected = selectedOptions.some(option => option.value === comp.name);
+                const wasSelected = previousSelectedOptions.some(option => option.value === comp.name);
+
+                if (isSelected && !wasSelected) {
+                    const compNameBadge = document.createElement("span");
+                    compNameBadge.classList.add("name-badge", "competition");
+                    compNameBadge.setAttribute("data-competition", comp.name);
+                    compNameBadge.setAttribute("data-id", comp.id);
+                    compNameBadge.textContent = comp.name;
+                    compNameBadge.setAttribute("title", "Station entfernen");
+
+                    const removeIcon = document.createElement("i");
+                    removeIcon.classList.add("fas", "fa-times");
+                    removeIcon.onclick = () => handleNameBadgeRemoval(compNameBadge, option, participantCell);
+
+                    // Stationennamen über das Select einfügen
+                    compNameBadge.appendChild(removeIcon);
+                    participantCell.insertBefore(compNameBadge, competitionSelect);
+
+                } else if (!isSelected && wasSelected) {
+                    const compNameBadge = participantCell.querySelector(
+                        `span[data-competition="${comp.name}"]`
+                    );
+
+                    if (compNameBadge) {
+                        compNameBadge.remove();
+                    }
+                }
+
+            });
+        }
+
+
         function showResultMessage(message, isSuccess = true) {
             const resultMessage = document.getElementById('result-message');
             resultMessage.textContent = message;
@@ -450,11 +532,8 @@ include 'nav.php';
         }
 
 
-        function checkIfStudentCompetitionsChanged(currentCompetitions, storedCompetitions) {
-            if (!storedCompetitions) {
-                return false;
-            }
 
+        function checkIfStudentCompetitionsChanged(currentCompetitions, storedCompetitions) {
             const cleanedCurrentCompetitions = currentCompetitions
                 .map(comp => comp.trim().replace(/\s+/g, ''))
                 .sort();
@@ -462,6 +541,7 @@ include 'nav.php';
             const cleanedStoredCompetitions = storedCompetitions
                 .split(",")
                 .map(comp => comp.trim().replace(/\s+/g, ''))
+                .filter(comp => comp !== '')
                 .sort();
 
             let competitionsEqual = true;
@@ -479,8 +559,20 @@ include 'nav.php';
             return !competitionsEqual;
         }
 
+        function handleNameBadgeRemoval(nameBadge, correspondingParticipantOption, participantCell) {
+            if (correspondingParticipantOption) {
+                correspondingParticipantOption.selected = false;
+            } else {
+                const optionValue = nameBadge.textContent.trim();
+                correspondingParticipantOption = participantCell.querySelector(`option[value="${optionValue}"]`);
 
-        function handleNameBadgeRemoval(nameBadge, correspondingOption, competitionCell) {
+                if (correspondingParticipantOption) {
+                    correspondingParticipantOption.selected = false;
+                } else {
+                    console.warn(`Option mit value="${optionValue}" nicht gefunden.`);
+                }
+            }
+
             nameBadge.remove();
         }
     </script>

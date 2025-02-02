@@ -894,7 +894,6 @@ include 'nav.php';
                 toggleStudentNameBadge(allStudents, studentSelect, selectedStudents, previousSelection, participantCell);
                 previousSelection = selectedStudents;
             });
-
             return studentSelect;
         }
 
