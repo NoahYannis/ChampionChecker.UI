@@ -45,9 +45,9 @@
 				echo '<script>alert("Beim Erstellen des Ergebnisses ist ein Fehler aufgetreten.");</script>';
 			}
 
-			$_SESSION['classresult_selectedClass'] = null;
-			$_SESSION['classresult_selectedCompetition'] = null;
-			$_POST['points'] = null;
+			unset($_SESSION['classresult_selectedClass']);
+			unset($_SESSION['classresult_selectedCompetition']);
+			unset($_POST['points']);
 		}
 	}
 
@@ -184,8 +184,6 @@
 			<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
 		</main>
 
-		<footer />
-
 		<script>
 			const invalidChars = ['+', '-', 'E', 'e'];
 
@@ -236,12 +234,18 @@
 					return;
 				}
 
-
 				try {
 					const isDuplicateResult = await fetch("../../Helper/check_is_duplicate_result.php").then(r => r.json());
 
 					if (isDuplicateResult) {
 						alert(`Es existiert bereits ein Ergebnis für Klasse ${selectedClass} und Station ${selectedCompetition}. Bitte löschen oder bearbeiten Sie das bestehende, um ein neues hinzuzufügen.`);
+
+						// Get-Request auslösen, wodurch vorherige POST-Daten entfernt werden.
+						const form = document.createElement('form');
+						form.method = 'GET';
+						form.action = window.location.href;
+						document.body.appendChild(form);
+						form.submit();
 						return;
 					}
 				} catch (error) {
