@@ -37,13 +37,17 @@
 		if (!empty($_POST['points']) && isset($selectedClass)) {
 			$compResult = new CompetitionResult(null, $_POST['points'],  $selectedCompetition->getId(), $selectedClass->getId(), null);
 			$compResController = new CompetitionResultController();
-			$compResController->create($compResult);
+			$createResult = $compResController->create($compResult);
+
+			if ($createResult['success'] === true) {
+				echo '<script>alert("Das Ergebnis wurde erfolgreich eingetragen.");</script>';
+			} else {
+				echo '<script>alert("Beim Erstellen des Ergebnisses ist ein Fehler aufgetreten.");</script>';
+			}
 
 			$_SESSION['classresult_selectedClass'] = null;
 			$_SESSION['classresult_selectedCompetition'] = null;
 			$_POST['points'] = null;
-			header("Location: " . $_SERVER['REQUEST_URI']); // Redirect, um erneutes Absenden zu verhindern
-			exit();
 		}
 	}
 
@@ -207,13 +211,19 @@
 				}
 			}
 
-			function submitForm() {
-				if (document.querySelector('select[name="competitions"]').value === 'default') {
+			async function submitForm() {
+				const competitionSelect = document.querySelector('select[name="competitions"]');
+				const classSelect = document.querySelector('select[name="classes"]');
+
+				const selectedCompetition = competitionSelect.value;
+				const selectedClass = classSelect.value;
+
+				if (selectedCompetition === 'default') {
 					alert('Bitte wählen Sie einen Wettbewerb aus.');
 					return;
 				}
 
-				if (document.querySelector('select[name="classes"]').value === 'default') {
+				if (selectedClass === 'default') {
 					alert('Bitte wählen Sie eine Klasse aus.');
 					return;
 				}
@@ -223,6 +233,19 @@
 
 				if (pointsInput.value === '' || pointsValue < 0 || pointsValue > 99) {
 					alert('Bitte geben Sie eine gültige Punktzahl zwischen 0 und 99 ein.');
+					return;
+				}
+
+
+				try {
+					const isDuplicateResult = await fetch("../../Helper/check_is_duplicate_result.php").then(r => r.json());
+
+					if (isDuplicateResult) {
+						alert(`Es existiert bereits ein Ergebnis für Klasse ${selectedClass} und Station ${selectedCompetition}. Bitte löschen oder bearbeiten Sie das bestehende, um ein neues hinzuzufügen.`);
+						return;
+					}
+				} catch (error) {
+					console.error("Error checking for duplicates:", error);
 					return;
 				}
 
