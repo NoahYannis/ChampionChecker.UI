@@ -78,9 +78,8 @@ class CompetitionResultController implements IController
         $createResult = $this->sendApiRequest('/api/competitionresult', 'POST', $data);
 
         if ($createResult['success'] === true) {
-            $compResult = json_decode($createResult['response']);
-            $model->setId($compResult->id);
-            $_SESSION['results_competitionResults'][] = $model;
+            unset($_SESSION['competitionResultsTimestamp']);
+            unset($_SESSION['results_competitionResultsTimestamp']);
         }
 
         return $createResult;
@@ -119,14 +118,7 @@ class CompetitionResultController implements IController
             return $deleteResult;
         }
 
-        // Cache-Eintrag entfernen.
-        foreach ($_SESSION['results_competitionResults'] as $key => $competitionResult) {
-            if ($competitionResult->getId() === $id) {
-                unset($_SESSION['results_competitionResults'][$key]);
-                break;
-            }
-        }
-
+        unset($_SESSION['competitionResultsTimestamp']);
         return $deleteResult;
     }
 
