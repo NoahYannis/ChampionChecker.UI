@@ -430,11 +430,11 @@ include 'nav.php';
                 }
 
                 if (Object.keys(competitions).length < 3) {
-                    lastNameCell.innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Wettbewerben zugeordnet."></i></span>';
+                    lastNameCell.innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Stationen zugeordnet."></i></span>';
                 }
 
                 if (timeCollisions.hasOwnProperty(student.id)) {
-                    lastNameCell.innerHTML += ' <span class="time-collision"><i class="fas fa-exclamation-circle" title="Warnung: Es gibt zeitliche Kollisionen bei den Stationen des Schülers"></i></span>';
+                    lastNameCell.innerHTML += ' <span class="time-collision"><i class="fas fa-exclamation-circle" title="Achtung: Schüler hat Stationen mit weniger als 15 Minuten Abstand."></i></span>';
                 }
 
                 row.appendChild(competitionCell);

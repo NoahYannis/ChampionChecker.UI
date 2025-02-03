@@ -52,7 +52,7 @@ foreach ($allStudents as $student) {
     $previousTime = null;
 
     foreach ($competitionTimes as $compId => $timestamp) {
-        if ($previousTime !== null && abs($timestamp - $previousTime) < 1800) { // Weniger als 30 Minuten Abstand
+        if ($previousTime !== null && abs($timestamp - $previousTime) < 900) { // Weniger als 15 Minuten Abstand
             if (!in_array($previousCompId, $collisionCompetitions)) {
                 $collisionCompetitions[] = $previousCompId;
             }
