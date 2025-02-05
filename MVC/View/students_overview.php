@@ -388,10 +388,18 @@ include 'nav.php';
             thead = document.createElement('thead');
             headerRow = document.createElement('tr');
 
-            const headers = ['Vorname', 'Nachname', 'Klasse', 'Geschlecht', 'Stationen', 'Anmeldung'];
+            const headers = [
+                'Vorname',
+                'Nachname',
+                'Klasse',
+                'Geschlecht',
+                'Stationen',
+                "<abbr title='Die Anmeldung der Schüler-Stationen kann als Zwischenstand oder offiziell gespeichert werden'>Anmeldung</abbr>"
+            ];
+
             headers.forEach((headerText, index) => {
                 const th = document.createElement('th');
-                th.textContent = headerText;
+                th.innerHTML = headerText;
                 th.onclick = () => filterTable(index);
                 headerRow.appendChild(th);
             });
