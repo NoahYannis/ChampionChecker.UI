@@ -28,6 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_SERVER['HTTP_X_CUSTOM_ATTRIB
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
+    return;
     $patchData = file_get_contents('php://input');
     $changedStudents = json_decode($patchData, true);
 
@@ -208,9 +209,10 @@ include 'nav.php';
                 exitEditState(wasCanceled);
                 if (!wasCanceled) {
                     saveChangedStudents(changedStudents).then(() => {
-                        setTimeout(() => {
-                            location.reload(); // Neu laden, um neue Zeitkonflikte anzuzeigen.
-                        }, 300);
+                        if (changedStudents.length > 0)
+                            setTimeout(() => {
+                                location.reload(); // Neu laden, um neue Zeitkonflikte anzuzeigen.
+                            }, 300);
                     });
                 }
                 changedStudents = [];
@@ -228,6 +230,8 @@ include 'nav.php';
                         name: element.textContent.trim()
                     }));
 
+                let isRegistrationFinalized = cells[5].querySelector(".status-circle.green") !== null;
+
                 // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
                 storedValues[row.rowIndex] = competitions.map(p => p.name.trim()).join(",");
 
@@ -240,6 +244,8 @@ include 'nav.php';
                             class="fas fa-times"></i>
                             </span>`;
                 }).join(' ');
+
+                cells[5].innerHTML = `<input id='participation' type="checkbox" ${isRegistrationFinalized ? 'checked' : ''}>`;
 
                 let allCompetitions =
                     <?php
@@ -259,14 +265,16 @@ include 'nav.php';
         async function exitEditState(wasCanceled = false) {
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
-                let storedCompetitions = storedValues[row.rowIndex];
+                let storedStudents = storedValues[row.rowIndex];
 
                 let selector = ".name-badge.competition";
                 let competitions = wasCanceled ?
-                    storedCompetitions.split(",").map(comp => comp.trim()).filter(comp => comp !== "") :
+                    storedStudents.split(",").map(comp => comp.trim()).filter(comp => comp !== "") :
                     Array.from(cells[4].querySelectorAll(selector))
                     .map(element => element.textContent.trim())
                     .filter(comp => comp !== "");
+
+                let isRegistrationFinalized = wasCanceled ? true : cells[5].querySelector("input").checked;
 
                 let compIds = Array.from(cells[4].querySelectorAll(selector))
                     .map(element => element.dataset.id)
@@ -277,9 +285,10 @@ include 'nav.php';
                     name: name
                 }));
 
-                if (checkIfStudentCompetitionsChanged(competitions, storedCompetitions)) {
+                if (!wasCanceled && checkIfStudentChanged(competitions, storedStudents)) {
                     let changedStudent = {
                         id: row.cells[1].dataset.id, // Schüler-ID hängt an der LastName-Zelle mit dran
+                        isRegistrationFinalized: isRegistrationFinalized,
                         competitions: competitionObjects
                     };
                     changedStudents.push(changedStudent);
@@ -294,6 +303,10 @@ include 'nav.php';
                         ${obj.name}
                         </span>`;
                     }).join(' ');
+
+
+                cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isRegistrationFinalized ? 'green' : 'red'}'></span></div>`;
+
             });
 
             storedValues = [];
@@ -374,7 +387,7 @@ include 'nav.php';
             thead = document.createElement('thead');
             headerRow = document.createElement('tr');
 
-            const headers = ['Vorname', 'Nachname', 'Klasse', 'Geschlecht', 'Stationen'];
+            const headers = ['Vorname', 'Nachname', 'Klasse', 'Geschlecht', 'Stationen', 'Anmeldung'];
             headers.forEach((headerText, index) => {
                 const th = document.createElement('th');
                 th.textContent = headerText;
@@ -428,6 +441,11 @@ include 'nav.php';
                 } else {
                     competitionCell.textContent = "-";
                 }
+                row.appendChild(competitionCell);
+
+                const registrationStateCell = document.createElement('td');
+                registrationStateCell.innerHTML = `<div class='td-content'><span class='status-circle ${student.isRegistrationFinalized ? 'green' : 'red'}' title='${student.isRegistrationFinalized ? 'Offiziell' : 'Zwischenstand'}'></span></div>`;
+                row.appendChild(registrationStateCell);
 
                 if (Object.keys(competitions).length < 3) {
                     lastNameCell.innerHTML += ' <span class="competition-warning"><i class="fas fa-exclamation-circle" title="Schüler ist weniger als 3 Stationen zugeordnet."></i></span>';
@@ -437,7 +455,6 @@ include 'nav.php';
                     lastNameCell.innerHTML += ' <span class="time-collision"><i class="fas fa-exclamation-circle" title="Achtung: Schüler hat Stationen mit weniger als 15 Minuten Abstand."></i></span>';
                 }
 
-                row.appendChild(competitionCell);
                 tbody.appendChild(row);
             }
 
@@ -541,7 +558,7 @@ include 'nav.php';
 
 
 
-        function checkIfStudentCompetitionsChanged(currentCompetitions, storedCompetitions) {
+        function checkIfStudentChanged(currentCompetitions, storedCompetitions) {
             const cleanedCurrentCompetitions = currentCompetitions
                 .map(comp => comp.trim().replace(/\s+/g, ''))
                 .sort();
