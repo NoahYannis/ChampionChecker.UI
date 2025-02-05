@@ -362,6 +362,10 @@ label {
   height: 0.625rem;
   border-radius: 50%;
   margin: 0 auto;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .green {

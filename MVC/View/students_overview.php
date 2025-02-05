@@ -28,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_SERVER['HTTP_X_CUSTOM_ATTRIB
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
-    return;
     $patchData = file_get_contents('php://input');
     $changedStudents = json_decode($patchData, true);
 
@@ -47,7 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
             $competitions[(int)$competition['id']] = $competition['name'];
         }
 
-        $data = ['competitions' => $competitions];
+        $data = ['competitions' => $competitions, 'isRegistrationFinalized' => $student['isRegistrationFinalized']];
+
         $patchResult = StudentController::getInstance()->patch($student['id'], $data, "replace");
         $patchSuccess &= $patchResult['success'] === true;
     }
@@ -233,7 +233,7 @@ include 'nav.php';
                 let isRegistrationFinalized = cells[5].querySelector(".status-circle.green") !== null;
 
                 // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
-                storedValues[row.rowIndex] = competitions.map(p => p.name.trim()).join(",");
+                storedValues[row.rowIndex] = [competitions.map(p => p.name.trim()).join(","), isRegistrationFinalized];
 
                 cells[4].innerHTML = competitions.map(comp => {
                     return `<span data-id="${comp.id}" data-competition="${comp.name}"
@@ -265,16 +265,14 @@ include 'nav.php';
         async function exitEditState(wasCanceled = false) {
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
-                let storedStudents = storedValues[row.rowIndex];
+                let storedStudent = storedValues[row.rowIndex];
 
                 let selector = ".name-badge.competition";
                 let competitions = wasCanceled ?
-                    storedStudents.split(",").map(comp => comp.trim()).filter(comp => comp !== "") :
+                    storedStudent[0].split(",").map(comp => comp.trim()).filter(comp => comp !== "") :
                     Array.from(cells[4].querySelectorAll(selector))
                     .map(element => element.textContent.trim())
                     .filter(comp => comp !== "");
-
-                let isRegistrationFinalized = wasCanceled ? true : cells[5].querySelector("input").checked;
 
                 let compIds = Array.from(cells[4].querySelectorAll(selector))
                     .map(element => element.dataset.id)
@@ -285,7 +283,10 @@ include 'nav.php';
                     name: name
                 }));
 
-                if (!wasCanceled && checkIfStudentChanged(competitions, storedStudents)) {
+                let isRegistrationFinalized = wasCanceled ? storedStudent[1] : cells[5].querySelector("input").checked;
+                let currentStudent = [competitions.join(","), isRegistrationFinalized]
+
+                if (!wasCanceled && checkIfStudentChanged(currentStudent, storedStudent)) {
                     let changedStudent = {
                         id: row.cells[1].dataset.id, // Schüler-ID hängt an der LastName-Zelle mit dran
                         isRegistrationFinalized: isRegistrationFinalized,
@@ -557,32 +558,16 @@ include 'nav.php';
         }
 
 
-
-        function checkIfStudentChanged(currentCompetitions, storedCompetitions) {
-            const cleanedCurrentCompetitions = currentCompetitions
-                .map(comp => comp.trim().replace(/\s+/g, ''))
-                .sort();
-
-            const cleanedStoredCompetitions = storedCompetitions
-                .split(",")
-                .map(comp => comp.trim().replace(/\s+/g, ''))
-                .filter(comp => comp !== '')
-                .sort();
-
-            let competitionsEqual = true;
-            if (cleanedCurrentCompetitions.length === cleanedStoredCompetitions.length) {
-                for (let i = 0; i < cleanedCurrentCompetitions.length; i++) {
-                    if (cleanedCurrentCompetitions[i] !== cleanedStoredCompetitions[i]) {
-                        competitionsEqual = false;
-                        break;
-                    }
+        function checkIfStudentChanged(currentStudent, storedStudent) {
+            for (let i = 0; i < currentStudent.length; i++) {
+                if (currentStudent[i] !== storedStudent[i]) {
+                    return true;
                 }
-            } else {
-                competitionsEqual = false;
             }
 
-            return !competitionsEqual;
+            return false;
         }
+
 
         function handleNameBadgeRemoval(nameBadge, correspondingParticipantOption, participantCell) {
             if (correspondingParticipantOption) {
