@@ -269,7 +269,7 @@ include 'nav.php';
                 } else {
                     const inputValue = cell.querySelector('input')?.value;
 
-                    if (checkIfScoreWasModified(inputValue, storedValue)) {
+                    if (!wasCanceled && checkIfScoreWasModified(inputValue, storedValue)) {
                         const compResId = cell.parentElement.querySelector("td[data-id]").dataset.id;
                         const scoreData = {
                             compResId,

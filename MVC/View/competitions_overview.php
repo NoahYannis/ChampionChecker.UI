@@ -520,7 +520,7 @@ include 'nav.php';
                 let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
 
-                if (checkIfRowWasModified(row, storedRow)) {
+                if (!wasCanceled && checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
                         id: row.cells[0].dataset.compId,
                         name: name,

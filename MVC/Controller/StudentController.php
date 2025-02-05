@@ -42,6 +42,7 @@ class StudentController implements IController
                 firstName: $data['firstName'],
                 lastName: $data['lastName'],
                 isMale: $data['isMale'],
+                isRegistrationFinalized: $data['isRegistrationFinalized'],
                 classId: key($data['class']),
                 competitions: $data['competitions'] ?? [],
                 competitionResults: $data['competitionResults'] ?? []
@@ -75,6 +76,7 @@ class StudentController implements IController
                     firstName: $studentData['firstName'],
                     lastName: $studentData['lastName'],
                     isMale: $studentData['isMale'],
+                    isRegistrationFinalized: $studentData['isRegistrationFinalized'],
                     classId: $studentData['classId'],
                     competitions: $studentData['competitions'] ?? [],
                     competitionResults: $studentData['competitionResults'] ?? []
@@ -102,6 +104,7 @@ class StudentController implements IController
                 firstName: $item['firstName'],
                 lastName: $item['lastName'],
                 isMale: $item['isMale'],
+                isRegistrationFinalized: $item['isRegistrationFinalized'],
                 classId: key($item['class']),
                 competitions: $item['competitions'] ?? [],
                 competitionResults: $item['competitionResults'] ?? []
@@ -124,6 +127,7 @@ class StudentController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'isMale' => $model->getIsMale(),
+            'isRegistrationFinalized' => $model->getIsRegistrationFinalized(),
             'class' => [
                 $model->getClassId() => ClassController::getInstance()->getClassName($model->getClassId())
             ],
@@ -145,6 +149,7 @@ class StudentController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'isMale' => $model->getIsMale(),
+            'isRegistrationFinalized' => $model->getIsRegistrationFinalized(),
             'classId' => $model->getClassId(),
             'competitions' => $model->getCompetitions(),
             'competitionResults' => $model->getCompetitionResults()

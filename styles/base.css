@@ -356,6 +356,22 @@ label {
   font-weight: bold;
 }
 
+.status-circle {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  margin: 0 auto;
+}
+
+.green {
+  background-color: darkgreen;
+}
+
+.red {
+  background-color: red;
+}
+
 /* Tabellen-Styles */
 .table-style {
   width: 100%;

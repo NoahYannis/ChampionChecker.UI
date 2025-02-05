@@ -390,7 +390,7 @@ include 'nav.php';
                 let isParticipating = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').checked;
 
                 // Prüfen, ob Zeile geändert wurde
-                if (checkIfRowWasModified(row, storedRow)) {
+                if (!wasCanceled && checkIfRowWasModified(row, storedRow)) {
                     let changedTeacher = {
                         lastName: lastName,
                         firstName: firstName,
