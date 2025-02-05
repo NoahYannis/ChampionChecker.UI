@@ -7,7 +7,6 @@ require_once '../vendor/autoload.php';
 use MVC\Controller\CompetitionController;
 use MVC\Controller\StudentController;
 
-
 function loadAllStudents($cacheDuration = 300): array
 {
     if (isset($_SESSION['students']) && isset($_SESSION['overview_students_timestamp'])) {
@@ -64,7 +63,8 @@ foreach ($allStudents as $student) {
     }
 
     if (!empty($collisionCompetitions)) {
-        $timeCollisions[$student->getId()] = array_unique($collisionCompetitions);
+        $collisionCompetitionNames = array_map(fn($compId) => $studentCompetitions[$compId], array_unique($collisionCompetitions));
+        $timeCollisions[$student->getId()] = $collisionCompetitionNames;
     }
 }
 

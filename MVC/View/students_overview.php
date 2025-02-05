@@ -461,7 +461,8 @@ include 'nav.php';
                 }
 
                 if (timeCollisions.hasOwnProperty(student.id)) {
-                    lastNameCell.innerHTML += ' <span class="time-collision"><i class="fas fa-exclamation-circle" title="Achtung: Schüler hat Stationen mit weniger als 15 Minuten Abstand."></i></span>';
+                    const collisionNames = timeCollisions[student.id].join(", ");
+                    lastNameCell.innerHTML += ` <span class="time-collision"><i class="fas fa-exclamation-circle" title="Achtung: Schüler hat Stationen mit weniger als 15 Minuten Abstand => ${collisionNames}"></i></span>`;
                 }
 
                 tbody.appendChild(row);
