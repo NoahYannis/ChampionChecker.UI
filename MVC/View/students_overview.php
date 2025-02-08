@@ -503,6 +503,9 @@ include 'nav.php';
         }
 
         function filterTable(columnIndex) {
+            if (isEditing) {
+                return;
+            }
             // Richtung togglen
             sortDirections[columnIndex] = sortDirections[columnIndex] === "asc" ? "desc" : "asc";
             let sortOrder = sortDirections[columnIndex];

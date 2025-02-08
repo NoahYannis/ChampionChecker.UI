@@ -690,6 +690,10 @@ include 'nav.php';
 
 
         function filterTable(columnIndex) {
+            if (isEditing) {
+                return;
+            }
+            
             let table = document.getElementById("comp-table");
             let tbody = table.getElementsByTagName("tbody")[0];
             let rows = Array.from(tbody.getElementsByTagName("tr"));
