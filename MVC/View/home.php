@@ -103,7 +103,7 @@ $competitionResults = loadCompetitionResults();
 
     <div class="flex-container">
         <p id="evaluation-text"></p>
-        <progress class="hidden" max="100" id="evaluation-progressbar"></progress>
+        <div id="evaluation-progressbar" class="progressbar hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
         <div class="spinner" id="spinner"></div>
     </div>
 
@@ -124,13 +124,13 @@ $competitionResults = loadCompetitionResults();
             try {
                 spinner.style.display = 'block';
                 const response = await fetch("../../Helper/get_comp_evaluation_progress.php").then(r => r.json());
-
                 const completed = response[0];
                 const total = response[1];
-                const progress = (completed / total) * 100;
+                const progress = Math.min(Math.round((completed / total) * 100), 100);
 
                 progressText.textContent = `Es wurden ${completed} von ${total} Stationen ausgewertet.`;
-                progressBar.setAttribute('value', progress);
+                progressBar.style.setProperty('--value', progress);
+                progressBar.setAttribute('aria-valuenow', progress);
                 progressBar.classList.remove('hidden');
             } catch (error) {
                 console.error("Error fetching competition evaluation states:", error);
