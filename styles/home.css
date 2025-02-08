@@ -40,7 +40,7 @@ body {
 
 .progressbar {
   --percentage: var(--value);
-  --primary: rebeccapurple;
+  --primary: #5a3cc3;
   --secondary: #b3b4ba;
   --size: 8rem;
   animation: progress 2s 0.5s forwards;
