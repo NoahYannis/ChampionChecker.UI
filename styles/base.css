@@ -479,7 +479,7 @@ th {
     max-width: 3.75rem;
     max-height: 3.125rem;
     overflow-x: auto;
-    font-size: clamp(0.5rem, 1.5vw, 1rem);
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
   }
 
   .td-content {

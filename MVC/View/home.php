@@ -5,6 +5,7 @@ include 'nav.php';
 
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\ClassController;
+use MVC\Controller\CompetitionController;
 use MVC\Model\CompetitionResult;
 
 
@@ -112,13 +113,32 @@ $competitionResults = loadCompetitionResults();
         <?php printCompetitionResult($competitionResults); ?>
     </section>
 
+    <section>
+        <div class="flex-container column">
+            <h2>Anstehende Stationen</h2>
+            <table id="upcoming-competitions-table" class="table-style">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Zeitpunkt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
 
     <script>
         const spinner = document.getElementById('spinner');
         const progressText = document.getElementById('evaluation-text');
         const progressBar = document.getElementById('evaluation-progressbar');
 
-        document.addEventListener("DOMContentLoaded", getCompEvaluationProgress);
+        document.addEventListener("DOMContentLoaded", () => {
+            getCompEvaluationProgress()
+            displayUpcomingCompetitions()
+        });
 
         async function getCompEvaluationProgress() {
             try {
@@ -137,6 +157,28 @@ $competitionResults = loadCompetitionResults();
             } finally {
                 spinner.style.display = 'none';
             }
+        }
+
+        async function displayUpcomingCompetitions() {
+            let allComps = <?php echo json_encode($_SESSION['overview_competitions'] ?? CompetitionController::getInstance()->getAll()); ?>;
+            const tableBody = document.getElementById('upcoming-competitions-table').querySelector('tbody');
+            const currentTime = new Date();
+
+            allComps
+                .filter(competition => new Date(competition.date) > currentTime) // Zukünftige Stationen
+                .sort((a, b) => new Date(a.date) - new Date(b.date)) // Zeitlich ordnen
+                .forEach(competition => {
+                    const row = document.createElement('tr');
+                    const nameCell = document.createElement('td');
+                    const dateCell = document.createElement('td');
+
+                    nameCell.textContent = competition.name;
+                    dateCell.textContent = new Date(competition.date).toLocaleString('de-DE');
+
+                    row.appendChild(nameCell);
+                    row.appendChild(dateCell);
+                    tableBody.appendChild(row);
+                });
         }
     </script>
 </body>
