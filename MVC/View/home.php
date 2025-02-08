@@ -81,9 +81,9 @@ function printCompetitionResult($competitionResults)
 }
 
 $competitionResults = loadCompetitionResults();
-
-
 ?>
+
+
 <!DOCTYPE html>
 <html lang="de">
 
@@ -98,16 +98,47 @@ $competitionResults = loadCompetitionResults();
 
 <body>
     <header>
-        <h1>Klassenübersicht</h1>
+        <h1>Auswertung</h1>
     </header>
 
-    <p class="result-message neutral">Es wurden X von Y Wettbewerben ausgewertet.</p>
+    <div class="flex-container">
+        <p id="evaluation-text"></p>
+        <progress class="hidden" max="100" id="evaluation-progressbar"></progress>
+        <div class="spinner" id="spinner"></div>
+    </div>
 
-    <progress value="33" max="100" id="progress"></progress>
 
     <section>
         <?php printCompetitionResult($competitionResults); ?>
     </section>
+
+
+    <script>
+        const spinner = document.getElementById('spinner');
+        const progressText = document.getElementById('evaluation-text');
+        const progressBar = document.getElementById('evaluation-progressbar');
+
+        document.addEventListener("DOMContentLoaded", getCompEvaluationProgress);
+
+        async function getCompEvaluationProgress() {
+            try {
+                spinner.style.display = 'block';
+                const response = await fetch("../../Helper/get_comp_evaluation_progress.php").then(r => r.json());
+
+                const completed = response[0];
+                const total = response[1];
+                const progress = (completed / total) * 100;
+
+                progressText.textContent = `Es wurden ${completed} von ${total} Stationen ausgewertet.`;
+                progressBar.setAttribute('value', progress);
+                progressBar.classList.remove('hidden');
+            } catch (error) {
+                console.error("Error fetching competition evaluation states:", error);
+            } finally {
+                spinner.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 
 </html>
