@@ -36,7 +36,7 @@ include 'nav.php';
                 <span class="slider"></span>
             </label>
             <abbr title="Fügen Sie Lehrer manuell hinzu, indem Sie das Formular ausfüllen und alle erforderlichen Informationen eingeben.">
-                <label for="toggleSwitch">Manuell</label>
+            <label for="toggleSwitch">Manuell</label>
         </div>
 
         <div id="form-container">

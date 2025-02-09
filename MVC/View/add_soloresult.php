@@ -17,30 +17,18 @@ if ($userRole->value < 2) {
 
 
 if (!isset($_SESSION['soloresult_competitions'])) {
-	// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
-	$competitionController = CompetitionController::getInstance();
-	$competitionModels = $competitionController->getAll();
-
-	$teamCompetitions = [];
+	$competitions = CompetitionController::getInstance()->getAll();
 	$soloCompetitions = [];
 
-	foreach ($competitionModels as $comp) {
-		if ($comp->getIsTeam()) {
-			$teamCompetitions[] = $comp;
-		} else {
+	foreach ($competitions as $comp) {
+		if (!$comp->getIsTeam()) {
 			$soloCompetitions[] = $comp;
 		}
 	}
 
-	// Wettbewerbe cachen
-	$_SESSION['soloresult_competitions'] = [
-		'team' => $teamCompetitions,
-		'solo' => $soloCompetitions
-	];
+	$_SESSION['soloresult_competitions'] = $soloCompetitions;
 } else {
-	// Gecachte Wettbewerbe laden
-	$teamCompetitions = $_SESSION['soloresult_competitions']['team'];
-	$soloCompetitions = $_SESSION['soloresult_competitions']['solo'];
+	$soloCompetitions = $_SESSION['soloresult_competitions'];
 }
 
 include 'nav.php';
@@ -50,21 +38,11 @@ include 'nav.php';
 <html>
 
 <head>
+	<link rel="stylesheet" type="text/css" href="../../styles/base.css" />
 	<script src="https://cdn.jsdelivr.net/npm/less"></script>
 	<meta charset="utf-8">
-	<meta name="description" content="Klassenpunkte eintragen">
-	<title>Klassenpunkte eintragen</title>
-	<script type="text/javascript" language="JavaScript">
-		function inputNumericValidate() {
-			const e = event || window.event;
-			const key = e.keyCode || e.which;
-			if (((key <= 48) || (key >= 57)) &&
-				(key !== 8) && (key !== 46) && (key !== 37) && (key !== 39)) {
-				if (e.preventDefault) e.preventDefault();
-				e.returnValue = false;
-			}
-		}
-	</script>
+	<meta name="description" content="Einzelergebnisse eintragen">
+	<title>Einzelergebnisse eintragen</title>
 </head>
 
 <body>
@@ -73,62 +51,35 @@ include 'nav.php';
 		<h1>Einzelpunkte</h1>
 	</header>
 
-	<main class="main-content">
-		<form method="POST" style="display: flex; flex-direction: column;" action="">
-			<div class="styled-select">
-				<!-- Wettbewerbs-Auswahl -->
-				<select name="competitions" id="competitions" onchange="this.form.submit()">
-					<option selected disabled value="default">Wettbewerb auswählen:</option>
+	<div class="flex-cotainer">
+		<select id="competitions">
+			<option selected disabled value="default">Station auswählen:</option>
+			<?php foreach ($soloCompetitions as $comp): ?>
+				<!-- Für Tischtennis data-mode = Tournament setzen, damit die Turnier-Oberfläche geladen wird -->
+				<!-- Alle anderen Stationen besitzen den gleichen Aufbau, weswegen dort das Competition-Form geladen wird  -->
+				<option value="<?= htmlspecialchars($comp->getName()) ?>"
+					data-mode="<?= (stripos($comp->getName(), 'Tischtennis') !== false) ? 'tournament' : 'competition' ?>">
+					<?= htmlspecialchars($comp->getName()) ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+	</div>
 
-					<!-- Gruppe für Mannschaft -->
-					<optgroup label="Mannschaft">
-						<?php foreach ($teamCompetitions as $comp): ?>
-							<option value="<?= htmlspecialchars($comp->getName()) ?>"
-								<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-								<?= htmlspecialchars($comp->getName()) ?>
-							</option>
-						<?php endforeach; ?>
-					</optgroup>
 
-					<!-- Gruppe für Einzeln -->
-					<optgroup label="Einzel">
-						<?php foreach ($soloCompetitions as $comp): ?>
-							<option value="<?= htmlspecialchars($comp->getName()) ?>"
-								<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-								<?= htmlspecialchars($comp->getName()) ?>
-							</option>
-						<?php endforeach; ?>
-					</optgroup>
-				</select>
-			</div>
-		</form>
+	<script>
+		let compSelect = document.getElementById("solo-competitions");
 
-		<?php
-		// Check if a competition is selected
-		if (isset($_POST['competitions']) && $_POST['competitions'] !== 'default') {
-			$selectedCompetition = $_POST['competitions'];
-
-			// Display table for the selected competition
-			echo '<div class="competition-table">';
-			if (in_array($selectedCompetition, array_map(fn($c) => $c->getName(), $teamCompetitions))) {
-				// Display table for Mannschaft competitions
-				echo '<h2>Mannschaft: ' . htmlspecialchars($selectedCompetition) . '</h2>';
-			} elseif (in_array($selectedCompetition, array_map(fn($c) => $c->getName(), $soloCompetitions))) {
-				// Display table for Einzel competitions
-				echo '<h2>Einzel: ' . htmlspecialchars($selectedCompetition) . '</h2>';
-				if ($_POST['competitions'] == 'Tischtennis')
-					switch ($_POST['competitions']) {
-						case 'Tischtennis':
-							include '.\Tables\table_tennis.php';  // Path to the specific table view
-							break;
-					}
-			} else {
-				echo '<p>Keine Tabelle verfügbar für die Auswahl.</p>';
+		compSelect.addEventListener("change", (event) => {
+			const selectedOption = event.target.value;
+			if (selectedOption !== "default") {
+				loadResultView(selectedOption);
 			}
-			echo '</div>';
+		});
+
+		function loadResultView(competitionName) {
+			if (competitionName.includes("Turnier")) {} else {}
 		}
-		?>
-	</main>
+	</script>
 </body>
 
 </html>
