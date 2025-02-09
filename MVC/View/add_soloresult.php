@@ -58,12 +58,40 @@ include 'nav.php';
 			<?php foreach ($soloCompetitions as $comp): ?>
 				<option value="<?= htmlspecialchars($comp->getName()) ?>"
 					data-mode="<?= (stripos($comp->getName(), 'Tischtennis') !== false) ? 'tournament' : 'competition' ?>"
+					data-time="<?= htmlspecialchars($comp->getDate()->format('Y-m-d H:i:s')) ?>"
+					data-gender="<?= htmlspecialchars($comp->getIsMale() === true ? 'M' : ($comp->getIsMale() === false ? 'w' : 'N')) ?>"
+					data-participants="<?= htmlspecialchars(count($comp->getStudentParticipants())) ?>"
+					data-info="<?= htmlspecialchars($comp->getAdditionalInfo()) ?>"
 					<?= (count($comp->getStudentParticipants()) == 0) ? 'disabled' : '' ?>>
 					<?= htmlspecialchars($comp->getName()) ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
 	</div>
+
+	<div>
+		<table id="competition-info" class="table-style hidden">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Zeit</th>
+					<th>Geschlecht</th>
+					<th>Teilnehmer</th>
+					<th>Sonstiges</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td id="comp-name"></td>
+					<td id="comp-time"></td>
+					<td id="comp-gender"></td>
+					<td id="comp-participants"></td>
+					<td id="comp-other"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
 
 
 	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
@@ -75,11 +103,13 @@ include 'nav.php';
 		let compSelect = document.getElementById("competitions");
 		let submitStationButton = document.getElementById("submit-station");
 		let resultForm = document.getElementById("result-form");
+		let competitionInfoTable = document.getElementById("competition-info");
 
 		compSelect.addEventListener("change", (event) => {
 			const selectedOption = event.target.selectedOptions[0];
 			const mode = selectedOption.dataset.mode;
 			loadResultFormView(mode);
+			updateCompetitionInfo(selectedOption);
 		});
 
 		function loadResultFormView(mode) {
@@ -94,6 +124,15 @@ include 'nav.php';
 					submitStationButton.classList.remove("hidden");
 				})
 				.catch(error => console.error("Error loading form:", error));
+		}
+
+		function updateCompetitionInfo(selectedOption) {
+			document.getElementById("comp-name").textContent = selectedOption.value;
+			document.getElementById("comp-time").textContent = new Date(selectedOption.dataset.time).toLocaleString('de-DE');
+			document.getElementById("comp-participants").textContent = selectedOption.dataset.participants;
+			document.getElementById("comp-other").textContent = selectedOption.dataset.info;
+			document.getElementById("comp-gender").textContent = selectedOption.dataset.gender
+			competitionInfoTable.classList.remove("hidden");
 		}
 	</script>
 </body>

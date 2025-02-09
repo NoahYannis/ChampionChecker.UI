@@ -111,6 +111,7 @@
 
 	<head>
 		<script src="https://cdn.jsdelivr.net/npm/less"></script>
+		<link rel="stylesheet" type="text/css" href="../../styles/base.css" />
 		<meta charset="utf-8">
 		<meta name="description" content="Klassenpunkte eintragen">
 		<title>Klassenpunkte eintragen</title>
