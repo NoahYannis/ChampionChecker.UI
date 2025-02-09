@@ -51,19 +51,19 @@ include 'nav.php';
 		<h1>Einzelpunkte</h1>
 	</header>
 
-	<div class="flex-cotainer">
+	<div class="flex-container">
 		<select id="competitions">
 			<option selected disabled value="default">Station auswählen:</option>
 			<?php foreach ($soloCompetitions as $comp): ?>
-				<!-- Für Tischtennis data-mode = Tournament setzen, damit die Turnier-Oberfläche geladen wird -->
-				<!-- Alle anderen Stationen besitzen den gleichen Aufbau, weswegen dort das Competition-Form geladen wird  -->
 				<option value="<?= htmlspecialchars($comp->getName()) ?>"
-					data-mode="<?= (stripos($comp->getName(), 'Tischtennis') !== false) ? 'tournament' : 'competition' ?>">
+					data-mode="<?= (stripos($comp->getName(), 'Tischtennis') !== false) ? 'tournament' : 'competition' ?>"
+					<?= (count($comp->getStudentParticipants()) == 0) ? 'disabled' : '' ?>>
 					<?= htmlspecialchars($comp->getName()) ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
 	</div>
+
 
 	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
 

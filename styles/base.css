@@ -286,6 +286,15 @@ input[type="submit"] {
   }
 }
 
+option:not(:disabled) {
+  cursor: pointer;
+}
+
+option:disabled {
+  color: gray;
+  background-color: lightgray;
+}
+
 .name-badge {
   display: inline-block;
   border-radius: 16px;
