@@ -52,30 +52,18 @@
 	}
 
 	if (!isset($_SESSION['classresult_competitions'])) {
-		// Wettbewerbe aus der Datenbank holen, wenn noch nicht gecached
-		$competitionController = CompetitionController::getInstance();
-		$competitionModels = $competitionController->getAll();
-
+		$competitionModels = CompetitionController::getInstance()->getAll();
 		$teamCompetitions = [];
-		$soloCompetitions = [];
 
 		foreach ($competitionModels as $comp) {
 			if ($comp->getIsTeam()) {
 				$teamCompetitions[] = $comp;
-			} else {
-				$soloCompetitions[] = $comp;
 			}
 		}
 
-		// Wettbewerbe cachen
-		$_SESSION['classresult_competitions'] = [
-			'team' => $teamCompetitions,
-			'solo' => $soloCompetitions
-		];
+		$_SESSION['classresult_competitions'] = $teamCompetitions;
 	} else {
-		// Gecachte Wettbewerbe laden
-		$teamCompetitions = $_SESSION['classresult_competitions']['team'];
-		$soloCompetitions = $_SESSION['classresult_competitions']['solo'];
+		$teamCompetitions = $_SESSION['classresult_competitions'];
 	}
 
 	$competitionSelected = !empty($_POST['competitions']);
@@ -84,9 +72,8 @@
 	// Selektierten Wettbewerb laden falls vorhanden
 	if ($competitionSelected) {
 		$selectedCompName = $_POST['competitions'];
-		$allCompetitions = array_merge($teamCompetitions, $soloCompetitions);
 
-		foreach ($allCompetitions as $comp) {
+		foreach ($teamCompetitions as $comp) {
 			if ($comp->getName() === $selectedCompName) {
 				$selectedCompetition = $comp;
 				$_SESSION['classresult_selectedCompetition'] = $selectedCompetition;
@@ -138,23 +125,13 @@
 		<main class="main-content">
 			<form method="POST" style="display: flex; flex-direction: column;" action="">
 				<div class="styled-select">
-					<!-- Wettbewerbs-Auswahl -->
+					<!-- Stations-Auswahl -->
 					<select name="competitions" id="competitions" onchange="this.form.submit()">
-						<option selected disabled value="default">Wettbewerb auswählen:</option>
+						<option selected disabled value="default">Station auswählen:</option>
 
 						<!-- Gruppe für Mannschaft -->
 						<optgroup label="Mannschaft">
 							<?php foreach ($teamCompetitions as $comp): ?>
-								<option value="<?= htmlspecialchars($comp->getName()) ?>"
-									<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-									<?= htmlspecialchars($comp->getName()) ?>
-								</option>
-							<?php endforeach; ?>
-						</optgroup>
-
-						<!-- Gruppe für Einzeln -->
-						<optgroup label="Einzel">
-							<?php foreach ($soloCompetitions as $comp): ?>
 								<option value="<?= htmlspecialchars($comp->getName()) ?>"
 									<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
 									<?= htmlspecialchars($comp->getName()) ?>
@@ -217,7 +194,7 @@
 				const selectedClass = classSelect.value;
 
 				if (selectedCompetition === 'default') {
-					alert('Bitte wählen Sie einen Wettbewerb aus.');
+					alert('Bitte wählen Sie eine Station aus.');
 					return;
 				}
 
