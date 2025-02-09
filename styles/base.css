@@ -188,6 +188,7 @@ button {
   font-size: clamp(1rem, 1vw, 2rem);
   margin: 1rem auto;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
+  user-select: none;
 
   &:hover:not(:disabled) {
     cursor: pointer;

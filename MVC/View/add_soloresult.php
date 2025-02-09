@@ -39,6 +39,7 @@ include 'nav.php';
 
 <head>
 	<link rel="stylesheet" type="text/css" href="../../styles/base.css" />
+	<link rel="stylesheet" type="text/css" href="../../styles/solo_results.css" />
 	<script src="https://cdn.jsdelivr.net/npm/less"></script>
 	<meta charset="utf-8">
 	<meta name="description" content="Einzelergebnisse eintragen">
@@ -67,9 +68,13 @@ include 'nav.php';
 
 	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
 
+	<button id="submit-station" class="submit-station hidden">Station abschließen</button>
+
 
 	<script>
 		let compSelect = document.getElementById("competitions");
+		let submitStationButton = document.getElementById("submit-station");
+		let resultForm = document.getElementById("result-form");
 
 		compSelect.addEventListener("change", (event) => {
 			const selectedOption = event.target.selectedOptions[0];
@@ -78,23 +83,17 @@ include 'nav.php';
 		});
 
 		function loadResultFormView(mode) {
-			const resultForm = document.getElementById("result-form");
+			let url = mode === "tournament" ?
+				"solo_result_forms/tournament_form.php" :
+				"solo_result_forms/competition_form.php";
 
-			if (mode === "tournament") {
-				fetch("solo_result_forms/tournament_form.php")
-					.then(response => response.text())
-					.then(html => {
-						resultForm.innerHTML = html;
-					})
-					.catch(error => console.error("Error loading tournament form:", error));
-			} else if (mode === "competition") {
-				fetch("solo_result_forms/competition_form.php")
-					.then(response => response.text())
-					.then(html => {
-						resultForm.innerHTML = html;
-					})
-					.catch(error => console.error("Error loading competition form:", error));
-			}
+			fetch(url)
+				.then(response => response.text())
+				.then(html => {
+					resultForm.innerHTML = html;
+					submitStationButton.classList.remove("hidden");
+				})
+				.catch(error => console.error("Error loading form:", error));
 		}
 	</script>
 </body>

@@ -1,0 +1,8 @@
+.submit-station {
+  background-color: #5a3cc3 !important;
+  color: white;
+
+  &:hover {
+    filter: brightness(1.5);
+  }
+}
