@@ -28,7 +28,7 @@ class StudentController implements IController
         return self::$instance;
     }
 
-    public function getById(int $id): ?Student
+    public function getById(int $id): ?Student  
     {
         if (isset($this->cachedStudents[$id])) {
             return $this->cachedStudents[$id];

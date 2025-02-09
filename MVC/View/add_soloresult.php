@@ -65,19 +65,36 @@ include 'nav.php';
 		</select>
 	</div>
 
+	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
+
 
 	<script>
-		let compSelect = document.getElementById("solo-competitions");
+		let compSelect = document.getElementById("competitions");
 
 		compSelect.addEventListener("change", (event) => {
-			const selectedOption = event.target.value;
-			if (selectedOption !== "default") {
-				loadResultView(selectedOption);
-			}
+			const selectedOption = event.target.selectedOptions[0];
+			const mode = selectedOption.dataset.mode;
+			loadResultFormView(mode);
 		});
 
-		function loadResultView(competitionName) {
-			if (competitionName.includes("Turnier")) {} else {}
+		function loadResultFormView(mode) {
+			const resultForm = document.getElementById("result-form");
+
+			if (mode === "tournament") {
+				fetch("solo_result_forms/tournament_form.php")
+					.then(response => response.text())
+					.then(html => {
+						resultForm.innerHTML = html;
+					})
+					.catch(error => console.error("Error loading tournament form:", error));
+			} else if (mode === "competition") {
+				fetch("solo_result_forms/competition_form.php")
+					.then(response => response.text())
+					.then(html => {
+						resultForm.innerHTML = html;
+					})
+					.catch(error => console.error("Error loading competition form:", error));
+			}
 		}
 	</script>
 </body>
