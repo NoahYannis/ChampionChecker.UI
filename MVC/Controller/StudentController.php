@@ -28,10 +28,10 @@ class StudentController implements IController
         return self::$instance;
     }
 
-    public function getById(int $id): ?Student  
+    public function getById(int $id): ?Student
     {
-        if (isset($this->cachedStudents[$id])) {
-            return $this->cachedStudents[$id];
+        if (isset($_SESSION["students"][$id])) {
+            return $_SESSION["students"][$id];
         }
 
         $data = $this->getApiData("/api/student/$id");
@@ -49,7 +49,7 @@ class StudentController implements IController
             );
 
             // Student im Cache speichern
-            $this->cachedStudents[$id] = $studentModel;
+            $_SESSION["students"][$id] = $studentModel;
             return $studentModel;
         }
         return null;

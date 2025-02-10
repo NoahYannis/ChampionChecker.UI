@@ -60,7 +60,7 @@ include 'nav.php';
 					data-mode="<?= (stripos($comp->getName(), 'Tischtennis') !== false) ? 'tournament' : 'competition' ?>"
 					data-time="<?= htmlspecialchars($comp->getDate()->format('Y-m-d H:i:s')) ?>"
 					data-gender="<?= htmlspecialchars($comp->getIsMale() === true ? 'M' : ($comp->getIsMale() === false ? 'W' : 'N')) ?>"
-					data-participants="<?= htmlspecialchars(count($comp->getStudentParticipants())) ?>"
+					data-participants="<?= htmlspecialchars(json_encode($comp->getStudentParticipants())) ?>"
 					data-info="<?= htmlspecialchars($comp->getAdditionalInfo()) ?>"
 					<?= (count($comp->getStudentParticipants()) == 0) ? 'disabled' : '' ?>>
 					<?= htmlspecialchars($comp->getName()) ?>
@@ -118,7 +118,13 @@ include 'nav.php';
 				"solo_result_forms/tournament_form.php" :
 				"solo_result_forms/competition_form.php";
 
-			fetch(url)
+			fetch(url, {
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json"
+					},
+					body: compSelect.selectedOptions[0].dataset.participants
+				})
 				.then(response => response.text())
 				.then(html => {
 					resultForm.innerHTML = html;
@@ -127,12 +133,20 @@ include 'nav.php';
 				.catch(error => console.error("Error loading form:", error));
 		}
 
+
 		function updateCompetitionInfo(selectedOption) {
 			document.getElementById("comp-name").textContent = selectedOption.value;
 			document.getElementById("comp-time").textContent = new Date(selectedOption.dataset.time).toLocaleString('de-DE');
-			document.getElementById("comp-participants").textContent = selectedOption.dataset.participants;
 			document.getElementById("comp-other").textContent = selectedOption.dataset.info;
-			document.getElementById("comp-gender").textContent = selectedOption.dataset.gender
+			document.getElementById("comp-gender").textContent = selectedOption.dataset.gender;
+
+			let participants = Object.values(JSON.parse(selectedOption.dataset.participants));
+			const participantsHTML = participants.map(p => {
+				const participantName = `${p.firstName} ${p.lastName}` || '???';
+				return `<span class='name-badge student'>${participantName}</span>`;
+			}).join(' ');
+
+			document.getElementById("comp-participants").innerHTML = participantsHTML;
 			competitionInfoTable.classList.remove("hidden");
 			separator.classList.remove("hidden");
 		}
