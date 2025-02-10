@@ -123,44 +123,42 @@
 			<h1>Klassenpunkte</h1>
 		</header>
 
-		<main class="main-content">
-			<form method="POST" style="display: flex; flex-direction: column;" action="">
-				<div class="styled-select">
-					<!-- Stations-Auswahl -->
-					<select name="competitions" id="competitions" onchange="this.form.submit()">
-						<option selected disabled value="default">Station auswählen:</option>
+		<form method="POST" style="display: flex; flex-direction: column;" action="">
+			<div class="styled-select">
+				<!-- Stations-Auswahl -->
+				<select name="competitions" id="competitions" onchange="this.form.submit()">
+					<option selected disabled value="default">Station auswählen:</option>
 
-						<!-- Gruppe für Mannschaft -->
-						<optgroup label="Mannschaft">
-							<?php foreach ($teamCompetitions as $comp): ?>
-								<option value="<?= htmlspecialchars($comp->getName()) ?>"
-									<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
-									<?= htmlspecialchars($comp->getName()) ?>
-								</option>
-							<?php endforeach; ?>
-						</optgroup>
-					</select>
-				</div>
-
-				<div class="styled-select">
-					<!-- Klassen-Auswahl -->
-					<select name="classes" id="classes" onchange="this.form.submit()" <?= empty($participantClassesNames) ? 'disabled' : '' ?>>
-						<option value="default">Klasse auswählen:</option>
-						<?php foreach ($participantClassesNames as $participantClassName): ?>
-							<option value="<?= htmlspecialchars($participantClassName) ?>"
-								<?= isset($_POST['classes']) && $_POST['classes'] == $participantClassName ? 'selected' : '' ?>>
-								<?= htmlspecialchars($participantClassName) ?>
+					<!-- Gruppe für Mannschaft -->
+					<optgroup label="Mannschaft">
+						<?php foreach ($teamCompetitions as $comp): ?>
+							<option value="<?= htmlspecialchars($comp->getName()) ?>"
+								<?= isset($_POST['competitions']) && $_POST['competitions'] == $comp->getName() ? 'selected' : '' ?>>
+								<?= htmlspecialchars($comp->getName()) ?>
 							</option>
 						<?php endforeach; ?>
-					</select>
-				</div>
-				<input name="points" placeholder="Punktzahl eingeben:" type="number"
-					required minlength="1" maxlength="2" min="0" max="99"
-					inputmode="numeric" oninput="validatePointInput(this)" />
-			</form>
+					</optgroup>
+				</select>
+			</div>
 
-			<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
-		</main>
+			<div class="styled-select">
+				<!-- Klassen-Auswahl -->
+				<select name="classes" id="classes" onchange="this.form.submit()" <?= empty($participantClassesNames) ? 'disabled' : '' ?>>
+					<option value="default">Klasse auswählen:</option>
+					<?php foreach ($participantClassesNames as $participantClassName): ?>
+						<option value="<?= htmlspecialchars($participantClassName) ?>"
+							<?= isset($_POST['classes']) && $_POST['classes'] == $participantClassName ? 'selected' : '' ?>>
+							<?= htmlspecialchars($participantClassName) ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+			<input name="points" placeholder="Punktzahl eingeben:" type="number"
+				required minlength="1" maxlength="2" min="0" max="99"
+				inputmode="numeric" oninput="validatePointInput(this)" />
+		</form>
+
+		<button onclick="submitForm()" type="submit" name="submit" value="Abschicken">Abschicken</button>
 
 		<script>
 			const invalidChars = ['+', '-', 'E', 'e'];
