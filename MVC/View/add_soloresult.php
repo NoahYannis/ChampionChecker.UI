@@ -59,7 +59,7 @@ include 'nav.php';
 				<option value="<?= htmlspecialchars($comp->getName()) ?>"
 					data-mode="<?= (stripos($comp->getName(), 'Tischtennis') !== false) ? 'tournament' : 'competition' ?>"
 					data-time="<?= htmlspecialchars($comp->getDate()->format('Y-m-d H:i:s')) ?>"
-					data-gender="<?= htmlspecialchars($comp->getIsMale() === true ? 'M' : ($comp->getIsMale() === false ? 'w' : 'N')) ?>"
+					data-gender="<?= htmlspecialchars($comp->getIsMale() === true ? 'M' : ($comp->getIsMale() === false ? 'W' : 'N')) ?>"
 					data-participants="<?= htmlspecialchars(count($comp->getStudentParticipants())) ?>"
 					data-info="<?= htmlspecialchars($comp->getAdditionalInfo()) ?>"
 					<?= (count($comp->getStudentParticipants()) == 0) ? 'disabled' : '' ?>>
@@ -92,7 +92,7 @@ include 'nav.php';
 		</table>
 	</div>
 
-
+	<hr id="horizontal-separator" class="horizontal-separator hidden">
 
 	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
 
@@ -104,6 +104,7 @@ include 'nav.php';
 		let submitStationButton = document.getElementById("submit-station");
 		let resultForm = document.getElementById("result-form");
 		let competitionInfoTable = document.getElementById("competition-info");
+		let separator = document.getElementById("horizontal-separator");
 
 		compSelect.addEventListener("change", (event) => {
 			const selectedOption = event.target.selectedOptions[0];
@@ -133,6 +134,7 @@ include 'nav.php';
 			document.getElementById("comp-other").textContent = selectedOption.dataset.info;
 			document.getElementById("comp-gender").textContent = selectedOption.dataset.gender
 			competitionInfoTable.classList.remove("hidden");
+			separator.classList.remove("hidden");
 		}
 	</script>
 </body>

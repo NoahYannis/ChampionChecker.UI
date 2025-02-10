@@ -108,7 +108,6 @@ $competitionResults = loadCompetitionResults();
         <div class="spinner" id="spinner"></div>
     </div>
 
-
     <section>
         <?php printCompetitionResult($competitionResults); ?>
     </section>

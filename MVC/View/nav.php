@@ -79,7 +79,7 @@ $profileImageUrl = $isAuthenticated
                         <ul class="dropdown-menu">
                             <li><a href="results.php">Ergebnisse ansehen</a></li>
                             <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                            <li><a href="add_soloresult.php">Einzelgebnis hinzufügen</a></li>
+                            <li><a href="add_soloresult.php">Einzelergebnis hinzufügen</a></li>
                         </ul>
                     <?php endif; ?>
                 </li>

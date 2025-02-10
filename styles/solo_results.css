@@ -6,3 +6,15 @@
     filter: brightness(1.5);
   }
 }
+
+.horizontal-separator {
+  width: 50%;
+  margin-block: 1rem;
+  border: 1px solid black;
+}
+
+@media (width < 50rem) {
+  .horizontal-separator {
+    width: 80%;
+  }
+}
