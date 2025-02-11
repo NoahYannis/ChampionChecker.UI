@@ -13,6 +13,14 @@
   border: 1px solid black;
 }
 
+.attempts-selection {
+  width: auto;
+}
+
+.attempt-cell {
+  white-space: nowrap !important;
+}
+
 @media (width < 50rem) {
   .horizontal-separator {
     width: 80%;

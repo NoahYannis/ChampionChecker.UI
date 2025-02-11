@@ -57,6 +57,11 @@ abbr {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  gap: 10px;
+
+  &.row {
+    flex-direction: row;
+  }
 }
 
 .submitButton {

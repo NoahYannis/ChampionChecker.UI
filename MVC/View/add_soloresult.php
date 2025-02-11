@@ -129,6 +129,11 @@ include 'nav.php';
 				.then(html => {
 					resultForm.innerHTML = html;
 					submitStationButton.classList.remove("hidden");
+
+					const formScript = resultForm.querySelector("script");
+					const appendedScript = document.createElement("script");
+					appendedScript.textContent = formScript.textContent;
+					document.body.appendChild(appendedScript);
 				})
 				.catch(error => console.error("Error loading form:", error));
 		}

@@ -113,7 +113,7 @@ $competitionResults = loadCompetitionResults();
     </section>
 
     <section>
-        <div class="flex-container column">
+        <div class="flex-container">
             <h2>Anstehende Stationen</h2>
             <table id="upcoming-competitions-table" class="table-style">
                 <thead>
