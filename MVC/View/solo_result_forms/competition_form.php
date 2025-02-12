@@ -28,7 +28,7 @@ function getStudentClassName($id)
 <body>
     <div class="flex-container row">
         <div>
-            <label for="attempts-count">Versuche:</label>
+            <label for="attempts-selection">Versuche:</label>
             <select class="attempts-selection" id="attempts-selection">
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -115,7 +115,7 @@ function getStudentClassName($id)
 
                     let input = document.createElement("input");
                     input.type = "number";
-                    input.min = "0";
+                    input.min = input.value = "0";
 
                     flexContainer.appendChild(label);
                     flexContainer.appendChild(input);
