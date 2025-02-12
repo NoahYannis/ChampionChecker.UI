@@ -21,6 +21,10 @@
   white-space: nowrap !important;
 }
 
+label {
+  text-align: center;
+}
+
 @media (width < 50rem) {
   .horizontal-separator {
     width: 80%;

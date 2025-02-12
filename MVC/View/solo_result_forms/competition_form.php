@@ -26,20 +26,30 @@ function getStudentClassName($id)
 </head>
 
 <body>
-    <div class="flex-container">
-        <label for="attempts-count">Anzahl Versuche:</label>
-        <select class="attempts-selection" id="attempts-selection">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-            <option value="7">7</option>
-            <option value="8">8</option>
-            <option value="9">9</option>
-            <option value="10">10</option>
-        </select>
+    <div class="flex-container row">
+        <div>
+            <label for="attempts-count">Versuche:</label>
+            <select class="attempts-selection" id="attempts-selection">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+            </select>
+        </div>
+        <div>
+            <label for="unit-selection">Einheit:</label>
+            <select id="unit-selection">
+                <option value="p">Punkte</option>
+                <option value="m">Meter</option>
+                <option value="z">Zeit</option>
+            </select>
+        </div>
     </div>
 
     <table id="attempt-table" class="table-style">
@@ -64,7 +74,10 @@ function getStudentClassName($id)
                     <td><?= htmlspecialchars($participant['lastName']) ?></td>
                     <td><?= $class ?></td>
                     <td class="attempt-cell">
-                        <input type="number" min="0">
+                        <div class="flex-container row">
+                            <label>1. Versuch:</label>
+                            <input type="number" min="0" value="0">
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
@@ -73,6 +86,8 @@ function getStudentClassName($id)
 
     <script>
         let attemptsSelection = document.getElementById("attempts-selection");
+        let unitSelection = document.getElementById("unit-selection");
+
         let attemptTable = document.getElementById("attempt-table");
         let attemptCells = Array.from(attemptTable.getElementsByClassName("attempt-cell"));
 
@@ -82,6 +97,10 @@ function getStudentClassName($id)
             createAttemptInputs(count)
         });
 
+        unitSelection.addEventListener("change", () => {
+            let unit = unitSelection.selectedOptions[0].value;
+            createUnitInputs(unit);
+        })
 
         function createAttemptInputs(count) {
             attemptCells.forEach(cell => {
@@ -103,6 +122,15 @@ function getStudentClassName($id)
 
                     cell.appendChild(flexContainer);
                 }
+            });
+        }
+
+        function createUnitInputs(unit) {
+            attemptCells.forEach(c => {
+                c.querySelectorAll("input").forEach(i => {
+                    i.type = (unit === "z") ? "time" : "number";
+                    i.value = (unit === "z") ? "00:00" : "0";
+                });
             });
         }
     </script>
