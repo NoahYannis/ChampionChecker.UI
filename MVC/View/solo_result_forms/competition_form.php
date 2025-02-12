@@ -73,12 +73,7 @@ function getStudentClassName($id)
                     <td><?= htmlspecialchars($participant['firstName']) ?></td>
                     <td><?= htmlspecialchars($participant['lastName']) ?></td>
                     <td><?= $class ?></td>
-                    <td class="attempt-cell">
-                        <div class="flex-container row">
-                            <label>1. Versuch:</label>
-                            <input type="number" min="0" value="0">
-                        </div>
-                    </td>
+                    <td class="attempt-cell"></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -87,10 +82,13 @@ function getStudentClassName($id)
     <script>
         let attemptsSelection = document.getElementById("attempts-selection");
         let unitSelection = document.getElementById("unit-selection");
+        let unit = "p"; // Punkte
 
         let attemptTable = document.getElementById("attempt-table");
         let attemptCells = Array.from(attemptTable.getElementsByClassName("attempt-cell"));
 
+        // Standardmäß ein Versuch pro Schüler
+        createAttemptInputs(1);
 
         attemptsSelection.addEventListener("change", () => {
             let count = attemptsSelection.selectedOptions[0].value;
@@ -98,7 +96,7 @@ function getStudentClassName($id)
         });
 
         unitSelection.addEventListener("change", () => {
-            let unit = unitSelection.selectedOptions[0].value;
+            unit = unitSelection.selectedOptions[0].value;
             createUnitInputs(unit);
         })
 
@@ -114,8 +112,9 @@ function getStudentClassName($id)
                     label.textContent = i + ". Versuch:";
 
                     let input = document.createElement("input");
-                    input.type = "number";
-                    input.min = input.value = "0";
+                    input.type = (unit === "z") ? "time" : "number";
+                    input.min = input.value = (unit === "z") ? "00:00" : "0";
+                    input.addEventListener("input", () => determineBestAttempt(unit, cell))
 
                     flexContainer.appendChild(label);
                     flexContainer.appendChild(input);
@@ -127,11 +126,27 @@ function getStudentClassName($id)
 
         function createUnitInputs(unit) {
             attemptCells.forEach(c => {
-                c.querySelectorAll("input").forEach(i => {
+                let inputs = c.querySelectorAll("input");
+                inputs.forEach(i => {
                     i.type = (unit === "z") ? "time" : "number";
                     i.value = (unit === "z") ? "00:00" : "0";
+                    i.addEventListener("input", () => {
+                        determineBestAttempt(unit, c);
+                    });
                 });
             });
+        }
+
+        function determineBestAttempt(unit, cell) {
+            let attemptInputs = Array.from(cell.querySelectorAll("input"));
+            attemptInputs.forEach(input => input.classList.remove("best-attempt"));
+
+            // TOOD: Prüfung bei Zeitwerten anpassen
+            let bestAttemptInput = attemptInputs.reduce((best, input) => {
+                return (parseFloat(input.value) > parseFloat(best.value) ? input : best);
+            }, attemptInputs[0]);
+
+            bestAttemptInput.classList.add("best-attempt");
         }
     </script>
 </body>

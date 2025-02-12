@@ -21,6 +21,12 @@
   white-space: nowrap !important;
 }
 
+.best-attempt {
+  border: 2px solid gold !important;
+  outline: none;
+  box-shadow: 0 0 3px gold;
+}
+
 label {
   text-align: center;
 }
