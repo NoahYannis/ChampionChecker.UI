@@ -8,8 +8,8 @@
 }
 
 .horizontal-separator {
-  width: 50%;
-  margin-block: 1rem;
+  min-width: 50%;
+  margin-block: 3rem;
   border: 1px solid black;
 }
 
@@ -27,7 +27,7 @@
   box-shadow: 0 0 3px gold;
 }
 
-label {
+h2, label {
   text-align: center;
 }
 

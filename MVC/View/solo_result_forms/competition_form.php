@@ -79,6 +79,24 @@ function getStudentClassName($id)
         </tbody>
     </table>
 
+    <hr class="horizontal-separator">
+
+    <h2>Auswertung:</h2>
+
+    <table id="evaluation-table" class="table-style">
+        <thead>
+            <tr>
+                <th>Platz</th>
+                <th>Nachname</th>
+                <th>Voname</th>
+                <th>Klasse</th>
+                <th>Ergebnis</th>
+                <th>Punkte</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
     <script>
         let attemptsSelection = document.getElementById("attempts-selection");
         let unitSelection = document.getElementById("unit-selection");
