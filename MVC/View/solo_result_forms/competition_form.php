@@ -122,6 +122,8 @@ function getStudentClassName($id)
 
         unitSelection.addEventListener("change", () => {
             unit = unitSelection.selectedOptions[0].value;
+            let bestAttempts = document.querySelectorAll(".best-attempt");
+            bestAttempts.forEach(input => input.classList.remove("best-attempt"));
             createUnitInputs(unit);
         })
 
@@ -191,6 +193,7 @@ function getStudentClassName($id)
             attemptInputs.forEach(input => input.classList.remove("best-attempt"));
 
             let bestAttemptInput;
+
             if (unit === "z") {
                 bestAttemptInput = attemptInputs.reduce((best, input) => {
                     let [bestMinutes, bestSeconds] = best.value.split(":").map(Number);
@@ -199,13 +202,13 @@ function getStudentClassName($id)
                 }, attemptInputs[0]);
             } else {
                 bestAttemptInput = attemptInputs.reduce((best, input) =>
-                    (!best.value || (input.value && parseFloat(input.value) > parseFloat(best.value))) ? input : best, {
-                        value: "-Infinity"
-                    }
+                    (!best.value || (input.value && parseFloat(input.value) > parseFloat(best.value))) ? input : best, attemptInputs[0]
                 );
             }
 
-            bestAttemptInput.classList.add("best-attempt");
+            if (bestAttemptInput) {
+                bestAttemptInput.classList.add("best-attempt");
+            }
         }
 
 
