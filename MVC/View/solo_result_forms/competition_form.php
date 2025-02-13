@@ -141,10 +141,18 @@ function getStudentClassName($id)
             let attemptInputs = Array.from(cell.querySelectorAll("input"));
             attemptInputs.forEach(input => input.classList.remove("best-attempt"));
 
-            // TOOD: Prüfung bei Zeitwerten anpassen
-            let bestAttemptInput = attemptInputs.reduce((best, input) => {
-                return (parseFloat(input.value) > parseFloat(best.value) ? input : best);
-            }, attemptInputs[0]);
+            let bestAttemptInput;
+            if (unit === "z") {
+                bestAttemptInput = attemptInputs.reduce((best, input) => {
+                    let [bestMinutes, bestSeconds] = best.value.split(":").map(Number);
+                    let [inputMinutes, inputSeconds] = input.value.split(":").map(Number);
+                    return (inputMinutes < bestMinutes || (inputMinutes === bestMinutes && inputSeconds < bestSeconds)) ? input : best;
+                }, attemptInputs[0]);
+            } else {
+                bestAttemptInput = attemptInputs.reduce((best, input) => {
+                    return (parseFloat(input.value) > parseFloat(best.value) ? input : best);
+                }, attemptInputs[0]);
+            }
 
             bestAttemptInput.classList.add("best-attempt");
         }
