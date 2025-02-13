@@ -88,11 +88,11 @@ function getStudentClassName($id)
         let attemptCells = Array.from(attemptTable.getElementsByClassName("attempt-cell"));
 
         // Standardmäß ein Versuch pro Schüler
-        createAttemptInputs(1);
+        displayAttemptInputs(1);
 
         attemptsSelection.addEventListener("change", () => {
             let count = attemptsSelection.selectedOptions[0].value;
-            createAttemptInputs(count)
+            displayAttemptInputs(count)
         });
 
         unitSelection.addEventListener("change", () => {
@@ -100,26 +100,43 @@ function getStudentClassName($id)
             createUnitInputs(unit);
         })
 
-        function createAttemptInputs(count) {
+        function displayAttemptInputs(count) {
             attemptCells.forEach(cell => {
-                cell.innerHTML = "";
+                let currentInputs = cell.querySelectorAll("input");
+                let inputCount = currentInputs.length;
 
-                for (let i = 1; i <= count; i++) {
+
+                while (inputCount > count) {
+                    cell.removeChild(cell.lastChild);
+                    inputCount--;
+                }
+
+                while (inputCount < count) {
                     let flexContainer = document.createElement("div");
                     flexContainer.classList.add("flex-container", "row");
 
                     let label = document.createElement("label");
-                    label.textContent = i + ". Versuch:";
+                    label.textContent = (inputCount + 1) + ". Versuch:";
 
                     let input = document.createElement("input");
                     input.type = (unit === "z") ? "time" : "number";
-                    input.min = input.value = (unit === "z") ? "00:00" : "0";
-                    input.addEventListener("input", () => determineBestAttempt(unit, cell))
+                    input.min = input.value = (unit === "z") ? "00:00" : "";
+                    input.addEventListener("input", () => determineBestAttempt(unit, cell));
 
                     flexContainer.appendChild(label);
                     flexContainer.appendChild(input);
 
                     cell.appendChild(flexContainer);
+                    inputCount++;
+                }
+
+                let cellHasResults = Array.from(currentInputs).some(input =>
+                    (unit === "z" && input.value !== "00:00") ||
+                    (unit !== "z" && input.value !== "")
+                );
+
+                if (cellHasResults) {
+                    determineBestAttempt(unit, cell);
                 }
             });
         }
@@ -129,7 +146,7 @@ function getStudentClassName($id)
                 let inputs = c.querySelectorAll("input");
                 inputs.forEach(i => {
                     i.type = (unit === "z") ? "time" : "number";
-                    i.value = (unit === "z") ? "00:00" : "0";
+                    i.value = (unit === "z") ? "00:00" : "";
                     i.addEventListener("input", () => {
                         determineBestAttempt(unit, c);
                     });
