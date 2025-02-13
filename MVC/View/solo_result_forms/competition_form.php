@@ -88,7 +88,7 @@ function getStudentClassName($id)
             <tr>
                 <th>Platz</th>
                 <th>Nachname</th>
-                <th>Voname</th>
+                <th>Vorname</th>
                 <th>Klasse</th>
                 <th>Ergebnis</th>
                 <th>Punkte</th>
@@ -100,13 +100,20 @@ function getStudentClassName($id)
     <script>
         let attemptsSelection = document.getElementById("attempts-selection");
         let unitSelection = document.getElementById("unit-selection");
-        let unit = "p"; // Punkte
 
         let attemptTable = document.getElementById("attempt-table");
+        let attemptRows = document.querySelectorAll("#attempt-table tbody tr");
         let attemptCells = Array.from(attemptTable.getElementsByClassName("attempt-cell"));
+
+        let evaluationTableBody = document.querySelector("#evaluation-table tbody");
+
+        let pointsDistribution = [7, 5, 4, 3, 2, 1];
+        let unit = "p"; // Punkte
+
 
         // Standardmäß ein Versuch pro Schüler
         displayAttemptInputs(1);
+        updateEvaluationTable();
 
         attemptsSelection.addEventListener("change", () => {
             let count = attemptsSelection.selectedOptions[0].value;
@@ -139,7 +146,10 @@ function getStudentClassName($id)
                     let input = document.createElement("input");
                     input.type = (unit === "z") ? "time" : "number";
                     input.min = input.value = (unit === "z") ? "00:00" : "";
-                    input.addEventListener("input", () => determineBestAttempt(unit, cell));
+                    input.addEventListener("input", () => {
+                        determineBestAttempt(unit, cell);
+                        updateEvaluationTable();
+                    });
 
                     flexContainer.appendChild(label);
                     flexContainer.appendChild(input);
@@ -157,6 +167,8 @@ function getStudentClassName($id)
                     determineBestAttempt(unit, cell);
                 }
             });
+
+            updateEvaluationTable();
         }
 
         function createUnitInputs(unit) {
@@ -170,6 +182,8 @@ function getStudentClassName($id)
                     });
                 });
             });
+
+            updateEvaluationTable();
         }
 
         function determineBestAttempt(unit, cell) {
@@ -184,12 +198,47 @@ function getStudentClassName($id)
                     return (inputMinutes < bestMinutes || (inputMinutes === bestMinutes && inputSeconds < bestSeconds)) ? input : best;
                 }, attemptInputs[0]);
             } else {
-                bestAttemptInput = attemptInputs.reduce((best, input) => {
-                    return (parseFloat(input.value) > parseFloat(best.value) ? input : best);
-                }, attemptInputs[0]);
+                bestAttemptInput = attemptInputs.reduce((best, input) =>
+                    (!best.value || (input.value && parseFloat(input.value) > parseFloat(best.value))) ? input : best, {
+                        value: "-Infinity"
+                    }
+                );
             }
 
             bestAttemptInput.classList.add("best-attempt");
+        }
+
+
+        function updateEvaluationTable() {
+            evaluationTableBody.innerHTML = ""; // TO DO: Bei Änderungen Zeilen tauschen und anpassen statt Tabelle neu zu generieren
+
+            attemptRows.forEach((row, index) => {
+                let newRow = document.createElement("tr");
+
+                let placeCell = document.createElement("td");
+                placeCell.textContent = index + 1;
+                newRow.appendChild(placeCell);
+
+                let lastNameCell = row.querySelector("td:nth-child(3)").cloneNode(true);
+                newRow.appendChild(lastNameCell);
+
+                let firstNameCell = row.querySelector("td:nth-child(2)").cloneNode(true);
+                newRow.appendChild(firstNameCell);
+
+                let classCell = row.querySelector("td:nth-child(4)").cloneNode(true);
+                newRow.appendChild(classCell);
+
+                let resultCell = document.createElement("td");
+                let bestAttempt = row.querySelector(".best-attempt");
+                resultCell.textContent = bestAttempt ? bestAttempt.value : "";
+                newRow.appendChild(resultCell);
+
+                let pointsCell = document.createElement("td");
+                pointsCell.textContent = pointsDistribution[index] || 0; // Punkte basierend auf der Platzierung zuweisen
+                newRow.appendChild(pointsCell);
+
+                evaluationTableBody.appendChild(newRow);
+            });
         }
     </script>
 </body>
