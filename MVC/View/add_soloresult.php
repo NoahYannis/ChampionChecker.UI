@@ -49,7 +49,7 @@ include 'nav.php';
 <body>
 
 	<header>
-		<h1>Einzelpunkte</h1>
+		<h1>Einzelergebnisse eintragen</h1>
 	</header>
 
 	<div class="flex-container">
@@ -69,8 +69,9 @@ include 'nav.php';
 		</select>
 	</div>
 
-	<div>
-		<table id="competition-info" class="table-style hidden">
+	<div id="competition-info-section" class="hidden">
+		<label>Stations-Informationen:</label>
+		<table id="info-table" class="table-style">
 			<thead>
 				<tr>
 					<th>Name</th>
@@ -103,7 +104,7 @@ include 'nav.php';
 		let compSelect = document.getElementById("competitions");
 		let submitStationButton = document.getElementById("submit-station");
 		let resultForm = document.getElementById("result-form");
-		let competitionInfoTable = document.getElementById("competition-info");
+		let competitionInfoTable = document.getElementById("info-table");
 		let separator = document.getElementById("horizontal-separator");
 
 		compSelect.addEventListener("change", (event) => {
@@ -152,7 +153,7 @@ include 'nav.php';
 			}).join(' ');
 
 			document.getElementById("comp-participants").innerHTML = participantsHTML;
-			competitionInfoTable.classList.remove("hidden");
+			document.getElementById("competition-info-section").classList.remove("hidden");
 			separator.classList.remove("hidden");
 		}
 	</script>

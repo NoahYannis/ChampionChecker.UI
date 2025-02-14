@@ -27,8 +27,13 @@
   box-shadow: 0 0 3px gold;
 }
 
-h2, label {
+h2,
+label {
   text-align: center;
+}
+
+#competition-info-section label {
+  margin-top: 1rem;
 }
 
 @media (width < 50rem) {

@@ -120,7 +120,7 @@
 	<body>
 
 		<header>
-			<h1>Klassenpunkte</h1>
+			<h1>Klassenpunkte eintragen</h1>
 		</header>
 
 		<form method="POST" style="display: flex; flex-direction: column;" action="">
