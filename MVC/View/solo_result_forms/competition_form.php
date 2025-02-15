@@ -56,8 +56,8 @@ function getStudentClassName($id)
         <thead>
             <tr>
                 <th>#</th>
-                <th>Vorname</th>
                 <th>Nachname</th>
+                <th>Vorname</th>
                 <th>Klasse</th>
                 <th>Ergebnis</th>
             </tr>
@@ -70,8 +70,8 @@ function getStudentClassName($id)
             ?>
                 <tr>
                     <td data-id="<?= $id ?>"><?= $i++ ?></td>
-                    <td><?= htmlspecialchars($participant['firstName']) ?></td>
                     <td><?= htmlspecialchars($participant['lastName']) ?></td>
+                    <td><?= htmlspecialchars($participant['firstName']) ?></td>
                     <td><?= $class ?></td>
                     <td class="attempt-cell"></td>
                 </tr>
@@ -147,7 +147,8 @@ function getStudentClassName($id)
 
                     let input = document.createElement("input");
                     input.type = (unit === "z") ? "time" : "number";
-                    input.min = input.value = (unit === "z") ? "00:00" : "";
+                    input.value = (unit === "z") ? "00:00" : "";
+                    input.min = (unit === "z") ? "00:00" : "0";
                     input.addEventListener("input", () => {
                         determineBestAttempt(unit, cell);
                         updateEvaluationTable();
@@ -179,6 +180,7 @@ function getStudentClassName($id)
                 inputs.forEach(i => {
                     i.type = (unit === "z") ? "time" : "number";
                     i.value = (unit === "z") ? "00:00" : "";
+                    i.min = (unit === "z") ? "00:00" : "0";
                     i.addEventListener("input", () => {
                         determineBestAttempt(unit, c);
                     });
@@ -213,34 +215,48 @@ function getStudentClassName($id)
 
 
         function updateEvaluationTable() {
-            evaluationTableBody.innerHTML = ""; // TO DO: Bei Änderungen Zeilen tauschen und anpassen statt Tabelle neu zu generieren
+            let currentResults = [];
 
+            // Bisherigen Stand abfragen
             attemptRows.forEach((row, index) => {
-                let newRow = document.createElement("tr");
-
-                let placeCell = document.createElement("td");
-                placeCell.textContent = index + 1;
-                newRow.appendChild(placeCell);
-
-                let lastNameCell = row.querySelector("td:nth-child(3)").cloneNode(true);
-                newRow.appendChild(lastNameCell);
-
-                let firstNameCell = row.querySelector("td:nth-child(2)").cloneNode(true);
-                newRow.appendChild(firstNameCell);
-
-                let classCell = row.querySelector("td:nth-child(4)").cloneNode(true);
-                newRow.appendChild(classCell);
-
-                let resultCell = document.createElement("td");
                 let bestAttempt = row.querySelector(".best-attempt");
-                resultCell.textContent = bestAttempt ? bestAttempt.value : "";
-                newRow.appendChild(resultCell);
+                let result = bestAttempt ? bestAttempt.value : "";
+                currentResults.push({
+                    index: index,
+                    result: result,
+                    lastName: row.querySelector("td:nth-child(2)").textContent,
+                    firstName: row.querySelector("td:nth-child(3)").textContent,
+                    className: row.querySelector("td:nth-child(4)").textContent
+                });
+            });
 
-                let pointsCell = document.createElement("td");
-                pointsCell.textContent = pointsDistribution[index] || 0; // Punkte basierend auf der Platzierung zuweisen
-                newRow.appendChild(pointsCell);
+            // Schüler nach Ergebnis neu sortieren
+            currentResults.sort((a, b) => {
+                if (unit === "z") {
+                    let [aMinutes, aSeconds] = a.result.split(":").map(Number);
+                    let [bMinutes, bSeconds] = b.result.split(":").map(Number);
+                    return (aMinutes - bMinutes) || (aSeconds - bSeconds);
+                } else {
+                    return parseFloat(b.result) - parseFloat(a.result);
+                }
+            });
 
-                evaluationTableBody.appendChild(newRow);
+            // Tabelle aktualisieren
+            currentResults.forEach((result, index) => {
+                let row = evaluationTableBody.querySelector(`tr:nth-child(${index + 1})`);
+                if (!row) {
+                    row = document.createElement("tr");
+                    evaluationTableBody.appendChild(row);
+                }
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${result.lastName}</td>
+                    <td>${result.firstName}</td>
+                    <td>${result.className}</td>
+                    <td>${result.result}</td>
+                    <td>${pointsDistribution[index] || 0}</td>
+                `;
             });
         }
     </script>
