@@ -175,10 +175,6 @@ class ClassController implements IController
      */
     public function create(object $model): array
     {
-        if (!$model instanceof ClassModel) {
-            throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
-        }
-
         $data = [
             'name' => $model->getName(),
             'students' => $model->getStudents(),
@@ -202,10 +198,6 @@ class ClassController implements IController
      */
     public function update(object $model): array
     {
-        if (!$model instanceof ClassModel) {
-            throw new \InvalidArgumentException('Model must be an instance of ClassModel.');
-        }
-
         $data = [
             'name' => $model->getName(),
             'students' => $model->getStudents(),
@@ -285,7 +277,7 @@ class ClassController implements IController
 
     /**
      * @param string $endpoint
-     * @param string $method
+     * @param string $method => die HTTP-Methode
      * @param array $data
      * @return array
      */

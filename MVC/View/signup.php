@@ -73,6 +73,7 @@ include 'nav.php';
                     <span id="password-toggle" class="fa fa-fw fa-eye toggle-password-icon"></span>
                 </div>
 
+                <!-- Enthält die Passwort-Anforderungen -->
                 <div id="check-container" class="password-check-container hidden">
                     <div class="password-check-row">
                         <span id="uppercase-check" class="password-check-icon">
@@ -117,11 +118,8 @@ include 'nav.php';
             <span class="divider-text">Bereits registriert?</span>
         </div>
 
-        <div class="button-container">
+        <div class="flex-container">
             <button id="login-email" onclick="window.location.href = 'login.php'">Login E-Mail</button>
-            <button class="moodle-login" onclick="window.location.href = 'login.php'">
-                <img src="../../resources/moodle-logo.svg" alt="Moodle Logo">
-            </button>
         </div>
     </div>
 </body>

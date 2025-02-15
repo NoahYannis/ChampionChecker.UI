@@ -49,7 +49,6 @@ class TeacherController implements IController
                 additionalInfo: $data['additionalInfo'] ?? null
             );
 
-            // Lehrer im Cache speichern
             $this->cachedTeachers[$id] = $teacher;
             return $teacher;
         }
@@ -99,10 +98,6 @@ class TeacherController implements IController
      */
     public function create(object $model): array
     {
-        if (!$model instanceof Teacher) {
-            throw new \InvalidArgumentException('Model must be an instance of Teacher.');
-        }
-
         $classes = $model->getClasses() ?? [];
         $classDictionary = [];
         foreach ($classes as $id => $name) {
@@ -128,10 +123,6 @@ class TeacherController implements IController
      */
     public function update(object $model): array
     {
-        if (!$model instanceof Teacher) {
-            throw new \InvalidArgumentException('Model must be an instance of Teacher.');
-        }
-
         $classes = $model->getClasses() ?? [];
         $classDictionary = [];
         foreach ($classes as $id => $name) {

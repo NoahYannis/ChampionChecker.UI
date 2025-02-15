@@ -1,4 +1,6 @@
 <?php
+// Manuelles Anlegen von Lehrkräften durch Eingabe aller notwendigen Daten.
+
 require '../../vendor/autoload.php';
 session_start();
 

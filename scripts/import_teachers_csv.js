@@ -1,3 +1,5 @@
+// Skript, dass bei Auswahl von "CSV-Import" in add_teachers_manual.php eingebunden wird.
+
 (function () {
   const fileInput = document.getElementById("fileToUpload");
   const submitButton = document.getElementById("submitButton");

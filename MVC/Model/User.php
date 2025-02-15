@@ -4,7 +4,7 @@ namespace MVC\Model;
 
 class User
 {
-    // Wird von der API gesetzt und abgeholt.
+    // Wird von der API abgefragt.
     private string $username;
 
     public function __construct(

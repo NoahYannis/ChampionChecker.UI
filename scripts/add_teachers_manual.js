@@ -1,3 +1,5 @@
+// Skript, dass bei Auswahl von "Manuell Hinzufügen" in add_teachers_manual.php eingebunden wird.
+
 (function () {
   const participationToggle = document.getElementById("participationToggle");
   const participationToggleLabel = participationToggle.parentNode;

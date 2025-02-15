@@ -1,4 +1,5 @@
 <?php
+// Prüft, ob ein Klassenergebnis einer Klasse bei einer Station bereits existiert.
 
 require_once '../vendor/autoload.php';
 

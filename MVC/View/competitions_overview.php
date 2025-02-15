@@ -1,4 +1,5 @@
 <?php
+// Stationsverwaltung, in der Stationen angezeigt oder bearbeitet werden können.
 
 use MVC\Controller\UserController;
 use MVC\Model\Role;

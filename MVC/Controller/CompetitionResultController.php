@@ -11,7 +11,6 @@ use RuntimeException;
  */
 class CompetitionResultController implements IController
 {
-
     private string $apiUrl;
 
     public function __construct()
@@ -64,10 +63,6 @@ class CompetitionResultController implements IController
      */
     public function create(object $model): array
     {
-        if (!$model instanceof CompetitionResult) {
-            throw new \InvalidArgumentException('Model must be an instance of CompetitionResult.');
-        }
-
         $data = [
             'pointsAchieved' => $model->getPointsAchieved(),
             'competitionId' => $model->getCompetitionId(),
@@ -91,10 +86,6 @@ class CompetitionResultController implements IController
      */
     public function update(object $model): array
     {
-        if (!$model instanceof CompetitionResult) {
-            throw new \InvalidArgumentException('Model must be an instance of CompetitionResult.');
-        }
-
         $data = [
             'pointsAchieved' => $model->getPointsAchieved(),
             'competitionId' => $model->getCompetitionId(),

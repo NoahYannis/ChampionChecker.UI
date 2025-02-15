@@ -1,4 +1,6 @@
 <?php
+// Übersicht über alle Schüler und deren Stationen. Schüler-Daten können hier bearbeiten und ihnen Stationen zugewiesen werden.
+
 require '../../vendor/autoload.php';
 session_start();
 

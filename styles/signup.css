@@ -65,27 +65,6 @@ input[type="submit"] {
   white-space: nowrap;
 }
 
-.button-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  width: 60%;
-}
-
-.moodle-login {
-  max-height: 3.125rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.3125rem 0.625rem;
-  background: transparent;
-  border: 3px solid var(--primary-color);
-
-  img {
-    max-height: 4rem;
-  }
-}
-
 input[type="password"].input-error {
   border-color: red;
 
@@ -137,16 +116,6 @@ input[type="password"].input-valid {
     border: 1px solid black;
   }
 
-  .moodle-login {
-    max-height: 2rem;
-    overflow: hidden;
-    padding-block: 0.625rem;
-
-    img {
-      height: 4rem;
-    }
-  }
-
   .toggle-password-icon {
     margin-top: 10px;
   }
@@ -189,11 +158,6 @@ input[type="password"].input-valid {
 }
 
 @media (min-width: 50rem) {
-  .button-container {
-    width: 30%;
-    padding-inline: 2.5rem;
-  }
-
   .divider-container {
     margin-top: 2.5rem;
   }
@@ -206,15 +170,6 @@ input[type="password"].input-valid {
   .password-mismatch {
     &.visible {
       font-size: 1rem;
-    }
-  }
-
-  .moodle-login {
-    max-height: 3.75rem;
-    font-size: 1.2rem;
-
-    img {
-      max-height: 5rem;
     }
   }
 }

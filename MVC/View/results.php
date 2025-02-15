@@ -1,4 +1,6 @@
 <?php
+// Hier werden die Klassen- und Einzelergebnisse angezeigt. Nutzer mit Admin-Status können Ergebnisse bearbeiten und löschen.
+
 require '../../vendor/autoload.php';
 session_start();
 

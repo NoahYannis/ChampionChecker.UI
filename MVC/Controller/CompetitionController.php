@@ -12,7 +12,6 @@ use MVC\Model\CompetitionStatus;
  */
 class CompetitionController implements IController
 {
-
     private static ?CompetitionController $instance = null;
     private array $cachedCompetitions = [];
     private string $apiUrl;
@@ -71,7 +70,6 @@ class CompetitionController implements IController
      */
     public function getAll(): array
     {
-
         if (!empty($this->cachedCompetitions)) {
             return $this->cachedCompetitions;
         }
@@ -100,7 +98,6 @@ class CompetitionController implements IController
 
         $_SESSION["overview_competitions"] = $competitions;
 
-        // Wettbewerbe Sortieren
         return $competitions;
     }
 
@@ -110,10 +107,6 @@ class CompetitionController implements IController
      */
     public function create(object $model): array
     {
-        if (!$model instanceof Competition) {
-            throw new \InvalidArgumentException('Model must be an instance of Competition.');
-        }
-
         $data = [
             'name' => $model->getName(),
             'classParticipants' => $model->getClassParticipants(),
@@ -135,10 +128,6 @@ class CompetitionController implements IController
      */
     public function update(object $model): array
     {
-        if (!$model instanceof Competition) {
-            throw new \InvalidArgumentException('Model must be an instance of Competition.');
-        }
-
         $data = [
             'id' => $model->getId(),
             'name' => $model->getName(),
@@ -216,7 +205,7 @@ class CompetitionController implements IController
 
     /**
      * @param string $endpoint
-     * @param string $method
+     * @param string $method => die HTTP-Methode
      * @param array $data
      * @return array
      */

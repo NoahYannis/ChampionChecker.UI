@@ -1,4 +1,5 @@
 	<?php
+	// Hier werden Klassenergebnisse hinzugefügt.
 
 	require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 

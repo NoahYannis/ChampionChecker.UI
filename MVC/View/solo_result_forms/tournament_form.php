@@ -1,3 +1,5 @@
+<!-- Das Formular für alle Turnier-Stationen (derzeit nur Tischtennis) -->
+
 <!DOCTYPE html>
 <html lang="en">
 

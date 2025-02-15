@@ -38,7 +38,7 @@ $profileImageUrl = $isAuthenticated
 </head>
 
 <body>
-    <aside class="sidebar">
+    <aside class="sidebar"> <!-- Wird bei kleinen Bildschirmen durch Klick auf das Hamburger-Menü angezeigt -->
         <div class="nav-items">
             <ul>
                 <li><a href="results.php">Ergebnisse</a></li>

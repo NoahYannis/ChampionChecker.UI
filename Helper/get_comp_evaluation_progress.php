@@ -1,4 +1,5 @@
 <?php
+// Liefert die Anzahl aller Stationen und die der ausgewerteten Stationen.
 
 require_once '../vendor/autoload.php';
 

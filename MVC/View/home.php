@@ -1,4 +1,6 @@
 <?php
+// Die Hauptseite der Anwendung. Hier wird der Auswertungsfortschritt, der aktuelle Zwischenstand und anstehende Stationen angezeigt.
+
 require '../../vendor/autoload.php';
 session_start();
 include 'nav.php';

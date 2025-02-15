@@ -4,8 +4,15 @@
   padding: 1rem;
 }
 
-input[type="password"] {
+#password {
   margin-bottom: 0;
+}
+
+input[type="submit"] {
+  height: 3rem;
+  width: 10rem;
+  padding-block: 0;
+  border: 1px solid black;
 }
 
 .forgot-password {
@@ -45,50 +52,11 @@ input[type="password"] {
   white-space: nowrap;
 }
 
-.button-container {
-  display: flex;
-  flex: 1;
-  justify-content: space-between;
-  align-items: center;
-  justify-content: center;
-  gap: 0.625rem;
-}
-
-.button-container input[type="submit"],
-.button-container .moodle-login {
-  flex-grow: 1;
-  width: 50%;
-  max-width: 50%;
-}
-
 .btn-register {
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
   border: 3px solid var(--primary-color);
   background-color: transparent;
-}
-
-.moodle-login {
-  max-height: 4rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.3125rem 0.625rem;
-  border: 1px solid black;
-  border-radius: 8px;
-  min-height: 2.5rem;
-
-  &:hover {
-    transform: translateY(2px);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    background-color: #d8b77a;
-  }
-
-  img {
-    width: 80%;
-    max-width: 100%;
-    object-fit: contain;
-  }
 }
 
 .password-container {
@@ -114,7 +82,7 @@ input[type="password"] {
   input[type="password"],
   input[type="submit"] {
     padding: 0.3125rem;
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
 
   input[type="submit"] {
@@ -123,16 +91,20 @@ input[type="password"] {
     border: 1px solid black;
   }
 
-  .moodle-login {
-    max-height: 3rem;
-  }
-
   .toggle-password-icon {
     margin-top: 0.625rem;
   }
 }
 
 @media screen and (min-width: 50rem) {
+  input[type="submit"] {
+    width: 20rem;
+    height: 3rem; /* Höhe festlegen */
+    line-height: 3rem; /* Gleicher Wert wie height */
+    text-align: center; /* Zentriert den Text horizontal */
+    border: 1px solid black;
+  }
+
   .divider-container {
     margin-top: 2.5rem;
     width: 50%;
@@ -151,14 +123,4 @@ input[type="password"] {
   .btn-register {
     margin-top: 2rem;
   }
-
-  .moodle-login {
-    max-height: 3.75rem;
-    font-size: 1.2rem;
-
-    img {
-      max-height: 5rem;
-    }
-  }
 }
-

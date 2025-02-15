@@ -1,3 +1,5 @@
+# Docker-Compose Datei, die die aktuelle Version des ChampionChecker.UI Repos baut. Änderungen an Projektdatein werden nicht in den Container übernommen.
+
 name: ChampionChecker.UI
 services:
   xampp:

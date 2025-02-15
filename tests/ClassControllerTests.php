@@ -1,4 +1,5 @@
 <?php
+// Derzeit nicht in Verwendung.
 
 require 'vendor/autoload.php';
 

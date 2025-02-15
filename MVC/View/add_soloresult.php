@@ -1,4 +1,5 @@
 <?php
+// Hier werden Einzelergebnisse angelegt. Nach Auswahl einer Station aus dem Select wird ein weiteres Formular für die Auswertung eingebunden.
 
 require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 

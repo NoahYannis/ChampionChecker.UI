@@ -154,6 +154,7 @@ class UserController
     }
 
 
+    // Ermöglicht es dem Nutzer, sein Passwort durch die Eingabe des Reset-Tokens aus der Passwort-vergessen-Email zurückzusetzen
     public function resetPassword(string $email, string $token, string $newPassword): array
     {
         $data = [
@@ -177,6 +178,8 @@ class UserController
         }
     }
 
+
+    // Nutzerinitialien im LocalStorage setzen, damit sie für das Profilbild in der Navbar verwendet werden können.
     public function extractUserInitials($apiUsername): void
     {
         $parts = explode('.', $apiUsername);
@@ -240,7 +243,7 @@ class UserController
             ],
             CURLOPT_USERAGENT => 'PHP API Request',
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => false, // Server SSL-Zertifikat nicht prüfen (nur für Entwicklung)
+            CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
         $response = curl_exec($curl);
@@ -257,7 +260,7 @@ class UserController
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $responseBody = json_decode($body, true);
 
-        // Cookies aus den Headern extrahieren und setzen
+        // Cookie aus dem Header extrahieren und speichern
         preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $header, $matches);
         foreach ($matches[1] as $cookieStr) {
             [$cookieName, $cookieValue] = explode('=', trim($cookieStr), 2);
@@ -274,8 +277,8 @@ class UserController
         return [
             'statusCode' => $statusCode,
             'response' => $responseBody,
-            // Bei erfolgreicher Anfrage enthält der Body den Nutzernamen,
-            // bei Fehlern die Fehlermeldung, die über response['errors'][0]['description']
+            // Bei erfolgreicher Anfrage enthält der Body den Nutzernamen.
+            // Bei Fehlern die Fehlermeldung, die über response['errors'][0]['description']
             // abgerufen werden kann
         ];
     }

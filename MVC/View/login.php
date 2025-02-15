@@ -61,11 +61,8 @@ include 'nav.php';
                 </div>
                 <a href="forgot_password.php" class="forgot-password">Passwort vergessen?</a>
 
-                <div class="button-container">
+                <div class="flex-container">
                     <input type="submit" value="Login">
-                    <button class="moodle-login" onclick="window.location.href = 'login.php'">
-                        <img src="../../resources/moodle-logo.svg" alt="Moodle Logo">
-                    </button>
                 </div>
             </fieldset>
         </form>

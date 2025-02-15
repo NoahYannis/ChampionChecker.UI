@@ -48,7 +48,6 @@ class StudentController implements IController
                 competitionResults: $data['competitionResults'] ?? []
             );
 
-            // Student im Cache speichern
             $_SESSION["students"][$id] = $studentModel;
             return $studentModel;
         }
@@ -111,7 +110,6 @@ class StudentController implements IController
             );
             $students[] = $studentModel;
 
-            // Student im Cache speichern
             $this->cachedStudents[$item['id']] = $studentModel;
         }
         return $students;

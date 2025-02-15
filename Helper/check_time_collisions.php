@@ -1,6 +1,5 @@
 <?php
-
-// Prüft den Zeitplan aller Schüler auf zeitliche Konflikte
+// Prüft die Stationen aller Schüler auf zeitliche Konflikte. Falls welche bestehen werden die betroffenen Stationen zurückgegeben
 
 require_once '../vendor/autoload.php';
 
