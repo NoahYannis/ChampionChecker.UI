@@ -102,7 +102,7 @@ include 'nav.php';
 
 	<script>
 		let compSelect = document.getElementById("competitions");
-		let submitStationButton = document.getElementById("submit-station");
+		let submitButton = document.getElementById("submit-station");
 		let resultForm = document.getElementById("result-form");
 		let competitionInfoTable = document.getElementById("info-table");
 		let separator = document.getElementById("horizontal-separator");
@@ -113,6 +113,8 @@ include 'nav.php';
 			loadResultFormView(mode);
 			updateCompetitionInfo(selectedOption);
 		});
+
+		submitButton.addEventListener("click", () => submitStationResults());
 
 		function loadResultFormView(mode) {
 			let url = mode === "tournament" ?
@@ -129,7 +131,7 @@ include 'nav.php';
 				.then(response => response.text())
 				.then(html => {
 					resultForm.innerHTML = html;
-					submitStationButton.classList.remove("hidden");
+					submitButton.classList.remove("hidden");
 					const formScript = resultForm.querySelector("script");
 					eval(formScript.textContent);
 				})
@@ -152,6 +154,14 @@ include 'nav.php';
 			document.getElementById("comp-participants").innerHTML = participantsHTML;
 			document.getElementById("competition-info-section").classList.remove("hidden");
 			separator.classList.remove("hidden");
+		}
+
+		function submitStationResults() {
+			if (!confirm("Bitte bestätigen Sie die Vollständigkeit der Ergebnisse.")) {
+				return;
+			}
+
+			// Ergebnisse speichern.
 		}
 	</script>
 </body>
