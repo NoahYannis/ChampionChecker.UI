@@ -11,9 +11,9 @@ use MVC\Controller\CompetitionController;
 use MVC\Model\CompetitionResult;
 
 
-$classController = new ClassController();
+$classController = ClassController::getInstance();
 
-/**
+/** Gibt alle Klassenergebnisse zurück
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
  * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
  */
@@ -21,12 +21,17 @@ function loadCompetitionResults($cacheDuration = 300): array
 {
     if (isset($_SESSION['competitionResults']) && isset($_SESSION['competitionResultsTimestamp'])) {
         if ((time() - $_SESSION['competitionResultsTimestamp']) < $cacheDuration) {
-            return $_SESSION['competitionResults'];
+            return array_filter($_SESSION['competitionResults'], function ($result) {
+                return $result->getClassId() !== null;
+            });
         }
     }
 
-    $competitionResultController = new CompetitionResultController();
-    $competitionResults = $competitionResultController->getAll();
+    $competitionResults = CompetitionResultController::getInstance()->getAll();
+
+    $competitionResults = array_filter($competitionResults, function ($result) {
+        return $result->getClassId() !== null; 
+    });
 
     $_SESSION['competitionResults'] = $competitionResults;
     $_SESSION['competitionResultsTimestamp'] = time();

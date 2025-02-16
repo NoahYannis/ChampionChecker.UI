@@ -53,7 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 	}
 
 	if ($createSuccess) {
-		// TODO: Session-Cache aktualisieren
+		unset($_SESSION['competitionResults']);
+		unset($_SESSION['results_competitionResults']);
 	}
 
 	$response = [

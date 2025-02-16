@@ -63,24 +63,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 
 $classController = new ClassController();
 
-/**
+/** Gibt alle Klassen-Stationsergebnisse zurück. Als nächster Schritt sollen hier ebenfalls Schüler-Ergebnisse für Admin und Lehrkräfte angezeigt werden.
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
  * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
  */
 function loadCompetitionResults($cacheDuration = 300): array
 {
-    // Gecachte Daten für die Dauer des Cache zurückgeben.
     if (isset($_SESSION['results_competitionResults']) && isset($_SESSION['results_competitionResultsTimestamp'])) {
         if ((time() - $_SESSION['results_competitionResultsTimestamp']) < $cacheDuration) {
-            return $_SESSION['results_competitionResults'];
+            return array_filter($_SESSION['results_competitionResults'], fn($result) => $result->getClassId() !== null);
         }
     }
 
-    // Daten aus der DB laden und im Cache speichern
-    $competitionResultController = new CompetitionResultController();
-    $competitionResults = $competitionResultController->getAll();
+    $competitionResults = CompetitionResultController::getInstance()->getAll();
+    $competitionResults = array_filter($competitionResults, fn($result) => $result->getClassId() !== null);
 
-    // Ergebnisse und Zeitstempel in der Session speichern
     $_SESSION['results_competitionResults'] = $competitionResults;
     $_SESSION['results_competitionResultsTimestamp'] = time();
 
