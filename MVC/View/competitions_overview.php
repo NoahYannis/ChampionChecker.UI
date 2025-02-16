@@ -188,12 +188,6 @@ include 'nav.php';
     <div id="result-message" class="result-message hidden"></div>
     <div id="timestamp-container" class="timestamp-container"></div>
     <div class="button-container">
-
-        <?php if ($isAdmin): ?>
-            <button class="circle-button add-button" id="" onclick="window.location.href='#'">
-                <i class="fas fa-plus"></i>
-            </button>
-        <?php endif; ?>
         <button class="circle-button edit-button" id="edit-button">
             <i class="fas fa-pencil-alt"></i>
         </button>
@@ -216,7 +210,6 @@ include 'nav.php';
         const editButton = document.getElementById("edit-button");
         const editButtonIcon = document.querySelector(".edit-button i");
         const cancelButton = document.querySelector(".cancel-button");
-        const addButton = document.querySelector(".add-button");
         const spinner = document.getElementById('spinner');
         const statuses = {
             Geplant: 0,
@@ -246,9 +239,6 @@ include 'nav.php';
             spinner.style.display = "block";
             editButton.disabled = true;
 
-            if (isAdmin)
-                addButton.disabled = true;
-
             try {
                 const response = await fetch('competitions_overview.php', {
                         method: 'GET',
@@ -262,9 +252,6 @@ include 'nav.php';
             } finally {
                 spinner.style.display = "none";
                 editButton.disabled = false;
-
-                if (isAdmin)
-                    addButton.disabled = false;
             }
         }
 
@@ -380,22 +367,8 @@ include 'nav.php';
         }
 
         async function enterEditState() {
-            let deleteHeader;
-            if (isAdmin) {
-                deleteHeader = document.createElement("th");
-            }
-
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
-
-                if (isAdmin) {
-                    let deleteColumn = document.createElement("td");
-                    deleteColumn.innerHTML = `
-                    <button class="circle-button delete-button">
-                        <i class="fas fa-trash"></i>
-                    </button>`;
-                    row.appendChild(deleteColumn);
-                }
 
                 let name = row.cells[0].innerText;
                 let date = row.cells[1].innerText;
@@ -475,21 +448,7 @@ include 'nav.php';
                 cells[6].innerHTML = ""; // Entfernt die Anzeige des bisherigen Status
                 cells[6].appendChild(statusSelect);
                 cells[7].innerHTML = `<input type="text" value="${additionalInfo}">`;
-
-                if (isAdmin) {
-                    let deleteButton = row.querySelector('.delete-button');
-                    deleteButton.addEventListener('click', () => {
-                        const confirmation = confirm('Sind Sie sicher, dass Sie diese Station löschen möchten?');
-                        if (confirmation) {
-                            deleteCompetition(row.cells[0].dataset.compId, row.rowIndex);
-                        }
-                    });
-                }
             });
-
-            if (isAdmin) {
-                headerRow.appendChild(deleteHeader);
-            }
         }
 
         function exitEditState(wasCanceled = false) {
@@ -573,50 +532,12 @@ include 'nav.php';
             });
 
             storedValues = [];
-
-            // Löschen-Spalte & -Knöpfe entfernen.
-            if (isAdmin) {
-                headerRow.querySelector("th:last-child").remove();
-                document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
-            }
-        }
-
-        async function deleteCompetition(compId, rowIndex) {
-            if (!isAdmin)
-                return;
-
-            spinner.style.display = 'inline-block';
-            editButton.disabled = true;
-
-            try {
-                const response = await fetch(`competitions_overview?compId=${compId}`, {
-                    method: 'DELETE',
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    const row = table.rows[rowIndex];
-                    if (row) {
-                        row.remove();
-                        storedValues.splice(rowIndex, 1);
-                    }
-                }
-
-                showResultMessage(data.message, data.success);
-            } catch (error) {
-                console.error('Error:', error);
-            } finally {
-                spinner.style.display = 'none';
-                editButton.disabled = false;
-            }
         }
 
         async function saveChangedCompetitions(changedCompetitions) {
             if (changedCompetitions.length === 0) {
                 return;
             }
-
-            // TODO: Validierung
 
             const compJSON = JSON.stringify(changedCompetitions);
             spinner.style.display = 'inline-block';
@@ -647,10 +568,9 @@ include 'nav.php';
             }
 
             let cells = row.getElementsByTagName("td");
-            let columnLength = isAdmin ? cells.length - 1 : cells.length; // Delete-Zelle im Fall von Admin rausrechnen.
 
             // Kopfzeile überspringen
-            for (let i = 0; i < columnLength; i++) {
+            for (let i = 0; i < cells.length; i++) {
 
                 let currentValue =
                     (cells[i].querySelector('input')?.value) ||
@@ -694,7 +614,7 @@ include 'nav.php';
             if (isEditing) {
                 return;
             }
-            
+
             let table = document.getElementById("comp-table");
             let tbody = table.getElementsByTagName("tbody")[0];
             let rows = Array.from(tbody.getElementsByTagName("tr"));
