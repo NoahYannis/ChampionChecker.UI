@@ -107,7 +107,7 @@ function getStudentClassName($id)
 
         let evaluationTableBody = document.querySelector("#evaluation-table tbody");
 
-        let Distribution = [7, 5, 4, 3, 2, 1];
+        let pointsDistribution = [7, 5, 4, 3, 2, 1];
         let unit = "p"; // Punkte
 
 
