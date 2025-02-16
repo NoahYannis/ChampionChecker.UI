@@ -11,6 +11,7 @@ use RuntimeException;
  */
 class CompetitionResultController implements IController
 {
+    private static ?CompetitionResultController $instance = null;
     private string $apiUrl;
 
     public function __construct()
@@ -19,6 +20,13 @@ class CompetitionResultController implements IController
         $this->apiUrl = $config['api_url'];
     }
 
+    public static function getInstance(): CompetitionResultController
+    {
+        if (self::$instance === null) {
+            self::$instance = new CompetitionResultController();
+        }
+        return self::$instance;
+    }
 
     /**
      * @param int $id

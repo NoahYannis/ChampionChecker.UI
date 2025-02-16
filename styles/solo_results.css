@@ -7,6 +7,15 @@
   }
 }
 
+#submit-station {
+  gap: 1rem;
+
+  .spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: white;
+  }
+}
+
 .horizontal-separator {
   min-width: 50%;
   margin-block: 3rem;

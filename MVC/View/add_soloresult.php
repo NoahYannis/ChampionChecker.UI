@@ -4,7 +4,9 @@
 require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 
 use MVC\Controller\CompetitionController;
+use MVC\Controller\CompetitionResultController;
 use MVC\Controller\UserController;
+use MVC\Model\CompetitionResult;
 
 session_start();
 
@@ -14,6 +16,53 @@ $userRole = UserController::getInstance()->getRole();
 if ($userRole->value < 2) {
 	header("Location: home.php");
 	exit();
+}
+
+// Stations-Auswertung
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+	$putData = file_get_contents('php://input');
+	$competitionResultController = CompetitionResultController::getInstance();
+
+	$compResData = json_decode($putData, true);
+
+	if (json_last_error() !== JSON_ERROR_NONE) {
+		$response['success'] = false;
+		$response['message'] = 'Ungültiges JSON erhalten.';
+		echo json_encode($response);
+		exit;
+	}
+
+	$resultsToCreate = [];
+
+	foreach ($compResData as $compRes) {
+		$comp = new CompetitionResult(
+			null,
+			$compRes["pointsAchieved"],
+			$compRes["compId"],
+			null, // Keine Klasse
+			$compRes["studentId"]
+		);
+		$resultsToCreate[] = $comp;
+	}
+
+	$createSuccess = true;
+
+	foreach ($resultsToCreate as $res) {
+		$result = $competitionResultController->create($res);
+		$createSuccess &= $result['success'] === true;
+	}
+
+	if ($createSuccess) {
+		// TODO: Session-Cache aktualisieren
+	}
+
+	$response = [
+		'success' => $createSuccess,
+		'message' => $createSuccess ? 'Die Station wurde erfolgreich ausgewertet' : 'Ein Fehler ist beim Auswerten der Station aufgetreten.'
+	];
+
+	echo json_encode($response);
+	exit;
 }
 
 
@@ -31,6 +80,7 @@ if (!isset($_SESSION['soloresult_competitions'])) {
 } else {
 	$soloCompetitions = $_SESSION['soloresult_competitions'];
 }
+
 
 include 'nav.php';
 ?>
@@ -58,6 +108,7 @@ include 'nav.php';
 			<option selected disabled value="default">Station auswählen:</option>
 			<?php foreach ($soloCompetitions as $comp): ?>
 				<option value="<?= htmlspecialchars($comp->getName()) ?>"
+					data-id="<?= htmlspecialchars($comp->getId()) ?>"
 					data-mode="<?= (stripos($comp->getName(), 'Tischtennis') !== false) ? 'tournament' : 'competition' ?>"
 					data-time="<?= htmlspecialchars($comp->getDate()->format('Y-m-d H:i:s')) ?>"
 					data-gender="<?= htmlspecialchars($comp->getIsMale() === true ? 'M' : ($comp->getIsMale() === false ? 'W' : 'N')) ?>"
@@ -98,8 +149,9 @@ include 'nav.php';
 
 	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
 
-	<button id="submit-station" class="submit-station hidden">Station abschließen</button>
-
+	<button id="submit-station" class="submit-station hidden">Station abschließen
+		<div class="spinner" id="spinner"></div>
+	</button>
 
 	<script>
 		let compSelect = document.getElementById("competitions");
@@ -115,7 +167,7 @@ include 'nav.php';
 			updateCompetitionInfo(selectedOption);
 		});
 
-		submitButton.addEventListener("click", () => submitStationResults());
+		submitButton.addEventListener("click", async () => await submitStationResults());
 
 		function loadResultFormView(mode) {
 			let url = mode === "tournament" ?
@@ -157,12 +209,49 @@ include 'nav.php';
 			separator.classList.remove("hidden");
 		}
 
-		function submitStationResults() {
+
+		async function submitStationResults() {
 			if (!confirm("Bitte bestätigen Sie die Vollständigkeit der Ergebnisse.")) {
 				return;
 			}
 
-			// Ergebnisse speichern.
+			let evaluationTableRows = document.querySelectorAll("#evaluation-table tbody tr");
+			let resultsToCreate = [];
+			let compId = compSelect.selectedOptions[0].dataset.id;
+
+			evaluationTableRows.forEach(row => {
+				let studentId = row.querySelector("td:first-child").dataset.id;
+				let pointsAchieved = row.querySelector("td:nth-child(6)").textContent;
+
+				resultsToCreate.push({
+					compId: compId,
+					studentId: studentId,
+					pointsAchieved: pointsAchieved
+				});
+			});
+
+			spinner.style.display = 'inline-block';
+
+			try {
+				const response = await fetch('add_soloresult.php', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(resultsToCreate)
+				});
+
+				const data = await response.json();
+				let message = data.success ?
+					"Die Station wurde erfolgreich ausgewertet." :
+					"Beim Auswerten der Station ist ein Fehler aufgetreten.";
+
+				alert(message);
+			} catch (error) {
+				console.error('Error:', error);
+			} finally {
+				spinner.style.display = 'none';
+			}
 		}
 	</script>
 </body>

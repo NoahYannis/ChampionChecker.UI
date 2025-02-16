@@ -224,6 +224,7 @@ function getStudentClassName($id)
                 currentResults.push({
                     index: index,
                     result: result,
+                    id: row.querySelector("td:first-child").dataset.id, // Schüler-ID
                     lastName: row.querySelector("td:nth-child(2)").textContent,
                     firstName: row.querySelector("td:nth-child(3)").textContent,
                     className: row.querySelector("td:nth-child(4)").textContent
@@ -250,7 +251,7 @@ function getStudentClassName($id)
                 }
 
                 row.innerHTML = `
-                    <td>${index + 1}</td>
+                    <td data-id="${result.id}">${index + 1}</td>
                     <td>${result.lastName}</td>
                     <td>${result.firstName}</td>
                     <td>${result.className}</td>
