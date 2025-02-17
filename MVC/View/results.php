@@ -115,7 +115,7 @@ function getCompetitionName($competitionId): string
 }
 
 
-function printCompetitionResult($competitionResults)
+function printCompetitionResult()
 {
     if (isset($_SESSION['results_competitionResultsTimestamp'])) {
         echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['results_competitionResultsTimestamp']) . "<br></p>";
@@ -216,7 +216,7 @@ include 'nav.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Ergebnisübersicht</title>
     <link rel="stylesheet" type="text/css" href="../../styles/base.css" />
     <link rel="stylesheet" type="text/css" href="../../styles/results.css" />
     <script src="https://cdn.jsdelivr.net/npm/less"></script>
@@ -229,7 +229,7 @@ include 'nav.php';
 
     <!-- Tabelle mit Punktzahlen -->
     <section>
-        <?php printCompetitionResult($competitionResults); ?>
+        <?php printCompetitionResult(); ?>
     </section>
 
     <script>
@@ -242,12 +242,18 @@ include 'nav.php';
         const editButton = document.getElementById("edit-button");
         const editButtonIcon = document.querySelector(".edit-button i");
         const cancelButton = document.getElementById("cancel-button");
-        const classResultTable = document.getElementById("results-table-classes");
-        const tbody = classResultTable.getElementsByTagName("tbody")[0];
-        const headerRow = classResultTable.getElementsByTagName("tr")[0];
-        const rows = Array.from(tbody.getElementsByTagName("tr"))
-        const spinner = document.getElementById('spinner');
 
+        const classResultTable = document.getElementById("results-table-classes");
+        const tbodyClasses = classResultTable.getElementsByTagName("tbody")[0];
+        const headerRowClasses = classResultTable.getElementsByTagName("tr")[0];
+        const rowsClasses = Array.from(tbodyClasses.getElementsByTagName("tr"))
+
+        const studentResultsTable = document.getElementById("results-table-students");
+        const tbodyStudents = studentResultsTable.getElementsByTagName("tbody")[0];
+        const headerRowStudents = studentResultsTable.getElementsByTagName("tr")[0];
+        const rowsStudents = Array.from(tbodyStudents.getElementsByTagName("tr"))
+
+        const spinner = document.getElementById('spinner');
 
         editButton.addEventListener('click', () => toggleEditState());
 
@@ -278,7 +284,8 @@ include 'nav.php';
 
 
         function enterEditState() {
-            let deleteHeader = document.createElement("th");
+            let deleteHeaderClasses = document.createElement("th");
+            let deleteHeaderStudents = document.createElement("th");
 
             pointsCells.forEach(cell => {
                 const currentPoints = cell.dataset.points;
@@ -303,7 +310,8 @@ include 'nav.php';
                 });
             });
 
-            headerRow.appendChild(deleteHeader);
+            headerRowClasses.appendChild(deleteHeaderClasses);
+            headerRowStudents.appendChild(deleteHeaderStudents);
         }
 
 
@@ -326,14 +334,14 @@ include 'nav.php';
                         changedScores.push(scoreData);
                     }
 
-
                     cell.innerHTML = `<span>${inputValue}</span>`;
                     cell.dataset.points = inputValue;
                 }
             });
 
             storedValues = [];
-            headerRow.querySelector("th:last-child").remove();
+            headerRowClasses.querySelector("th:last-child").remove();
+            headerRowStudents.querySelector("th:last-child").remove();
             document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
         }
 
@@ -349,7 +357,7 @@ include 'nav.php';
 
                 const data = await response.json();
                 if (data.success) {
-                    const row = classResultTable.rows[rowIndex];
+                    const row = classResultTable.rows[rowIndex]; // TODO: Anpassen auf Einzelergebnisse
                     if (row) {
                         row.remove();
                         pointsCells = document.querySelectorAll('td[data-points]');
@@ -368,6 +376,10 @@ include 'nav.php';
 
 
         function filterTable(columnIndex, tableId) {
+            if (isEditing) {
+                return;
+            }
+
             let table = document.getElementById(tableId);
             let tbody = table.getElementsByTagName("tbody")[0];
             let rows = Array.from(tbody.getElementsByTagName("tr"));
@@ -395,6 +407,7 @@ include 'nav.php';
 
 
         async function saveChangedScores(changedScores) {
+            console.log(changedScores);
             if (changedScores.length === 0) {
                 return;
             }
