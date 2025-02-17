@@ -141,9 +141,9 @@ function printCompetitionResult($competitionResults)
     echo "<table id='results-table-classes' class='table-style'>";
     echo "<thead>";
     echo "<tr>";
-    echo "<th onclick='filterTable(0)'>Station</th>";
-    echo "<th onclick='filterTable(1)'>Klasse</th>";
-    echo "<th onclick='filterTable(2)'>Punkte</th>";
+    echo "<th onclick='filterTable(0, \"results-table-classes\")'>Station</th>";
+    echo "<th onclick='filterTable(1, \"results-table-classes\")'>Klasse</th>";
+    echo "<th onclick='filterTable(2, \"results-table-classes\")'>Punkte</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
@@ -166,12 +166,12 @@ function printCompetitionResult($competitionResults)
     // Einzelergebnisse ab Rolle Lehrkraft sichtbar
     if (UserController::getInstance()->getRole()->value > 1) {
         echo "<h2>Schüler-Ergebnisse:</h2>";
-        echo "<table id='results-table-student' class='table-style'>";
+        echo "<table id='results-table-students' class='table-style'>";
         echo "<thead>";
         echo "<tr>";
-        echo "<th onclick='filterTable(0)'>Station</th>";
-        echo "<th onclick='filterTable(1)'>Schüler</th>";
-        echo "<th onclick='filterTable(2)'>Punkte</th>";
+        echo "<th onclick='filterTable(0, \"results-table-students\")'>Station</th>";
+        echo "<th onclick='filterTable(1, \"results-table-students\")'>Schüler</th>";
+        echo "<th onclick='filterTable(2, \"results-table-students\")'>Punkte</th>";
         echo "</tr>";
         echo "</thead>";
         echo "<tbody>";
@@ -367,8 +367,8 @@ include 'nav.php';
         }
 
 
-        function filterTable(columnIndex) {
-            let table = document.getElementById("results-table-classes");
+        function filterTable(columnIndex, tableId) {
+            let table = document.getElementById(tableId);
             let tbody = table.getElementsByTagName("tbody")[0];
             let rows = Array.from(tbody.getElementsByTagName("tr"));
 
@@ -434,7 +434,7 @@ include 'nav.php';
             return inputValue !== storedScore[1];
         }
 
-        
+
         function showResultMessage(message, isSuccess = true) {
             const resultMessage = document.getElementById('result-message');
             resultMessage.textContent = message;
