@@ -7,10 +7,10 @@ session_start();
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
+use MVC\Controller\StudentController;
 use MVC\Controller\UserController;
 use MVC\Model\CompetitionResult;
 use MVC\Model\Role;
-
 
 if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
     $changedScores = file_get_contents('php://input');
@@ -61,7 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 }
 
 
-$classController = new ClassController();
 
 /** Gibt alle Klassen-Stationsergebnisse zurück. Als nächster Schritt sollen hier ebenfalls Schüler-Ergebnisse für Admin und Lehrkräfte angezeigt werden.
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
@@ -69,16 +68,28 @@ $classController = new ClassController();
  */
 function loadCompetitionResults($cacheDuration = 300): array
 {
+    // Gecachte Daten für die Dauer des Cache zurückgeben.
     if (isset($_SESSION['results_competitionResults']) && isset($_SESSION['results_competitionResultsTimestamp'])) {
         if ((time() - $_SESSION['results_competitionResultsTimestamp']) < $cacheDuration) {
-            return array_filter($_SESSION['results_competitionResults'], fn($result) => $result->getClassId() !== null);
+            return $_SESSION['results_competitionResults'];
         }
     }
 
     $competitionResults = CompetitionResultController::getInstance()->getAll();
-    $competitionResults = array_filter($competitionResults, fn($result) => $result->getClassId() !== null);
 
-    $_SESSION['results_competitionResults'] = $competitionResults;
+    $classResults = [];
+    $studentResults = [];
+
+    foreach ($competitionResults as $result) {
+        if ($result->getClassId() !== null) {
+            $classResults[] = $result;
+        } else {
+            $studentResults[] = $result;
+        }
+    }
+
+    $_SESSION['results_competitionResults_class'] = $classResults;
+    $_SESSION['results_competitionResults_students'] = $studentResults;
     $_SESSION['results_competitionResultsTimestamp'] = time();
 
     return $competitionResults;
@@ -103,10 +114,9 @@ function getCompetitionName($competitionId): string
     return $compName;
 }
 
+
 function printCompetitionResult($competitionResults)
 {
-    global $classController;
-
     if (isset($_SESSION['results_competitionResultsTimestamp'])) {
         echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['results_competitionResultsTimestamp']) . "<br></p>";
     }
@@ -126,23 +136,61 @@ function printCompetitionResult($competitionResults)
         </div>';
     }
 
-    echo "<table id='results-table' class='table-style'>";
+    // Klassen-Ergebnisse
+    echo "<h2>Klassen-Ergebnisse:</h2>";
+    echo "<table id='results-table-classes' class='table-style'>";
     echo "<thead>";
     echo "<tr>";
-    echo "<th onclick='filterTable(0)'>Wettbewerb</th>";
+    echo "<th onclick='filterTable(0)'>Station</th>";
     echo "<th onclick='filterTable(1)'>Klasse</th>";
     echo "<th onclick='filterTable(2)'>Punkte</th>";
     echo "</tr>";
     echo "</thead>";
     echo "<tbody>";
 
-    foreach ($competitionResults as $result) {
+    $classResults = $_SESSION['results_competitionResults_class'] ?? [];
+
+    foreach ($classResults as $result) {
         echo "<tr>";
         echo "<td data-id=\"{$result->getId()}\">" . getCompetitionName(competitionId: $result->getCompetitionId()) . "</td>";
-        echo "<td>" . $classController->getClassName($result->getClassId()) . "</td>";
+        echo "<td>" . ClassController::getInstance()->getClassName($result->getClassId()) . "</td>";
         $pointsAchieved = htmlspecialchars($result->getPointsAchieved());
         echo "<td data-points=\"$pointsAchieved\"><span class=\"td-content\">$pointsAchieved</span></td>";
         echo "</tr>";
+    }
+
+    echo "</tbody>";
+    echo "</table>";
+
+
+    // Einzelergebnisse ab Rolle Lehrkraft sichtbar
+    if (UserController::getInstance()->getRole()->value > 1) {
+        echo "<h2>Schüler-Ergebnisse:</h2>";
+        echo "<table id='results-table-student' class='table-style'>";
+        echo "<thead>";
+        echo "<tr>";
+        echo "<th onclick='filterTable(0)'>Station</th>";
+        echo "<th onclick='filterTable(1)'>Schüler</th>";
+        echo "<th onclick='filterTable(2)'>Punkte</th>";
+        echo "</tr>";
+        echo "</thead>";
+        echo "<tbody>";
+
+        $studentResults = $_SESSION['results_competitionResults_students'] ?? [];
+
+        foreach ($studentResults as $result) {
+            echo "<tr>";
+            echo "<td data-id=\"{$result->getId()}\">" . getCompetitionName(competitionId: $result->getCompetitionId()) . "</td>";
+            $student = StudentController::getInstance()->getById($result->getStudentId());
+            $studentName = $student ? "{$student->getFirstName()} {$student->getLastName()}" : "???";
+            echo "<td>" . htmlspecialchars($studentName) . "</td>";
+            $pointsAchieved = htmlspecialchars($result->getPointsAchieved());
+            echo "<td data-points=\"$pointsAchieved\"><span class=\"td-content\">$pointsAchieved</span></td>";
+            echo "</tr>";
+        }
+
+        echo "</tbody>";
+        echo "</table>";
     }
 
     echo "</tbody>";
@@ -162,8 +210,6 @@ usort($competitionResults, function ($resultA, $resultB) {
 include 'nav.php';
 ?>
 
-<!-- TODO: Filtern, mehr Infos anzeigen -->
-
 <!DOCTYPE html>
 <html lang="de">
 
@@ -181,7 +227,7 @@ include 'nav.php';
         <h1>Ergebnisübersicht</h1>
     </header>
 
-    <!-- Tabelle mit Klassenpunktzahlen -->
+    <!-- Tabelle mit Punktzahlen -->
     <section>
         <?php printCompetitionResult($competitionResults); ?>
     </section>
@@ -196,9 +242,9 @@ include 'nav.php';
         const editButton = document.getElementById("edit-button");
         const editButtonIcon = document.querySelector(".edit-button i");
         const cancelButton = document.getElementById("cancel-button");
-        const table = document.getElementById("results-table");
-        const tbody = table.getElementsByTagName("tbody")[0];
-        const headerRow = table.getElementsByTagName("tr")[0];
+        const classResultTable = document.getElementById("results-table-classes");
+        const tbody = classResultTable.getElementsByTagName("tbody")[0];
+        const headerRow = classResultTable.getElementsByTagName("tr")[0];
         const rows = Array.from(tbody.getElementsByTagName("tr"))
         const spinner = document.getElementById('spinner');
 
@@ -211,6 +257,7 @@ include 'nav.php';
                 toggleEditState(true);
             }
         })
+
 
         async function toggleEditState(wasCanceled = false) {
             isEditing = !isEditing;
@@ -228,6 +275,7 @@ include 'nav.php';
                 changedScores = [];
             }
         }
+
 
         function enterEditState() {
             let deleteHeader = document.createElement("th");
@@ -257,6 +305,7 @@ include 'nav.php';
 
             headerRow.appendChild(deleteHeader);
         }
+
 
         function exitEditState(wasCanceled = false) {
             pointsCells.forEach(cell => {
@@ -288,6 +337,7 @@ include 'nav.php';
             document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
         }
 
+
         async function deleteCompResult(compResId, rowIndex) {
             spinner.style.display = 'inline-block';
             editButton.disabled = true;
@@ -299,7 +349,7 @@ include 'nav.php';
 
                 const data = await response.json();
                 if (data.success) {
-                    const row = table.rows[rowIndex];
+                    const row = classResultTable.rows[rowIndex];
                     if (row) {
                         row.remove();
                         pointsCells = document.querySelectorAll('td[data-points]');
@@ -316,8 +366,9 @@ include 'nav.php';
             }
         }
 
+
         function filterTable(columnIndex) {
-            let table = document.getElementById("results-table");
+            let table = document.getElementById("results-table-classes");
             let tbody = table.getElementsByTagName("tbody")[0];
             let rows = Array.from(tbody.getElementsByTagName("tr"));
 
@@ -341,6 +392,7 @@ include 'nav.php';
 
             rows.forEach(row => tbody.appendChild(row));
         }
+
 
         async function saveChangedScores(changedScores) {
             if (changedScores.length === 0) {
@@ -376,11 +428,13 @@ include 'nav.php';
             }
         }
 
+
         // Überprüft, ob eine Punktzahl bearbeitet wurde. storedScore[0] speichert die Wettbewerbs-ID, storedScore[1] den gecachten Wert dazu.
         function checkIfScoreWasModified(inputValue, storedScore) {
             return inputValue !== storedScore[1];
         }
 
+        
         function showResultMessage(message, isSuccess = true) {
             const resultMessage = document.getElementById('result-message');
             resultMessage.textContent = message;

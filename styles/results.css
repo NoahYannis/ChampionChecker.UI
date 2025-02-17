@@ -14,3 +14,9 @@
 .edit-input {
   max-width: 4.375rem;
 }
+
+h2 {
+  text-align: center;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+}
