@@ -66,8 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 }
 
 
-
-/** Gibt alle Klassen-Stationsergebnisse zurück. Als nächster Schritt sollen hier ebenfalls Schüler-Ergebnisse für Admin und Lehrkräfte angezeigt werden.
+/** Gibt alle Stationsergebnisse zurück. 
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
  * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
  */
@@ -177,7 +176,8 @@ function printCompetitionResult()
         echo "<tr>";
         echo "<th onclick='filterTable(0, \"results-table-students\")'>Station</th>";
         echo "<th onclick='filterTable(1, \"results-table-students\")'>Schüler</th>";
-        echo "<th onclick='filterTable(2, \"results-table-students\")'>Punkte</th>";
+        echo "<th onclick='filterTable(2, \"results-table-students\")'>Klasse</th>";
+        echo "<th onclick='filterTable(3, \"results-table-students\")'>Punkte</th>";
         echo "</tr>";
         echo "</thead>";
         echo "<tbody>";
@@ -190,6 +190,7 @@ function printCompetitionResult()
             $student = StudentController::getInstance()->getById($result->getStudentId());
             $studentName = $student ? "{$student->getFirstName()} {$student->getLastName()}" : "???";
             echo "<td>" . htmlspecialchars($studentName) . "</td>";
+            echo "<td>" . ClassController::getInstance()->getClassName($student->getClassId()) . "</td>";
             $pointsAchieved = htmlspecialchars($result->getPointsAchieved());
             echo "<td data-points=\"$pointsAchieved\"><span class=\"td-content\">$pointsAchieved</span></td>";
             echo "</tr>";

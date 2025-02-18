@@ -8,12 +8,13 @@ include 'nav.php';
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\ClassController;
 use MVC\Controller\CompetitionController;
+use MVC\Controller\StudentController;
 use MVC\Model\CompetitionResult;
 
 
 $classController = ClassController::getInstance();
 
-/** Gibt alle Klassenergebnisse zurück
+/** Gibt alle Klassen- und Einzelergebnisse zurück.
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
  * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
  */
@@ -21,30 +22,31 @@ function loadCompetitionResults($cacheDuration = 300): array
 {
     if (isset($_SESSION['competitionResults']) && isset($_SESSION['competitionResultsTimestamp'])) {
         if ((time() - $_SESSION['competitionResultsTimestamp']) < $cacheDuration) {
-            return array_filter($_SESSION['competitionResults'], function ($result) {
-                return $result->getClassId() !== null;
-            });
+            return $_SESSION['competitionResults'];
         }
     }
 
     $competitionResults = CompetitionResultController::getInstance()->getAll();
-
-    $competitionResults = array_filter($competitionResults, function ($result) {
-        return $result->getClassId() !== null; 
-    });
 
     $_SESSION['competitionResults'] = $competitionResults;
     $_SESSION['competitionResultsTimestamp'] = time();
 
     return $competitionResults;
 }
-
 function aggregatePointsByClass($competitionResults)
 {
     $pointsByClass = [];
 
     foreach ($competitionResults as $result) {
         $classId = $result->getClassId();
+
+        if ($classId == null) // Einzelergebnis, daher Schülerklasse ermitteln
+        {
+            $student = StudentController::getInstance()->getById($result->getStudentId());
+            $classId = $student->getClassId();
+        }
+
+
         $points = $result->getPointsAchieved();
 
         // Punkte zur Gesamtpunktzahl für die Klasse addieren
