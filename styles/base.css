@@ -474,7 +474,7 @@ th {
   cursor: not-allowed;
 }
 
-@media (max-width: 37.5rem) {
+@media (width < 37.5rem) {
   .table-style {
     margin: 0.625rem auto;
     width: 100%;
@@ -507,5 +507,9 @@ th {
     padding-block: 0.3125rem;
     height: 2.5rem;
     width: 2.5rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
   }
 }
