@@ -151,7 +151,7 @@ include 'nav.php';
 	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
 
 	<button id="submit-station" class="submit-station hidden">Station abschließen
-		<div class="spinner" id="spinner"></div>
+		<div id="submit-spinner" class="spinner hidden"></div>
 	</button>
 
 	<script>
@@ -160,6 +160,7 @@ include 'nav.php';
 		let resultForm = document.getElementById("result-form");
 		let competitionInfoTable = document.getElementById("info-table");
 		let separator = document.getElementById("horizontal-separator");
+		let submitSpinner = document.getElementById("submit-spinner");
 
 		compSelect.addEventListener("change", (event) => {
 			const selectedOption = event.target.selectedOptions[0];
@@ -231,7 +232,7 @@ include 'nav.php';
 				});
 			});
 
-			spinner.style.display = 'inline-block';
+			submitSpinner.style.display = 'inline-block';
 
 			try {
 				const response = await fetch('add_soloresult.php', {
@@ -251,7 +252,7 @@ include 'nav.php';
 			} catch (error) {
 				console.error('Error:', error);
 			} finally {
-				spinner.style.display = 'none';
+				submitSpinner.style.display = 'none';
 			}
 		}
 	</script>
