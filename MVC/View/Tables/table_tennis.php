@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="\ChampionChecker.UI\styles\CustomCombobox\CustomCombobox.css">
     <style>
         table {
             width: 100%;
@@ -44,7 +45,7 @@
 
 <?php
 $numPlayers = 5;
-
+$players = ['Player1', 'Player2', 'Player3', 'Player4', 'Player5'];
 // Matches data
 $matches = [
     ['player1' => 2, 'player2' => 1],
@@ -64,40 +65,62 @@ $matches = [
     <table class="turnier-table">
         <caption>Tischtennis Turnier (Weiblich) bis 11 P.; 2 P. Abstand; Jeder gegen Jeden</caption>
         <?php foreach ($matches as $index => $match): ?>
-            <tr class="match-row" data-player1="<?= $match['player1'] ?>" data-player2="<?= $match['player2'] ?>">
-                <td style="text-align: right;"><?= $match['player1'] ?></td>
-                <td><input type="text" style=" text-align: left;" name="player_<?= $match['player1'] ?>" required oninput="updateText(this, <?= $match['player1'] ?>)" /></td>
-                <td style="text-align: right;"><?= $match['player2'] ?></td>
-                <td><input type="text" style=" text-align: left;" name="player_<?= $match['player2'] ?>" required oninput="updateText(this, <?= $match['player2'] ?>)" /></td>
-                <td>
-                    <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
-                        <input type="number" class="points-player1" style="width: 50px; text-align: right;" maxlength="2" oninput="validateNumber(this)" />
-                        :
-                        <input type="number" class="points-player2" style="width: 50px; text-align: right;" maxlength="2" oninput="validateNumber(this)" />
-                 </div>
-              </td>
-            </tr>
-        <?php endforeach; ?>
+    <tr class="match-row" data-player1="<?= $match['player1'] ?>" data-player2="<?= $match['player2'] ?>">
+        <td style="text-align: right;"><?= $match['player1'] ?></td>
+        <td><input type="text" style="text-align: left;" name="player_<?= $match['player1'] ?>" required oninput="updateText(this, <?= $match['player1'] ?>)" /></td>
+        <td style="text-align: right;"><?= $match['player2'] ?></td>
+        <td><input type="text" style="text-align: left;" name="player_<?= $match['player2'] ?>" required oninput="updateText(this, <?= $match['player2'] ?>)" /></td>
+
+        <!-- Combobox for Player 1 -->
+        <td>
+            <div style="position: relative;">
+                <input type="text" class="player-combobox" name="player_<?= $match['player1'] ?>" required onchange="handleComboboxInput(this, '1', <?= $index ?>)" placeholder="Select or type Player 1" list="players-list-<?= $index ?>-1"/>
+                <datalist id="players-list-<?= $index ?>-1">
+                    <?php foreach ($players as $player): ?>
+                        <option value="<?= $player ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+            </div>
+        </td>
+
+        <!-- Combobox for Player 2 -->
+        <td>
+            <div style="position: relative;">
+                <input type="text" class="player-combobox" name="player_<?= $match['player2'] ?>" required onchange="handleComboboxInput(this, '2', <?= $index ?>)" placeholder="Select or type Player 2" list="players-list-<?= $index ?>-2"/>
+                <datalist id="players-list-<?= $index ?>-2">
+                    <?php foreach ($players as $player): ?>
+                        <option value="<?= $player ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+            </div>
+        </td>
+        <td>
+            <div style="display: flex; gap: 10px; align-items: center; justify-content: center;">
+                <input type="number" class="points-player1" style="width: 50px; text-align: right;" maxlength="2" oninput="validateNumber(this)" />
+                :
+                <input type="number" class="points-player2" style="width: 50px; text-align: right;" maxlength="2" oninput="validateNumber(this)" />
+            </div>
+        </td>
+    </tr>
+<?php endforeach; ?>
+
     </tbody>
 </table>
     </tbody>
 </table>
-    
-<!-- Region Endergebnis -->
-    <table>
-    <table>
-        <caption>Endergebnis (Sieg 2P. Unentschieden 1P.)</caption>
-        <thead>
-            <tr>
-                <th>NR</th>
-                <th colspan="2">Name</th>
-                <th>Punkte</th>
-                <th>kl. Punkte</th>
-                <th>Platz</th>
-                <th>Punkte</th>
-            </tr>
-        </thead>
-        <tbody>
+table>
+    <caption>Endergebnis (Sieg 2P. Unentschieden 1P.)</caption>
+    <thead>
+        <tr>
+            <th>NR</th>
+            <th colspan="2">Name</th>
+            <th>Spiel Punkte</th>
+            <th>kl. Punkte</th>
+            <th>Platz</th>
+            <th>Tunier Punkte</th>
+        </tr>
+    </thead>
+    <tbody>
         <?php for ($i = 1; $i <= $numPlayers; $i++): ?>
         <tr class="result-row" data-player-id="<?= $i ?>">
             <td><?= $i ?>.</td>
@@ -111,13 +134,21 @@ $matches = [
     </tbody>
 </table>
 
-
-<script>
+<script src="\ChampionChecker.UI\styles\CustomCombobox\CustomCombobox.js">
 // Update all text inputs for the same player
 function updateText(input, player) {
     const value = input.value;
-    const allInputs = document.querySelectorAll(`[name="player_${player}"]`);
-    allInputs.forEach(inputElement => inputElement.value = value);
+
+    // Update all inputs with the same player ID
+    document.querySelectorAll(`[name="player_${player}"]`).forEach((element) => {
+        if (element.tagName === "INPUT" && element.type === "text") {
+            // Update textboxes
+            element.value = value;
+        } else if (element.tagName === "SELECT") {
+            // Update comboboxes
+            element.value = value;
+        }
+    });
 }
 
 // Object to track player points
@@ -225,6 +256,43 @@ function calculateRankings() {
         row.querySelector('[name^="platz_"]').value = player.rank;
     });
 }
+
+const globalPlayerList = new Set([
+    <?php foreach ($players as $player): ?>
+        "<?= $player ?>",
+    <?php endforeach; ?>
+]);
+// Handle input changes for the combobox
+function handleComboboxInput(inputElement, playerType, matchIndex) {
+    const value = inputElement.value.trim();
+
+    if (value === "") return; // Ignore empty values
+
+    // Synchronize changes across all matching inputs
+    const nameAttribute = inputElement.name;
+    const allInputs = document.querySelectorAll(`[name="${nameAttribute}"]`);
+    allInputs.forEach(input => (input.value = value));
+
+    // Add the value to the global player list only if it’s new
+    if (!globalPlayerList.has(value)) {
+        globalPlayerList.add(value);
+        updateAllDataLists(value); // Add to dropdowns
+    }
+}
+
+// Update all datalists when a new player is added
+function updateAllDataLists(newPlayer) {
+    const allDatalists = document.querySelectorAll('datalist');
+    allDatalists.forEach(datalist => {
+        // Check if the player already exists in this datalist
+        if (![...datalist.options].some(option => option.value === newPlayer)) {
+            const newOption = document.createElement('option');
+            newOption.value = newPlayer;
+            datalist.appendChild(newOption);
+        }
+    });
+}
+
 </script>
 
 </body>
