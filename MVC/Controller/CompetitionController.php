@@ -12,7 +12,6 @@ use MVC\Model\CompetitionStatus;
  */
 class CompetitionController implements IController
 {
-
     private static ?CompetitionController $instance = null;
     private array $cachedCompetitions = [];
     private string $apiUrl;
@@ -53,7 +52,7 @@ class CompetitionController implements IController
                 studentParticipants: $data['studentParticipants'] ?? [],
                 date: $data['date'],
                 refereeId: $data['refereeId'],
-                referee: $data['referee'],
+                referee: $data['referee'] ?? null,
                 status: CompetitionStatus::from($data['status']),
                 additionalInfo: $data['additionalInfo']
             );
@@ -71,7 +70,6 @@ class CompetitionController implements IController
      */
     public function getAll(): array
     {
-
         if (!empty($this->cachedCompetitions)) {
             return $this->cachedCompetitions;
         }
@@ -89,7 +87,7 @@ class CompetitionController implements IController
                 isMale: $item['isMale'],
                 date: new DateTime($item['date']),
                 refereeId: $item['refereeId'],
-                referee: $item['referee'],
+                referee: $item['referee'] ?? null,
                 status: CompetitionStatus::from($item['status']),
                 additionalInfo: $item['additionalInfo']
             );
@@ -98,7 +96,8 @@ class CompetitionController implements IController
             $competitions[] = $competition;
         }
 
-        // Wettbewerbe Sortieren
+        $_SESSION["overview_competitions"] = $competitions;
+
         return $competitions;
     }
 
@@ -108,10 +107,6 @@ class CompetitionController implements IController
      */
     public function create(object $model): array
     {
-        if (!$model instanceof Competition) {
-            throw new \InvalidArgumentException('Model must be an instance of Competition.');
-        }
-
         $data = [
             'name' => $model->getName(),
             'classParticipants' => $model->getClassParticipants(),
@@ -133,17 +128,13 @@ class CompetitionController implements IController
      */
     public function update(object $model): array
     {
-        if (!$model instanceof Competition) {
-            throw new \InvalidArgumentException('Model must be an instance of Competition.');
-        }
-
         $data = [
             'id' => $model->getId(),
             'name' => $model->getName(),
-            'classParticipants' => $model->getClassParticipants(),
-            'studentParticipants' => $model->getStudentParticipants(),
+            'classParticipants' => empty($model->getClassParticipants()) ? null : $model->getClassParticipants(),
+            'studentParticipants' => empty($model->getStudentParticipants()) ? null : $model->getStudentParticipants(),
             'isTeam' => $model->getIsTeam(),
-            'isMale' => $model-> getIsMale(),
+            'isMale' => $model->getIsMale(),
             'date' => $model->getDate()->format(DateTime::ATOM),
             'refereeId' => $model->getRefereeId(),
             'referee' => $model->getReferee(),
@@ -152,17 +143,24 @@ class CompetitionController implements IController
         ];
 
         $updateResult = $this->sendApiRequest("/api/competition", 'PUT', $data);
-        
+
         if ($updateResult['success'] === true && isset($_SESSION['overview_competitions'])) {
             foreach ($_SESSION['overview_competitions'] as $key => $comp) {
                 if ($comp->getId() === $model->getId()) {
                     $_SESSION['overview_competitions'][$key] = $model;
                     $_SESSION['overview_competitions_timestamp'] = time();
+
+                    if ($comp->getIsTeam()) {
+                        unset($_SESSION['classresult_competitions']);
+                    } else {
+                        unset($_SESSION['soloresult_competitions']);
+                    }
+                    
                     break;
                 }
             }
         }
-        
+
         return $updateResult;
     }
 
@@ -207,7 +205,7 @@ class CompetitionController implements IController
 
     /**
      * @param string $endpoint
-     * @param string $method
+     * @param string $method => die HTTP-Methode
      * @param array $data
      * @return array
      */

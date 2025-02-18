@@ -49,7 +49,6 @@ class TeacherController implements IController
                 additionalInfo: $data['additionalInfo'] ?? null
             );
 
-            // Lehrer im Cache speichern
             $this->cachedTeachers[$id] = $teacher;
             return $teacher;
         }
@@ -62,7 +61,6 @@ class TeacherController implements IController
      */
     public function getAll(): array
     {
-        // Überprüfen, ob die Lehrer bereits im Cache sind
         if (!empty($this->cachedTeachers)) {
             return $this->cachedTeachers;
         }
@@ -71,18 +69,24 @@ class TeacherController implements IController
         $teachers = [];
 
         foreach ($data as $item) {
+            $classesDictionary = [];
+            if (isset($item['classes']) && is_array($item['classes'])) {
+                foreach ($item['classes'] as $id => $name) {
+                    $classesDictionary[$id] = $name;
+                }
+            }
+
             $teacher = new Teacher(
                 id: $item['id'],
                 firstName: $item['firstName'],
                 lastName: $item['lastName'],
                 shortCode: $item['shortCode'],
                 isParticipating: $item['isParticipating'],
-                classes: $item['classes'] ?? [],
+                classes: $classesDictionary,
                 additionalInfo: $item['additionalInfo'] ?? null
             );
-            $teachers[] = $teacher;
 
-            // Lehrer im Cache speichern
+            $teachers[] = $teacher;
             $this->cachedTeachers[$item['id']] = $teacher;
         }
         return $teachers;
@@ -94,8 +98,10 @@ class TeacherController implements IController
      */
     public function create(object $model): array
     {
-        if (!$model instanceof Teacher) {
-            throw new \InvalidArgumentException('Model must be an instance of Teacher.');
+        $classes = $model->getClasses() ?? [];
+        $classDictionary = [];
+        foreach ($classes as $id => $name) {
+            $classDictionary[(int)$id] = (string)$name;
         }
 
         $data = [
@@ -104,7 +110,7 @@ class TeacherController implements IController
             'shortCode' => $model->getShortCode(),
             'isParticipating' => $model->getIsParticipating(),
             'additionalInfo' => $model->getAdditionalInfo() ?? "",
-            'classes' => $model->getClasses() ?? []
+            'classes' => empty($classDictionary) ? null : $classDictionary
         ];
 
         $createResult = $this->sendApiRequest('/api/teacher', 'POST', $data);
@@ -117,8 +123,10 @@ class TeacherController implements IController
      */
     public function update(object $model): array
     {
-        if (!$model instanceof Teacher) {
-            throw new \InvalidArgumentException('Model must be an instance of Teacher.');
+        $classes = $model->getClasses() ?? [];
+        $classDictionary = [];
+        foreach ($classes as $id => $name) {
+            $classDictionary[(int)$id] = (string)$name;
         }
 
         $data = [
@@ -128,7 +136,7 @@ class TeacherController implements IController
             'shortCode' => $model->getShortCode(),
             'isParticipating' => $model->getIsParticipating(),
             'additionalInfo' => $model->getAdditionalInfo() ?? "",
-            'classes' => $model->getClasses() ?? []
+            'classes' => empty($classDictionary) ? null : $classDictionary
         ];
 
         $updateResult = $this->sendApiRequest("/api/teacher", 'PUT', $data);

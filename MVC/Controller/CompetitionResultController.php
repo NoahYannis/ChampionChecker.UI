@@ -11,7 +11,7 @@ use RuntimeException;
  */
 class CompetitionResultController implements IController
 {
-
+    private static ?CompetitionResultController $instance = null;
     private string $apiUrl;
 
     public function __construct()
@@ -20,6 +20,13 @@ class CompetitionResultController implements IController
         $this->apiUrl = $config['api_url'];
     }
 
+    public static function getInstance(): CompetitionResultController
+    {
+        if (self::$instance === null) {
+            self::$instance = new CompetitionResultController();
+        }
+        return self::$instance;
+    }
 
     /**
      * @param int $id
@@ -64,10 +71,6 @@ class CompetitionResultController implements IController
      */
     public function create(object $model): array
     {
-        if (!$model instanceof CompetitionResult) {
-            throw new \InvalidArgumentException('Model must be an instance of CompetitionResult.');
-        }
-
         $data = [
             'pointsAchieved' => $model->getPointsAchieved(),
             'competitionId' => $model->getCompetitionId(),
@@ -76,6 +79,12 @@ class CompetitionResultController implements IController
         ];
 
         $createResult = $this->sendApiRequest('/api/competitionresult', 'POST', $data);
+
+        if ($createResult['success'] === true) {
+            unset($_SESSION['competitionResultsTimestamp']);
+            unset($_SESSION['results_competitionResultsTimestamp']);
+        }
+
         return $createResult;
     }
 
@@ -85,10 +94,6 @@ class CompetitionResultController implements IController
      */
     public function update(object $model): array
     {
-        if (!$model instanceof CompetitionResult) {
-            throw new \InvalidArgumentException('Model must be an instance of CompetitionResult.');
-        }
-
         $data = [
             'pointsAchieved' => $model->getPointsAchieved(),
             'competitionId' => $model->getCompetitionId(),
@@ -107,19 +112,12 @@ class CompetitionResultController implements IController
     public function delete(int $id): array
     {
         $deleteResult = $this->sendApiRequest("/api/competitionresult/$id", 'DELETE');
-        
+
         if (!$deleteResult['success'] || !isset($_SESSION['results_competitionResults'])) {
             return $deleteResult;
         }
 
-        // Cache-Eintrag entfernen.
-        foreach ($_SESSION['results_competitionResults'] as $key => $competitionResult) {
-            if ($competitionResult->getId() === $id) {
-                unset($_SESSION['results_competitionResults'][$key]);
-                break;
-            }
-        }
-        
+        unset($_SESSION['competitionResultsTimestamp']);
         return $deleteResult;
     }
 
@@ -247,7 +245,8 @@ class CompetitionResultController implements IController
 
         return [
             'success' => true,
-            'error' => null
+            'error' => null,
+            'response' => $response
         ];
     }
 }

@@ -1,16 +1,21 @@
 <?php
 require '../../vendor/autoload.php';
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
-    exit();
-}
-
 use MVC\Model\Student;
 use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
+use MVC\Controller\UserController;
 
 session_start();
+
+$userRole = UserController::getInstance()->getRole();
+
+// Für Zugriff mindestens Rolle Lehrkraft
+if ($userRole->value < 2) {
+    header("Location: home.php");
+    exit();
+}
+
 
 $response = [
     'success' => true,
@@ -48,7 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             firstName: trim($data['firstName']),
             lastName: trim($data['lastName']),
             isMale: filter_var($data['isMale'], FILTER_VALIDATE_BOOLEAN),
-            classId: $classController->getIdFromName(trim($data['className']))
+            classId: $classController->getIdFromName(trim($data['className'])),
+            competitions: null,
+            competitionResults: null
         );
 
         $result = $studentController->create($student);
@@ -62,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($importSuccess) {
         $response['message'] = 'Schüler erfolgreich importiert.';
+        unset($_SESSION['overview_students_timestamp']);
     }
 
     echo json_encode($response);

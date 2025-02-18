@@ -13,6 +13,7 @@ class Student implements JsonSerializable
         private string $firstName,
         private string $lastName,
         private bool $isMale = false,
+        private bool $isRegistrationFinalized = false,
         private int $classId,
         private ?array $competitions = [],
         private ?array $competitionResults = []
@@ -26,6 +27,7 @@ class Student implements JsonSerializable
             'firstName' => $this->firstName,
             'lastName' => $this->lastName,
             'isMale' => $this->isMale,
+            'isRegistrationFinalized' => $this->isRegistrationFinalized,
             'classId' => $this->classId,
             'competitions' => $this->competitions,
             'competitionResults' => $this->competitionResults,
@@ -80,6 +82,16 @@ class Student implements JsonSerializable
     {
         $this->isMale = $isMale;
     }
+
+    public function getIsRegistrationFinalized(): bool {
+        return $this->isRegistrationFinalized;
+    }
+
+    public function setIsRegistrationFinalized(bool $isRegistrationFinalized): void
+    {
+        $this->isRegistrationFinalized = $isRegistrationFinalized;
+    }
+
 
     public function getClassId(): int
     {

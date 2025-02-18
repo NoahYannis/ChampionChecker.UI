@@ -30,8 +30,8 @@ class StudentController implements IController
 
     public function getById(int $id): ?Student
     {
-        if (isset($this->cachedStudents[$id])) {
-            return $this->cachedStudents[$id];
+        if (isset($_SESSION["students"][$id])) {
+            return $_SESSION["students"][$id];
         }
 
         $data = $this->getApiData("/api/student/$id");
@@ -42,13 +42,13 @@ class StudentController implements IController
                 firstName: $data['firstName'],
                 lastName: $data['lastName'],
                 isMale: $data['isMale'],
-                classId: $data['classId'],
+                isRegistrationFinalized: $data['isRegistrationFinalized'],
+                classId: key($data['class']),
                 competitions: $data['competitions'] ?? [],
                 competitionResults: $data['competitionResults'] ?? []
             );
 
-            // Student im Cache speichern
-            $this->cachedStudents[$id] = $studentModel;
+            $_SESSION["students"][$id] = $studentModel;
             return $studentModel;
         }
         return null;
@@ -58,7 +58,7 @@ class StudentController implements IController
     {
         foreach ($this->cachedStudents as $studentModel) {
             if ($studentModel->getFirstName() === $name || $studentModel->getLastName() === $name) {
-                return $studentModel; // Gecachten Studenten zurückgeben
+                return $studentModel; // Gecachten Schüler zurückgeben
             }
         }
 
@@ -75,6 +75,7 @@ class StudentController implements IController
                     firstName: $studentData['firstName'],
                     lastName: $studentData['lastName'],
                     isMale: $studentData['isMale'],
+                    isRegistrationFinalized: $studentData['isRegistrationFinalized'],
                     classId: $studentData['classId'],
                     competitions: $studentData['competitions'] ?? [],
                     competitionResults: $studentData['competitionResults'] ?? []
@@ -102,13 +103,13 @@ class StudentController implements IController
                 firstName: $item['firstName'],
                 lastName: $item['lastName'],
                 isMale: $item['isMale'],
-                classId: $item['classId'],
+                isRegistrationFinalized: $item['isRegistrationFinalized'],
+                classId: key($item['class']),
                 competitions: $item['competitions'] ?? [],
                 competitionResults: $item['competitionResults'] ?? []
             );
             $students[] = $studentModel;
 
-            // Student im Cache speichern
             $this->cachedStudents[$item['id']] = $studentModel;
         }
         return $students;
@@ -124,9 +125,12 @@ class StudentController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'isMale' => $model->getIsMale(),
-            'classId' => $model->getClassId(),
-            'competitions' => $model->getCompetitions(),
-            'competitionResults' => $model->getCompetitionResults()
+            'isRegistrationFinalized' => $model->getIsRegistrationFinalized(),
+            'class' => [
+                $model->getClassId() => ClassController::getInstance()->getClassName($model->getClassId())
+            ],
+            'competitions' => empty($model->getCompetitions) ? null : $model->getCompetitions(),
+            'competitionResults' => empty($model->getCompetitionResults()) ? null : $model->getCompetitionResults(),
         ];
 
         $createResult = $this->sendApiRequest('/api/student', 'POST', $data);
@@ -143,12 +147,13 @@ class StudentController implements IController
             'firstName' => $model->getFirstName(),
             'lastName' => $model->getLastName(),
             'isMale' => $model->getIsMale(),
+            'isRegistrationFinalized' => $model->getIsRegistrationFinalized(),
             'classId' => $model->getClassId(),
             'competitions' => $model->getCompetitions(),
             'competitionResults' => $model->getCompetitionResults()
         ];
 
-        $updateResult = $this->sendApiRequest("/api/student/{$model->getId()}", 'PUT', $data);
+        $updateResult = $this->sendApiRequest("/api/student", 'PUT', $data);
         return $updateResult;
     }
 
@@ -161,6 +166,36 @@ class StudentController implements IController
         $deleteResult = $this->sendApiRequest("/api/student/$id", 'DELETE');
         return $deleteResult;
     }
+
+
+    public function patch(int $id, array $data, string $operation): array
+    {
+        $patchDocument = [];
+        foreach ($data as $key => $value) {
+            $patchDocument[] = [
+                "op" => $operation,
+                "path" => "/$key",
+                "value" => $value
+            ];
+        }
+
+        $patchResult = $this->sendApiRequest(
+            "/api/student/$id",
+            'PATCH',
+            $patchDocument,
+            "application/json-patch+json"
+        );
+
+        if (!$patchResult['success']) {
+            return $patchResult;
+        }
+
+        unset($_SESSION['overview_competitions_timestamp']);
+        unset($_SESSION['overview_students_timestamp']);
+
+        return $patchResult;
+    }
+
 
     /**
      * @param string $endpoint
@@ -196,7 +231,7 @@ class StudentController implements IController
      * @param array $data
      * @return array
      */
-    protected function sendApiRequest(string $endpoint, string $method, array $data = []): array
+    protected function sendApiRequest(string $endpoint, string $method, array $data = [], string $contentType = 'application/json'): array
     {
         $curl = curl_init();
 
@@ -206,7 +241,7 @@ class StudentController implements IController
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_POSTFIELDS => json_encode($data),
             CURLOPT_HTTPHEADER => [
-                'Content-Type: application/json'
+                'Content-Type: ' . $contentType
             ],
             CURLOPT_USERAGENT => 'PHP API Request',
             CURLOPT_SSL_VERIFYPEER => false,
@@ -219,7 +254,7 @@ class StudentController implements IController
             $error = curl_error($curl);
             throw new RuntimeException('cURL error: ' . $error);
         }
-  
+
         if (curl_errno($curl)) {
             return [
                 'success' => false,

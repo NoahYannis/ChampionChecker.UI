@@ -52,6 +52,18 @@ abbr {
   }
 }
 
+.flex-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  &.row {
+    flex-direction: row;
+  }
+}
+
 .submitButton {
   display: flex;
   justify-content: center;
@@ -180,6 +192,7 @@ button {
   font-size: clamp(1rem, 1vw, 2rem);
   margin: 1rem auto;
   transition: transform 0.1s ease, box-shadow 0.1s ease;
+  user-select: none;
 
   &:hover:not(:disabled) {
     cursor: pointer;
@@ -278,6 +291,15 @@ input[type="submit"] {
   }
 }
 
+option:not(:disabled) {
+  cursor: pointer;
+}
+
+option:disabled {
+  color: gray;
+  background-color: lightgray;
+}
+
 .name-badge {
   display: inline-block;
   border-radius: 16px;
@@ -302,12 +324,20 @@ input[type="submit"] {
   &.student {
     background-color: #94f8b0;
   }
+
+  &.competition {
+    background-color: white;
+    padding: 8px;
+    border: 2px solid black;
+  }
 }
 
 input[type="text"],
+input[type="number"],
 input[type="email"],
 input[type="password"],
 input[type="datetime-local"],
+input[type="time"],
 textarea,
 select {
   width: 100%;
@@ -321,6 +351,10 @@ select {
 
   &:not(.readonly-input) {
     border: 2px solid #999;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
   }
 }
 
@@ -337,6 +371,26 @@ label {
   display: block;
   margin-bottom: 0.3rem;
   font-weight: bold;
+}
+
+.status-circle {
+  display: inline-block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  margin: 0 auto;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.green {
+  background-color: darkgreen;
+}
+
+.red {
+  background-color: red;
 }
 
 /* Tabellen-Styles */
@@ -405,7 +459,7 @@ th {
   }
 
   &.neutral {
-    color:black
+    color: black;
   }
 }
 
@@ -428,6 +482,11 @@ th {
 
   .name-badge {
     padding-inline: 0.625rem;
+
+    &.competition {
+      padding: 2px;
+      text-overflow: ellipsis;
+    }
   }
 
   .table-style th,
@@ -436,7 +495,7 @@ th {
     max-width: 3.75rem;
     max-height: 3.125rem;
     overflow-x: auto;
-    font-size: clamp(0.5rem, 1.5vw, 1rem);
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
   }
 
   .td-content {

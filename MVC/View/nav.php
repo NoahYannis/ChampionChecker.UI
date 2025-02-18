@@ -1,5 +1,26 @@
 <?php
+
+use MVC\Controller\UserController;
+use MVC\Model\Role;
+
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
+
+$userRole = UserController::getInstance()->getRole();
+
+$icon = match ($userRole->name) {
+    'Gast' => 'fas fa-eye',
+    'Schüler' => 'fas fa-user-graduate',
+    'Lehrkraft' => 'fas fa-chalkboard-teacher',
+    'Admin' => 'fas fa-user-shield',
+    default => 'fas fa-question-circle',
+};
+
 $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
+$profileImageUrl = $isAuthenticated
+    ? '../../resources/profile-authenticated.png'
+    : '../../resources/profile.webp';
 ?>
 
 <!DOCTYPE html>
@@ -17,16 +38,25 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
 </head>
 
 <body>
-    <aside class="sidebar">
+    <aside class="sidebar"> <!-- Wird bei kleinen Bildschirmen durch Klick auf das Hamburger-Menü angezeigt -->
         <div class="nav-items">
             <ul>
                 <li><a href="results.php">Ergebnisse</a></li>
-                <?php if ($isAuthenticated): ?>
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
                     <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                    <li><a href="add_soloresult.php">Einzelergebnis hinzufügen</a></li>
+                    <hr />
                     <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
                 <?php endif; ?>
+
+                <?php if (UserController::getInstance()->getRole() === Role::Admin): ?>
+                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                <?php endif; ?>
+
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
+                    <li><a href="students_overview.php">Schülerübersicht</a></li>
+                <?php endif; ?>
+
             </ul>
         </div>
     </aside>
@@ -43,21 +73,52 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
         </div>
         <div class="nav-items">
             <ul>
-                <li><a href="results.php">Ergebnisse</a></li>
-                <?php if ($isAuthenticated): ?>
-                    <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
-                    <li><a href="add_soloresult.php">Soloergebnis hinzufügen</a></li>
-                    <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
-                    <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                <li class="dropdown">
+                    <a href="results.php">Ergebnisse</a>
+                    <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
+                        <ul class="dropdown-menu">
+                            <li><a href="results.php">Ergebnisse ansehen</a></li>
+                            <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
+                            <li><a href="add_soloresult.php">Einzelergebnis hinzufügen</a></li>
+                        </ul>
+                    <?php endif; ?>
+                </li>
+
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
+                    <li class="dropdown">
+                        <a href="competitions_overview.php">Stationen</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
+                    <li class="dropdown">
+                        <a href="students_overview.php">Schüler</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="students_overview.php">Schülerübersicht</a></li>
+                            <li><a href="import_students_csv.php">CSV-Import Schüler</a></li>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+
+                <?php if (UserController::getInstance()->getRole() === Role::Admin): ?>
+                    <li class="dropdown">
+                        <a href="teachers_overview.php">Lehrer</a>
+                        <ul class="dropdown-menu">
+                            <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
+                            <li><a href="add_teachers_manual.php">Lehrer hinzufügen</a></li>
+                            <li><a href="import_teachers_csv.php">CSV-Import Lehrer</a></li>
+                        </ul>
+                    </li>
                 <?php endif; ?>
             </ul>
         </div>
+
         <div class="profile" id="profile"
-             style="background-image: url('<?= ($isAuthenticated)
-				 ? '../../resources/profile-authenticated.png'
-				 : '../../resources/profile.webp'
-			 ;?>');"
-             data-content-initials="">
+            style="background-image: url('<?= $profileImageUrl; ?>');"
+            data-content-initials="">
         </div>
 
         <div class="profile-menu" id="profile-menu" style="display: none;">
@@ -70,7 +131,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
                     </li>
                     <li>
                         <a href="#">
-                            <i class="fas fa-cog"></i> Einstellungen
+                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
                         </a>
                     </li>
                 <?php else: ?>
@@ -82,6 +143,11 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
                     <li>
                         <a href="login.php">
                             <i class="fas fa-sign-in-alt"></i> Anmelden
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
                         </a>
                     </li>
                 <?php endif; ?>
@@ -110,7 +176,7 @@ $isAuthenticated = isset($_COOKIE['ChampionCheckerCookie']);
     hamburgerInput.addEventListener('change', function() {
         sideBar.classList.toggle("open")
     });
-    
+
     profilePic.addEventListener('click', function(event) {
         event.preventDefault();
         if (!profilePic.contains(event.target) && !profileMenu.contains(event.target)) {

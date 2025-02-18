@@ -22,9 +22,6 @@ class CompetitionResult
 
     public function setId(int $id): void
     {
-        if (isset($this->id)) {
-            throw new RuntimeException('ID cannot be set manually after initialization.');
-        }
         $this->id = $id;
     }
 

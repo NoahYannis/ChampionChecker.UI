@@ -1,14 +1,18 @@
 <?php
 require '../../vendor/autoload.php';
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
+use MVC\Controller\UserController;
+use MVC\Controller\TeacherController;
+use MVC\Model\Teacher;
+use MVC\Model\Role;
+
+session_start();
+
+if (UserController::getInstance()->getRole() !== Role::Admin) {
+    header("Location: home.php");
     exit();
 }
 
-session_start();
-use MVC\Model\Teacher;
-use MVC\Controller\TeacherController;
 
 $response = [
     'success' => true,
@@ -69,6 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     echo $response['message'];
     exit;
+}
+
+$mode = $_GET['mode'] ?? null;
+
+// Seite wurde direkt aufgerufen statt über die Lehrerverwaltung, Nav-Menü für die Seite einbinden.
+if (!isset($mode)) {
+    include 'nav.php';
 }
 ?>
 

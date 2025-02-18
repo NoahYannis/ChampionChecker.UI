@@ -2,16 +2,16 @@
 require '../../vendor/autoload.php';
 session_start();
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
-    exit();
-}
-
-
+use MVC\Controller\UserController;
 use MVC\Controller\TeacherController;
 use MVC\Controller\ClassController;
+use MVC\Model\Role;
 use MVC\Model\Teacher;
-use MVC\Model\ClassModel;
+
+if (UserController::getInstance()->getRole() !== Role::Admin) {
+    header("Location: home.php");
+    exit();
+}
 
 $teacherController = TeacherController::getInstance();
 $classController = ClassController::getInstance();
@@ -89,15 +89,8 @@ function printTeachers($teachers)
         $classes = $teacher->getClasses() ?? [];
         $classNames = [];
 
-        if (is_array($classes)) {
-            $classes = array_map(function ($class) {
-                return $class instanceof ClassModel ? $class : ClassModel::mapToModel($class);
-            }, $classes);
-        }
-
-
         foreach ($classes as $class) {
-            $className = $class->getName();
+            $className = $class;
             if ($className) {
                 $escapedName = htmlspecialchars($className);
                 $classNames[] = "<span class='name-badge class'>{$escapedName}</span>";
@@ -144,17 +137,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         exit;
     }
 
-
     $changedTeachers = [];
 
     foreach ($teachersData as $data) {
-        $classes = $data['classes'];
-
-        $classObjects = [];
-        foreach ($classes as $class) {
-            $classObjects[] = $classController->getByName($class);
+        $classDictionary = [];
+        $classNames = $data['classes'];
+        foreach ($classNames as $class) {
+            $classId = $classController->getIdFromName($class);
+            $classDictionary[(int)$classId] = (string)$class;
         }
-
 
         $additionalInfo = trim($data['additionalInfo']) === '-' ? null : trim($data['additionalInfo']);
         $shortCode = trim($data['shortCode']);
@@ -166,7 +157,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             shortCode: $shortCode,
             isParticipating: isset($data['isParticipating']) ? (bool)$data['isParticipating'] : false,
             additionalInfo: $additionalInfo,
-            classes: $classObjects,
+            classes: $classDictionary,
         );
         $changedTeachers[] = $teacher;
     }
@@ -399,7 +390,7 @@ include 'nav.php';
                 let isParticipating = wasCanceled && storedRow ? storedRow[5] : cells[5].querySelector('input').checked;
 
                 // Prüfen, ob Zeile geändert wurde
-                if (checkIfRowWasModified(row, storedRow)) {
+                if (!wasCanceled && checkIfRowWasModified(row, storedRow)) {
                     let changedTeacher = {
                         lastName: lastName,
                         firstName: firstName,
@@ -501,7 +492,7 @@ include 'nav.php';
                 console.error('Error:', error);
             } finally {
                 spinner.style.display = 'none';
-                editButton.parentElement.disabled = true;
+                editButton.parentElement.disabled = false;
             }
         }
 
@@ -611,6 +602,7 @@ include 'nav.php';
 
             classData.forEach(classItem => {
                 let option = document.createElement("option");
+                option.dataset.id = classItem.id;
                 option.value = classItem.name;
                 option.textContent = `${classItem.name} (${classItem.teacherCount}/2)`;
 

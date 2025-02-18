@@ -1,15 +1,25 @@
 <?php
+// Stationsverwaltung, in der Stationen angezeigt oder bearbeitet werden können.
+
+use MVC\Controller\UserController;
+use MVC\Model\Role;
+
 require '../../vendor/autoload.php';
 session_start();
 
-if (!isset($_COOKIE['ChampionCheckerCookie'])) {
-    header("Location: login.php");
+$userRole = UserController::getInstance()->getRole();
+
+// Für Zugriff mindestens Rolle Lehrkraft
+if ($userRole->value < 2) {
+    header("Location: home.php");
     exit();
 }
 
+$isAdmin = $userRole == Role::Admin;
 
 use MVC\Controller\CompetitionController;
 use MVC\Controller\ClassController;
+use MVC\Controller\StudentController;
 use MVC\Model\CompetitionStatus;
 use MVC\Model\Competition;
 
@@ -45,12 +55,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
 
     $changedComps = [];
 
+    $classParticipants = [];
+    $studentParticipants = [];
+
+    $studentController = StudentController::getInstance();
+    $classController = ClassController::getInstance();
+
     foreach ($compData as $data) {
         $isTeam = $data['type'] === 'Team';
-        // $classParticipants = $isTeam ? $data['participants'] : null;
-        // $studentParticipants = !$isTeam ? $data['participants'] : null;
-        $classParticipants = [];
-        $studentParticipants = [];
+
+        if ($isTeam && isset($data['participants'])) {
+            $classParticipants = getClassDictionary($data['participants']);
+        } else if (isset($data['participants'])) {
+            $studentParticipants = getStudentDictionary($data['participants']);
+        }
 
         $comp = new Competition(
             id: $data['id'],
@@ -80,6 +98,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
         $putSuccess &= $updateResult['success'] === true;
     }
 
+    if ($putSuccess) {
+        unset($_SESSION['overview_students_timestamp']); // Teilnehmer könnten sich geändert haben.
+    }
+
     $response = [
         'success' => $putSuccess,
         'message' => $putSuccess ? 'Änderungen erfolgreich gespeichert.' : 'Einige Änderungen konnten nicht übernommen werden.'
@@ -89,6 +111,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     exit;
 }
 
+function getStudentDictionary(array $studentIds): array
+{
+    global $studentController;
+
+    $studentObjects = array_map(function ($studentId) use ($studentController) {
+        return $studentController->getById($studentId);
+    }, $studentIds);
+
+    $studentDictionary = [];
+    foreach ($studentObjects as $student) {
+        $studentDictionary[$student->getId()] = [
+            'firstName' => $student->getFirstName(),
+            'lastName' => $student->getLastName()
+        ];
+    }
+
+    return $studentDictionary;
+}
+
+function getClassDictionary(array $classIds): array
+{
+    global $classController;
+
+    $classIdNameMap = [];
+    foreach ($classIds as $classId) {
+        $classIdNameMap[$classId] = $classController->getClassName($classId);
+    }
+
+    return $classIdNameMap;
+}
+
 
 function loadAllCompetitions($cacheDuration = 300): array
 {
@@ -96,9 +149,9 @@ function loadAllCompetitions($cacheDuration = 300): array
 
     // Gecachte Daten für die Dauer des Cache zurückgeben.
     if (isset($_SESSION['overview_competitions']) && isset($_SESSION['overview_competitions_timestamp'])) {
-        // if ((time() - $_SESSION['overview_competitions_timestamp']) < $cacheDuration) {
-        //     return $_SESSION['overview_competitions'];
-        // }
+        if ((time() - $_SESSION['overview_competitions_timestamp']) < $cacheDuration) {
+            return $_SESSION['overview_competitions'];
+        }
     }
 
     // Daten aus der DB laden und im Cache speichern
@@ -135,9 +188,6 @@ include 'nav.php';
     <div id="result-message" class="result-message hidden"></div>
     <div id="timestamp-container" class="timestamp-container"></div>
     <div class="button-container">
-        <button class="circle-button add-button" id="" onclick="window.location.href='#'">
-            <i class="fas fa-plus"></i>
-        </button>
         <button class="circle-button edit-button" id="edit-button">
             <i class="fas fa-pencil-alt"></i>
         </button>
@@ -152,6 +202,7 @@ include 'nav.php';
 
     <script>
         let isEditing = false;
+        let isAdmin = <?php echo $isAdmin ? 'true' : 'false'; ?>;
         let sortDirections = {};
         let storedValues = [];
         let changedCompetitions = [];
@@ -159,7 +210,6 @@ include 'nav.php';
         const editButton = document.getElementById("edit-button");
         const editButtonIcon = document.querySelector(".edit-button i");
         const cancelButton = document.querySelector(".cancel-button");
-        const addButton = document.querySelector(".add-button");
         const spinner = document.getElementById('spinner');
         const statuses = {
             Geplant: 0,
@@ -188,7 +238,6 @@ include 'nav.php';
         async function loadCompetitionData() {
             spinner.style.display = "block";
             editButton.disabled = true;
-            addButton.disabled = true;
 
             try {
                 const response = await fetch('competitions_overview.php', {
@@ -203,7 +252,6 @@ include 'nav.php';
             } finally {
                 spinner.style.display = "none";
                 editButton.disabled = false;
-                addButton.disabled = false;
             }
         }
 
@@ -319,16 +367,8 @@ include 'nav.php';
         }
 
         async function enterEditState() {
-            let deleteHeader = document.createElement("th");
-
             rows.forEach(row => {
                 let cells = row.getElementsByTagName("td");
-                let deleteColumn = document.createElement("td");
-                deleteColumn.innerHTML = `
-                <button class="circle-button delete-button">
-                    <i class="fas fa-trash"></i>
-                </button>`;
-                row.appendChild(deleteColumn);
 
                 let name = row.cells[0].innerText;
                 let date = row.cells[1].innerText;
@@ -340,31 +380,36 @@ include 'nav.php';
 
                 let selector = type === "Team" ? '.name-badge.class' : '.name-badge.student';
                 let participants = Array.from(row.cells[5].querySelectorAll(selector))
-                    .map(element => element.textContent.trim());
+                    .map(element => ({
+                        id: element.dataset.id,
+                        name: element.textContent.trim()
+                    }));
 
                 let state = row.cells[6].innerText;
                 let additionalInfo = row.cells[7].innerText;
 
                 // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
-                storedValues[row.rowIndex] = [name, date, referee, type, gender, participants.join(","), state, additionalInfo];
+                storedValues[row.rowIndex] = [name, date, referee, type, gender, participants.map(p => p.name).join(","), state, additionalInfo];
 
-                cells[0].innerHTML = `<input type="text" value="${name}">`;
+                cells[0].innerHTML = `<input type="text" value="${name}" ${!isAdmin ? 'readonly' : ''}>`;
 
                 let dateValue = createISODateValueFromString(date);
-                cells[1].innerHTML = `<input type="datetime-local" value="${dateValue}">`;
+                cells[1].innerHTML = `<input type="datetime-local" value="${dateValue}" ${!isAdmin ? 'readonly' : ''}>`;
 
-                cells[2].innerHTML = `<input type="text" value="${referee}">`;
+                cells[2].innerHTML = `<input type="text" value="${referee}" ${!isAdmin ? 'readonly' : ''}>`;
 
                 const typeSelect = createTypeSelect(type)
                 cells[3].innerHTML = typeSelect;
 
                 cells[4].innerHTML = createGenderSelect(gender);
                 cells[5].innerHTML = participants.map(participant => {
-                    return `<span data-participant="${participant}"
-                     class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
-                    ${participant} 
-                    <i onclick="handleNameBadgeRemoval(this.parentElement, '', this.parentElement.parentElement)" class="fas fa-times"></i>
-                    </span>`
+                    return `<span data-id="${participant.id}" data-participant="${participant.name}"
+                            class="name-badge ${type === "Team" ? "class" : "student"}" 
+                            title="Teilnehmer entfernen">
+                                ${participant.name}
+                            <i onclick="handleNameBadgeRemoval(this.parentElement, '', this.parentElement.parentElement)" 
+                            class="fas fa-times"></i>
+                            </span>`;
                 }).join(' ');
 
                 let allClasses =
@@ -382,6 +427,7 @@ include 'nav.php';
 
                 const statusSelect = document.createElement("select");
                 statusSelect.id = "status-select";
+                statusSelect.disabled = !isAdmin;
 
                 let selectedOption = document.createElement("option");
                 selectedOption.textContent = state;
@@ -402,17 +448,7 @@ include 'nav.php';
                 cells[6].innerHTML = ""; // Entfernt die Anzeige des bisherigen Status
                 cells[6].appendChild(statusSelect);
                 cells[7].innerHTML = `<input type="text" value="${additionalInfo}">`;
-
-                let deleteButton = row.querySelector('.delete-button');
-                deleteButton.addEventListener('click', () => {
-                    const confirmation = confirm('Sind Sie sicher, dass Sie diese Station löschen möchten?');
-                    if (confirmation) {
-                        deleteCompetition(row.cells[0].dataset.compId, row.rowIndex);
-                    }
-                });
             });
-
-            headerRow.appendChild(deleteHeader);
         }
 
         function exitEditState(wasCanceled = false) {
@@ -430,15 +466,21 @@ include 'nav.php';
                 let gender = wasCanceled ? storedRow[4] : cells[4].querySelector('select').value;
 
                 let selector = type === "Team" ? ".name-badge.class" : ".name-badge.student";
-                let participants = wasCanceled ? storedRow[5].split(",") : Array.from(cells[5].querySelectorAll(selector))
+                let participants = wasCanceled ?
+                    storedRow[5].split(",").filter(participant => participant.trim() !== "") :
+                    Array.from(cells[5].querySelectorAll(selector))
                     .map(element => element.textContent.trim());
+
+                // Nötig, um aus der Option das zugehörige Class bzw. Schüler-Objekt zu finden.
+                let participantIds = Array.from(cells[5].querySelectorAll(selector))
+                    .map(element => element.dataset.id)
+                    .filter(id => id != null);
 
                 // Beim Bestätigen den Wert der selektierten Option abfragen, bei keiner Änderung wird der bisherige Wert verwendet.
                 let state = wasCanceled ? storedRow[6] : statusKeys[cells[6].querySelector('select').value] ?? storedRow[6];
                 let additionalInfo = wasCanceled ? storedRow[7] : cells[7].querySelector('input').value;
 
-
-                if (checkIfRowWasModified(row, storedRow)) {
+                if (!wasCanceled && checkIfRowWasModified(row, storedRow)) {
                     let changedComp = {
                         id: row.cells[0].dataset.compId,
                         name: name,
@@ -446,7 +488,7 @@ include 'nav.php';
                         referee: referee,
                         type: type,
                         gender: gender,
-                        participants: participants,
+                        participants: participantIds,
                         state: state,
                         additionalInfo: additionalInfo
                     };
@@ -470,13 +512,18 @@ include 'nav.php';
                 genderContent.appendChild(genderIcon);
                 cells[4].appendChild(genderContent);
 
+                let participantObjects = participants.map((name, index) => ({
+                    id: participantIds[index] || "",
+                    name: name
+                }));
+
                 // Teilnehmer-Anzeige
                 cells[5].innerHTML = participants.length === 0 ?
                     '-' :
-                    participants.map(participant => {
-                        return `<span data-participant="${participant}"
+                    participantObjects.map(obj => {
+                        return `<span data-id="${obj.id}" data-participant="${obj.name}"
                         class="name-badge ${type === "Team" ? "class" : "student"}" title="Teilnehmer entfernen">
-                        ${participant}
+                        ${obj.name}
                         </span>`;
                     }).join(' ');
 
@@ -485,45 +532,12 @@ include 'nav.php';
             });
 
             storedValues = [];
-
-            // Löschen-Spalte & -Knöpfe entfernen.
-            headerRow.querySelector("th:last-child").remove();
-            document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
-        }
-
-        async function deleteCompetition(compId, rowIndex) {
-            spinner.style.display = 'inline-block';
-            editButton.disabled = true;
-
-            try {
-                const response = await fetch(`competitions_overview?compId=${compId}`, {
-                    method: 'DELETE',
-                });
-
-                const data = await response.json();
-                if (data.success) {
-                    const row = table.rows[rowIndex];
-                    if (row) {
-                        row.remove();
-                        storedValues.splice(rowIndex, 1);
-                    }
-                }
-
-                showResultMessage(data.message, data.success);
-            } catch (error) {
-                console.error('Error:', error);
-            } finally {
-                spinner.style.display = 'none';
-                editButton.disabled = false;
-            }
         }
 
         async function saveChangedCompetitions(changedCompetitions) {
             if (changedCompetitions.length === 0) {
                 return;
             }
-
-            // TODO: Validierung
 
             const compJSON = JSON.stringify(changedCompetitions);
             spinner.style.display = 'inline-block';
@@ -556,7 +570,7 @@ include 'nav.php';
             let cells = row.getElementsByTagName("td");
 
             // Kopfzeile überspringen
-            for (let i = 0; i < cells.length - 1; i++) {
+            for (let i = 0; i < cells.length; i++) {
 
                 let currentValue =
                     (cells[i].querySelector('input')?.value) ||
@@ -576,7 +590,7 @@ include 'nav.php';
                 }
 
                 if (currentValue !== storedValue) {
-                    console.log(`Vorher: ${storedValue} vs currentValue: ${currentValue}`);
+                    console.log(`Vorher: ${storedValue} vs Nachher: ${currentValue}`);
                     return true;
                 }
             }
@@ -597,6 +611,10 @@ include 'nav.php';
 
 
         function filterTable(columnIndex) {
+            if (isEditing) {
+                return;
+            }
+
             let table = document.getElementById("comp-table");
             let tbody = table.getElementsByTagName("tbody")[0];
             let rows = Array.from(tbody.getElementsByTagName("tr"));
@@ -615,7 +633,7 @@ include 'nav.php';
 
         function createGenderSelect(gender) {
             const optionsHTML = `
-            <select id="gender-select">
+            <select id="gender-select" ${!isAdmin ? 'disabled' : ''}>
                 <option value="M" ${gender === 'M' ? 'selected' : ''}>Männlich</option>
                 <option value="W" ${gender === 'W' ? 'selected' : ''}>Weiblich</option>
                 <option value="N" ${gender === 'N' ? 'selected' : ''}>Neutral</option>
@@ -625,7 +643,7 @@ include 'nav.php';
 
         function createTypeSelect(type) {
             const optionsHTML = `
-            <select id="type-select">
+            <select id="type-select" ${!isAdmin ? 'disabled' : ''}>
                 <option value="Einzel" ${type === 'Einzel' ? 'selected' : ''}>Einzel</option>
                 <option value="Team" ${type === 'Team' ? 'selected' : ''}>Team</option>
             </select>`;
@@ -679,13 +697,17 @@ include 'nav.php';
             let participantsHTML = "";
 
             if (comp.isTeam === true) {
-                participantsHTML = comp.classParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-participant="${p.name}" class="name-badge class">${p.name}</span>`;
-                }).join(' ');
+                participantsHTML = Object.entries(comp.classParticipants).length === 0 ?
+                    '-' :
+                    Object.entries(comp.classParticipants).map(([id, name]) => {
+                        return `<span data-id="${id}" data-participant="${name}" class="name-badge class">${name}</span>`;
+                    }).join(' ');
             } else {
-                participantsHTML = comp.studentParticipants.map(p => {
-                    return `<span data-id="${p.id}" data-participant="${p.firstName} ${p.lastName}" class="name-badge student">${p.firstName} ${p.lastName}</span>`;
-                }).join(' ');
+                participantsHTML = Object.entries(comp.studentParticipants).length === 0 ?
+                    '-' :
+                    Object.entries(comp.studentParticipants).map(([id, student]) => {
+                        return `<span data-id="${id}" data-participant="${student.firstName} ${student.lastName}" class="name-badge student">${student.firstName} ${student.lastName}</span>`;
+                    }).join(' ');
             }
 
             return participantsHTML;
@@ -764,7 +786,7 @@ include 'nav.php';
             studentSelect.id = "student-select";
             studentSelect.multiple = true;
             studentSelect.setAttribute("title",
-                "Wählen Sie die teilnehmenden Schüler aus"
+                "Wählen Sie die teilnehmenden Schüler aus. Halten Sie STRG gedrückt, um mehrere Schüler auszuwählen."
             );
 
             let defaultOption = document.createElement("option");
@@ -797,7 +819,6 @@ include 'nav.php';
                 toggleStudentNameBadge(allStudents, studentSelect, selectedStudents, previousSelection, participantCell);
                 previousSelection = selectedStudents;
             });
-
             return studentSelect;
         }
 
@@ -827,7 +848,7 @@ include 'nav.php';
             classes.forEach(classItem => {
                 const option = classSelect.querySelector(`option[value="${classItem.name}"]`);
                 option.textContent = classItem.name;
-                
+
                 const isSelected = selectedOptions.some(option => option.value === classItem.name);
                 const wasSelected = previousSelectedOptions.some(option => option.value === classItem.name);
 
@@ -835,6 +856,7 @@ include 'nav.php';
                     const classElement = document.createElement("span");
                     classElement.classList.add("name-badge", "class");
                     classElement.setAttribute("data-participant", classItem.name);
+                    classElement.setAttribute("data-id", classItem.id);
                     classElement.textContent = `${classItem.name}`;
                     classElement.setAttribute("title", "Klasse entfernen");
 
@@ -871,6 +893,7 @@ include 'nav.php';
                     const nameBadge = document.createElement("span");
                     nameBadge.classList.add("name-badge", "student");
                     nameBadge.setAttribute("data-participant", name);
+                    nameBadge.setAttribute("data-id", s.id);
                     nameBadge.textContent = name;
                     nameBadge.setAttribute("title", "Schüler entfernen");
 

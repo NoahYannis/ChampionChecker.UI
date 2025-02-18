@@ -1,3 +1,5 @@
+# Docker-Compose-Datei zur Herstelleung einer lokalen XAMPP-Entwicklungsumgebung. Änderungen an Projektdateien werden im Container reflektiert.
+
 name: ChampionChecker.UI
 services:
   xampp:

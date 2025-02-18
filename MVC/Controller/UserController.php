@@ -3,6 +3,8 @@
 namespace MVC\Controller;
 
 use MVC\Model\User;
+use MVC\Model\Role;
+
 use RuntimeException;
 use Exception;
 
@@ -25,6 +27,34 @@ class UserController
         return self::$instance;
     }
 
+    public function getRole(): Role
+    {
+        if (!isset($_COOKIE['ChampionCheckerCookie'])) {
+            return Role::Gast;
+        }
+
+        if (isset($_SESSION['user_role'])) {
+            return $_SESSION['user_role'];
+        }
+
+        $roleResult = $this->getApiData('/api/auth/role');
+
+        if ($roleResult['success'] === false) {
+            error_log("Die Nutzerrolle konnte nicht abgefragt werden: " . json_encode($roleResult));
+            return Role::Gast;
+        }
+
+        $roleValue = json_decode($roleResult['response'], true);
+
+        try {
+            $role = Role::from($roleValue['role']);
+            $_SESSION['user_role'] = $role;
+            return $role;
+        } catch (Exception $e) {
+            throw new RuntimeException('Ungültiger Rollenwert: ' . $roleValue['role']);
+        }
+    }
+
 
     public function login(string $email, string $password): array
     {
@@ -38,12 +68,29 @@ class UserController
             $success = $apiResult['statusCode'] < 400;
 
             if ($success) {
-                $this->extractUserInitials($apiResult['response']);
+                $userName = explode(',', $apiResult['response'])[0];
+                $userRole = explode(',', $apiResult['response'])[1];
+                $this->extractUserInitials($userName);
+
+
+                if (session_status() !== PHP_SESSION_ACTIVE) {
+                    session_start();
+                }
+
+                $_SESSION['user_role'] = match ($userRole) {
+                    'Spectator' => Role::Gast,
+                    'Student' => Role::Schüler,
+                    'Supervisor' => Role::Lehrkraft,
+                    'Admin' => Role::Admin,
+                    default => throw new RuntimeException(message: 'Ungültiger Rollenwert: ' . $userRole),
+                };
             }
+
+            $response = $success ? $userName : $apiResult['response'];
 
             return [
                 'success' => $success,
-                'response' => $apiResult['response']
+                'response' => $response
             ];
         } catch (Exception $e) {
             return [
@@ -107,6 +154,7 @@ class UserController
     }
 
 
+    // Ermöglicht es dem Nutzer, sein Passwort durch die Eingabe des Reset-Tokens aus der Passwort-vergessen-Email zurückzusetzen
     public function resetPassword(string $email, string $token, string $newPassword): array
     {
         $data = [
@@ -130,6 +178,8 @@ class UserController
         }
     }
 
+
+    // Nutzerinitialien im LocalStorage setzen, damit sie für das Profilbild in der Navbar verwendet werden können.
     public function extractUserInitials($apiUsername): void
     {
         $parts = explode('.', $apiUsername);
@@ -144,6 +194,38 @@ class UserController
         echo "<script>
         localStorage.setItem('Initials', '" . addslashes(string: $initials) . "');
       </script>";
+    }
+
+
+    private function getApiData(string $endpoint)
+    {
+        $curl = curl_init($this->apiUrl . $endpoint);
+        $cookieValue = $_COOKIE['ChampionCheckerCookie'] ?? null;
+
+
+        curl_setopt_array($curl, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+                'Accept: application/json',
+            ],
+            CURLOPT_USERAGENT => 'PHP API Request',
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_COOKIE => $cookieValue !== null ? "ChampionCheckerCookie={$cookieValue}" : null,
+        ]);
+
+        $response = curl_exec($curl);
+        $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $success = $statusCode < 400;
+
+        if ($response === false) {
+            $error = curl_error($curl);
+            throw new RuntimeException('cURL error: ' . $error);
+        }
+
+        return ['response' => $response, 'success' => $success];
     }
 
     private function sendApiRequest(string $endpoint, string $method, array $data = []): array
@@ -161,7 +243,7 @@ class UserController
             ],
             CURLOPT_USERAGENT => 'PHP API Request',
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => false, // Server SSL-Zertifikat nicht prüfen (nur für Entwicklung)
+            CURLOPT_SSL_VERIFYPEER => false,
         ]);
 
         $response = curl_exec($curl);
@@ -178,7 +260,7 @@ class UserController
         $statusCode = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
         $responseBody = json_decode($body, true);
 
-        // Cookies aus den Headern extrahieren und setzen
+        // Cookie aus dem Header extrahieren und speichern
         preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $header, $matches);
         foreach ($matches[1] as $cookieStr) {
             [$cookieName, $cookieValue] = explode('=', trim($cookieStr), 2);
@@ -195,8 +277,8 @@ class UserController
         return [
             'statusCode' => $statusCode,
             'response' => $responseBody,
-            // Bei erfolgreicher Anfrage enthält der Body den Nutzernamen,
-            // bei Fehlern die Fehlermeldung, die über response['errors'][0]['description']
+            // Bei erfolgreicher Anfrage enthält der Body den Nutzernamen.
+            // Bei Fehlern die Fehlermeldung, die über response['errors'][0]['description']
             // abgerufen werden kann
         ];
     }

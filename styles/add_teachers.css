@@ -38,10 +38,6 @@ select {
   }
 }
 
-option {
-  cursor: pointer;
-}
-
 @media (max-width: 37.5rem) {
   input[type="text"],
   input[type="email"],
