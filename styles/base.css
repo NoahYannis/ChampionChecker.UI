@@ -347,6 +347,7 @@ select {
 
   &:hover {
     border-color: var(--primary-color);
+    cursor: pointer;
   }
 
   &:not(.readonly-input) {

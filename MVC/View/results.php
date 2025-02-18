@@ -91,6 +91,7 @@ function loadCompetitionResults($cacheDuration = 300): array
     $_SESSION['results_competitionResults_class'] = $classResults;
     $_SESSION['results_competitionResults_students'] = $studentResults;
     $_SESSION['results_competitionResultsTimestamp'] = time();
+    $_SESSION['results_competitionResults'] = $competitionResults;
 
     return $competitionResults;
 }
