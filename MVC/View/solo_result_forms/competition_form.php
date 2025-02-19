@@ -21,7 +21,6 @@ function getStudentClassName($id)
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="../../../styles/solo_results.css" />
     <title>Stationsauswertung</title>
 </head>
 
