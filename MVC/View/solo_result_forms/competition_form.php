@@ -264,7 +264,7 @@ function getStudentClassName($id)
         }
 
         window.addEventListener("resize", () => {
-            document.querySelectorAll(".flex-container").forEach(fc =>
+            attemptTable.querySelectorAll("table.flex-container").forEach(fc =>
                 fc.classList.toggle("row", !window.matchMedia("(width < 37rem)").matches)
             );
         });
