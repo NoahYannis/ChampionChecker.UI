@@ -261,6 +261,7 @@ include 'nav.php';
 
                 let competitionSelect = createCompetitionSelect(allCompetitions, cells[4]);
                 cells[4].appendChild(competitionSelect);
+                cells[4].classList.add("td-big");
             });
         }
 
@@ -306,6 +307,8 @@ include 'nav.php';
                         ${obj.name}
                         </span>`;
                     }).join(' ');
+
+                cells[4].classList.remove("td-big");
 
 
                 cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isRegistrationFinalized ? 'green' : 'red'}'></span></div>`;
@@ -508,7 +511,7 @@ include 'nav.php';
             if (isEditing) {
                 return;
             }
-            
+
             // Richtung togglen
             sortDirections[columnIndex] = sortDirections[columnIndex] === "asc" ? "desc" : "asc";
             let sortOrder = sortDirections[columnIndex];

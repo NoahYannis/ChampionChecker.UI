@@ -47,7 +47,7 @@
 
   .status-circle {
     height: 1rem;
-    width: 1rem;  
+    width: 1rem;
   }
 
   .td-content {
@@ -56,5 +56,16 @@
 
   section {
     margin: 0.75rem;
+  }
+
+  /* Stationsauswahl bedienbarer machen für kleine Viewports im Edit-Modus */
+  .td-big {
+    max-width: 10rem !important;
+    margin: 0.3125rem;
+
+    option {
+      font-size: 0.55rem;
+      text-overflow: ellipsis;
+    }
   }
 }
