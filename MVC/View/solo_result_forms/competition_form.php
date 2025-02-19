@@ -139,7 +139,10 @@ function getStudentClassName($id)
 
                 while (inputCount < count) {
                     let flexContainer = document.createElement("div");
-                    flexContainer.classList.add("flex-container", "row");
+
+                    flexContainer.classList.add(
+                        "flex-container", window.matchMedia("(width < 37rem)").matches 
+                        ?   "column" : "row");
 
                     let label = document.createElement("label");
                     label.textContent = (inputCount + 1) + ". Versuch:";
@@ -259,6 +262,12 @@ function getStudentClassName($id)
                 `;
             });
         }
+
+        window.addEventListener("resize", () => {
+            document.querySelectorAll(".flex-container").forEach(fc =>
+                fc.classList.toggle("row", !window.matchMedia("(width < 37rem)").matches)
+            );
+        });
     </script>
 </body>
 
