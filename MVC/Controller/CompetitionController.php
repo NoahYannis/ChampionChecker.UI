@@ -52,7 +52,6 @@ class CompetitionController implements IController
                 studentParticipants: $data['studentParticipants'] ?? [],
                 date: $data['date'],
                 refereeId: $data['refereeId'],
-                referee: $data['referee'] ?? null,
                 status: CompetitionStatus::from($data['status']),
                 additionalInfo: $data['additionalInfo']
             );
@@ -87,7 +86,6 @@ class CompetitionController implements IController
                 isMale: $item['isMale'],
                 date: new DateTime($item['date']),
                 refereeId: $item['refereeId'],
-                referee: $item['referee'] ?? null,
                 status: CompetitionStatus::from($item['status']),
                 additionalInfo: $item['additionalInfo']
             );
@@ -113,7 +111,6 @@ class CompetitionController implements IController
             'studentParticipants' => $model->getStudentParticipants(),
             'date' => $model->getDate(),
             'refereeId' => $model->getRefereeId(),
-            'referee' => $model->getReferee(),
             'status' => $model->getStatus(),
             'additionalInfo' => $model->getAdditionalInfo()
         ];
@@ -137,7 +134,6 @@ class CompetitionController implements IController
             'isMale' => $model->getIsMale(),
             'date' => $model->getDate()->format(DateTime::ATOM),
             'refereeId' => $model->getRefereeId(),
-            'referee' => $model->getReferee(),
             'status' => $model->getStatus(),
             'additionalInfo' => $model->getAdditionalInfo()
         ];

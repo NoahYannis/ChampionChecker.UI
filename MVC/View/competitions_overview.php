@@ -84,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             },
             date: DateTime::createFromFormat("Y-m-d\TH:i:s", $data['date']),
             refereeId: 0,
-            referee: null, // TODO: Nur ID übergeben
             status: CompetitionStatus::fromString($data['state']),
             additionalInfo: trim($data['additionalInfo'])
         );
