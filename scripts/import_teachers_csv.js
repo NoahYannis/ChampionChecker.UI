@@ -43,14 +43,27 @@
     const lines = data.split("\n").slice(1); // Kopfzeile entfernen.
 
     for (const line of lines) {
-      const [lastName, firstName, shortCode] = line
-        .split(";")
-        .map((item) => item.trim());
+      const [
+        lastName,
+        firstName,
+        shortCode,
+        class1,
+        class2,
+        participatingText,
+      ] = line.split(";").map((item) => item.trim());
+
+      // Name & Kürzel müssen vorhanden sein, Klassenbetreuung für Import optional.
       if (lastName && firstName && shortCode) {
+        const isParticipating =
+          participatingText && participatingText.toLowerCase() === "ja";
+
         teachers.push({
           lastName,
           firstName,
           shortCode,
+          class1,
+          class2,
+          isParticipating,
         });
       }
     }
@@ -80,13 +93,21 @@
     // Tabelle erstellen und Lehrer-Daten anzeigen.
     const table = document.createElement("table");
     const header = document.createElement("tr");
-    header.innerHTML = "<th>Vorname</th><th>Nachname</th><th>Kürzel</th>";
+    header.innerHTML =
+      "<th>Vorname</th><th>Nachname</th><th>Kürzel</th><th>Klasse 1</th><th>Klasse 2</th><th>Aktiv</th>";
     table.appendChild(header);
 
     // Alle Zeilen bis auf Kopfzeile durchgehen.
     teachers.forEach((teacher) => {
       const row = document.createElement("tr");
-      row.innerHTML = `<td>${teacher.firstName}</td><td>${teacher.lastName}</td><td>${teacher.shortCode}</td>`;
+
+      row.innerHTML = `<td>${teacher.firstName}</td>
+      <td>${teacher.lastName}</td>
+      <td>${teacher.shortCode}</td>
+      <td>${teacher.class1 || "-"}</td>
+      <td>${teacher.class2 || "-"}</td>
+      <td>${teacher.isParticipating ? "Ja" : "Nein"}</td>`;
+
       table.appendChild(row);
     });
 
@@ -118,7 +139,7 @@
       .catch((error) => {
         spinner.style.display = "none";
         console.error("Fehler:", error);
-        resultMessage.innerHTML = `<p class="resultMessage error">Fehler beim Importieren der Lehrer.</p>`;
+        resultMessage.innerHTML = `<p class="resultMessage error">Fehler beim Importieren der Lehrer-CSV-Datei.</p>`;
       });
   }
 

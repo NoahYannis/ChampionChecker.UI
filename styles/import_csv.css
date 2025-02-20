@@ -1,8 +1,6 @@
-
 .import-header {
   display: flex;
 }
-
 
 .custom-file-upload {
   cursor: pointer;
@@ -25,7 +23,6 @@
 input[type="file"] {
   display: none;
 }
-
 
 table {
   border-collapse: collapse;
@@ -50,14 +47,15 @@ table {
   }
 }
 
-@media screen and (max-width: 48rem) {
+.resultMessage {
+  padding-inline: 0.625rem;
+  margin-top: 2rem;
+}
+
+@media (width < 48rem) {
   form.uploadForm {
     margin-top: 1rem;
     justify-content: center;
-  }
-
-  .resultMessage .error {
-    padding-inline: 0.625rem;
   }
 
   fieldset {
@@ -69,11 +67,13 @@ table {
   table {
     font-size: clamp(0.6rem, 1.5vw, 1.2rem);
     font-weight: 600;
+
+    th {
+      padding: 0.3125rem;
+    }
   }
 
   .scrollable-container {
-    padding-left: 3vw;
-    padding-right: 3vw;
     max-width: 80vw;
   }
 
@@ -83,12 +83,8 @@ table {
   }
 }
 
-@media screen and (min-width: 48rem) {
+@media (width > 48rem) {
   form.uploadForm {
     margin-block: 5rem;
-  }
-
-  table {
-    width: 80%;
   }
 }
