@@ -46,7 +46,6 @@ input[type="submit"] {
   top: -0.625rem;
   left: 50%;
   transform: translateX(-50%);
-  background: white;
   padding: 0 0.625rem;
   font-weight: bold;
   white-space: nowrap;

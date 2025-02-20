@@ -381,6 +381,7 @@ include 'nav.php';
 
         async function generateStudentTable(studentJSON) {
             let timeStamp = "<?php echo isset($_SESSION['overview_students_timestamp']) ? date('d.m.Y H:i:s', $_SESSION['overview_students_timestamp']) : ''; ?>";
+            studentJSON = Array.isArray(studentJSON) ? studentJSON : Object.values(studentJSON);
 
             if (timeStamp) {
                 document.getElementById('timestamp-container').innerHTML = `<p>Zuletzt aktualisiert: ${timeStamp}</p>`;

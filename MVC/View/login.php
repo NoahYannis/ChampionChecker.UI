@@ -68,7 +68,6 @@ include 'nav.php';
         </form>
 
         <div class="divider-container">
-            <hr class="divider">
             <span class="divider-text">Noch nicht registriert?</span>
         </div>
 

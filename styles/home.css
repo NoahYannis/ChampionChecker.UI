@@ -12,6 +12,10 @@ section {
   margin-top: 3rem;
 }
 
+.competition-table {
+  color: black;
+}
+
 .competition-table tbody tr:nth-child(1) {
   background-color: gold;
 }
