@@ -114,6 +114,8 @@ function getStudentClassName($id)
         displayAttemptInputs(1);
         updateEvaluationTable();
 
+        window.addEventListener("resize", updateFlexContainerLayout);
+
         attemptsSelection.addEventListener("change", () => {
             let count = attemptsSelection.selectedOptions[0].value;
             displayAttemptInputs(count)
@@ -131,7 +133,6 @@ function getStudentClassName($id)
                 let currentInputs = cell.querySelectorAll("input");
                 let inputCount = currentInputs.length;
 
-
                 while (inputCount > count) {
                     cell.removeChild(cell.lastChild);
                     inputCount--;
@@ -140,9 +141,8 @@ function getStudentClassName($id)
                 while (inputCount < count) {
                     let flexContainer = document.createElement("div");
 
-                    flexContainer.classList.add(
-                        "flex-container", window.matchMedia("(width < 37rem)").matches 
-                        ?   "column" : "row");
+                    // Je nach Viewport-Breite die Label über oder neben das Versuchsinput platzieren.
+                    flexContainer.classList.add("flex-container", window.matchMedia("(max-width: 37rem)").matches ? "column" : "row");
 
                     let label = document.createElement("label");
                     label.textContent = (inputCount + 1) + ". Versuch:";
@@ -263,11 +263,13 @@ function getStudentClassName($id)
             });
         }
 
-        window.addEventListener("resize", () => {
-            attemptTable.querySelectorAll("table.flex-container").forEach(fc =>
-                fc.classList.toggle("row", !window.matchMedia("(width < 37rem)").matches)
-            );
-        });
+        // Anordnung der Versuchszeile anpassen wenn sich die Viewport-Breite ändert.
+        function updateFlexContainerLayout() {
+            attemptTable.querySelectorAll(".flex-container").forEach(fc => {
+                fc.classList.toggle("row", !window.matchMedia("(max-width: 37rem)").matches);
+                fc.classList.toggle("column", window.matchMedia("(max-width: 37rem)").matches);
+            });
+        }
     </script>
 </body>
 
