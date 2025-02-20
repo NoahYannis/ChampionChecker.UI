@@ -19,8 +19,22 @@ th {
   }
 }
 
+#class-select {
+  height: 5.25rem;
+  transition: height 0.3s ease;
+  max-height: unset;
 
-@media (min-width: 37.5rem) {
+  &:focus {
+    height: 12.5rem;
+  }
+}
+
+.table-style td.td-edit,
+.table-style th.td-edit {
+  min-width: 8rem !important;
+}
+
+@media (width > 37.5rem) {
   .table-style th,
   .table-style td {
     max-width: 18.75rem;

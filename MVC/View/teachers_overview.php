@@ -336,6 +336,7 @@ include 'nav.php';
                         </span>` :
                         "-";
                 }).join(' ');
+                cells[3].classList.add("td-edit"); // Klassenzuweisung für Mobile breiter machen.
 
                 if (isParticipating) {
                     addClassSelect(cells, classData, classes);
@@ -425,6 +426,7 @@ include 'nav.php';
                 cells[1].innerHTML = `<div class='td-content'>${firstName}</div>`;
                 cells[2].innerHTML = `<div class='td-content'>${shortCode}</div>`;
                 cells[3].innerHTML = `<div class='td-content'>${classElements}</div>`;
+                cells[3].classList.remove("td-edit");
                 cells[4].innerHTML = `<div class='td-content` + (additionalInfo === '-' ? ' empty' : '') + `'>${additionalInfo}</div>`;
                 cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isParticipating ? 'green' : 'red'}'></span></div>`;
             });
