@@ -344,6 +344,12 @@ include 'nav.php';
 
             rows = Array.from(tbody.getElementsByTagName("tr"));
             table.appendChild(tbody);
+
+            // Stationsleiter-Zelle ausblenden, da Speichern und Ändern nicht implementiert.
+            table.querySelectorAll("th:nth-child(3), td:nth-child(3)").forEach(cell => {
+                cell.classList.add("hidden");
+            });
+
             document.querySelector('section').appendChild(table);
         }
 
