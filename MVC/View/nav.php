@@ -129,11 +129,6 @@ $profileImageUrl = $isAuthenticated
                             <i class="fas fa-sign-out-alt"></i> Ausloggen
                         </a>
                     </li>
-                    <li>
-                        <a href="#">
-                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
-                        </a>
-                    </li>
                 <?php else: ?>
                     <li>
                         <a href="signup.php">
@@ -145,23 +140,32 @@ $profileImageUrl = $isAuthenticated
                             <i class="fas fa-sign-in-alt"></i> Anmelden
                         </a>
                     </li>
-                    <li>
-                        <a href="#">
-                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
-                        </a>
-                    </li>
                 <?php endif; ?>
+                <li>
+                    <a href="#">
+                        <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="theme-toggle">
+                        <i class="fas fa-sun"></i>Ansicht
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
 </body>
 
 <script>
+    const body = document.querySelector("body");
     const profilePic = document.getElementById('profile');
     const profileMenu = document.getElementById('profile-menu');
     const hamburgerInput = document.getElementById('hamburger-input');
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const sideBar = document.querySelector('.sidebar');
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('i');
 
     document.addEventListener("DOMContentLoaded", () => {
         const isAuthenticated = <?php echo json_encode($isAuthenticated); ?>;
@@ -199,6 +203,13 @@ $profileImageUrl = $isAuthenticated
             hamburgerInput.checked = false;
             sideBar.classList.toggle("open");
         }
+    });
+
+    themeToggle.addEventListener('click', () => {
+        themeIcon.classList.toggle('fa-sun');
+        themeIcon.classList.toggle('fa-moon');
+        const isDark = body.classList.toggle("darkmode");
+        localStorage.setItem("darkmode", isDark ? "enabled" : "disabled");
     });
 
     function logout() {
