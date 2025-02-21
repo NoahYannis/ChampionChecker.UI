@@ -44,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-
     $teacher = new Teacher(
         id: null,
         firstName: $firstname,
@@ -116,7 +115,8 @@ if (!isset($mode)) {
 
                 <label for="shortcode">
                     <abbr title="Das Kürzel muss einzigartig und zwischen 2 bis 5 Zeichen lang sein.">Kürzel:</abbr>
-                </label> <input type="text" id="shortcode" name="shortcode" minlength="2" maxlength="5" required>
+                </label>
+                <input type="text" id="shortcode" name="shortcode" minlength="2" maxlength="5" required>
 
                 <label for="additional-info">Zusätzliche Informationen:</label>
                 <textarea id="additional-info" name="additional-info"></textarea>

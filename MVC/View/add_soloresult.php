@@ -1,5 +1,6 @@
 <?php
-// Hier werden Einzelergebnisse angelegt. Nach Auswahl einer Station aus dem Select wird ein weiteres Formular für die Auswertung eingebunden.
+// Hier werden Einzelergebnisse angelegt. `
+//Nach Auswahl einer Station aus dem Select wird ein weiteres Formular für die Auswertung eingebunden.
 
 require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 
@@ -104,6 +105,7 @@ include 'nav.php';
 		<h1>Einzelergebnisse eintragen</h1>
 	</header>
 
+	<!-- Stationsauswahl. Infos für JavaScript an die HTML-Optionen per Data-Attribut schreiben. -->
 	<div class="flex-container">
 		<select id="competitions">
 			<option selected disabled value="default">Station auswählen:</option>
@@ -122,6 +124,7 @@ include 'nav.php';
 		</select>
 	</div>
 
+	<!-- Zeigt Infos über die ausgewählte Station an -->
 	<div id="competition-info-section" class="hidden">
 		<label>Stations-Informationen:</label>
 		<table id="info-table" class="table-style">
@@ -188,7 +191,7 @@ include 'nav.php';
 					resultForm.innerHTML = html;
 					submitButton.classList.remove("hidden");
 					const formScript = resultForm.querySelector("script");
-					eval(formScript.textContent);
+					eval(formScript.textContent); // Script des eingebunden Formulars ausführen, u.A. um Handler zu registrieren.
 				})
 				.catch(error => console.error("Error loading form:", error));
 		}

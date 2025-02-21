@@ -19,6 +19,8 @@ $isDuplicateResult = !empty($duplicateResults);
 echo json_encode($isDuplicateResult);
 exit;
 
+
+// Lädt die Stationsergebnisse. Falls ein gültiges Cache besteht daraus, ansonsten aus der Datenbank.
 function loadCompetitionResults($cacheDuration = 300): array
 {
     // Gecachte Daten für die Dauer des Cache zurückgeben.

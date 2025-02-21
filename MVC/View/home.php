@@ -33,6 +33,8 @@ function loadCompetitionResults($cacheDuration = 300): array
 
     return $competitionResults;
 }
+
+// Addiert alle Klassenpunkte und die Ergebnisse ihrer Schüler auf.
 function aggregatePointsByClass($competitionResults)
 {
     $pointsByClass = [];
@@ -45,7 +47,6 @@ function aggregatePointsByClass($competitionResults)
             $student = StudentController::getInstance()->getById($result->getStudentId());
             $classId = $student->getClassId();
         }
-
 
         $points = $result->getPointsAchieved();
 
@@ -111,16 +112,19 @@ $competitionResults = loadCompetitionResults();
         <h1>Auswertung</h1>
     </header>
 
+    <!-- Anzeig Auswertungsfortschritt -->
     <div class="flex-container">
         <p id="evaluation-text"></p>
         <div id="evaluation-progressbar" class="progressbar hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
         <div class="spinner" id="spinner"></div>
     </div>
 
+    <!-- Ergebnisanzeige -->
     <section>
         <?php printCompetitionResult($competitionResults); ?>
     </section>
 
+    <!-- Anzeige anstehende Stationen -->
     <section>
         <div class="flex-container">
             <h2>Anstehende Stationen</h2>
@@ -152,12 +156,12 @@ $competitionResults = loadCompetitionResults();
             try {
                 spinner.style.display = 'block';
                 const response = await fetch("../../Helper/get_comp_evaluation_progress.php").then(r => r.json());
-                const completed = response[0];
-                const total = response[1];
+                const completed = response[0]; // Abgeschlossene Stationen
+                const total = response[1]; // Insgesamte Stationsanzahl
                 const progress = Math.min(Math.round((completed / total) * 100), 100);
 
                 progressText.textContent = `Es wurden ${completed} von ${total} Stationen ausgewertet.`;
-                progressBar.style.setProperty('--value', progress);
+                progressBar.style.setProperty('--value', progress); // Custom CSS-Eigenschaft für Fortschritt der Progressbar
                 progressBar.setAttribute('aria-valuenow', progress);
                 progressBar.classList.remove('hidden');
             } catch (error) {

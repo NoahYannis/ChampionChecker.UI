@@ -2,13 +2,15 @@
 <html lang="de">
 
 <?php
+// Hier kann ein Nutzer sein Passwort zurücksetzen. Nach Eingabe seiner Email erhält der Nutzer eine Email mit 
+// Link zum Zurücksetzen des Passworts. Nach Eingabe eines neuen Passworts wird dieses anschließend zurückgesetzt.
 require '../../vendor/autoload.php';
 
 use MVC\Controller\UserController;
 
 $passwordResetEmailClicked = false;
-$token = null;
-$email = null;
+$token = null; // Reset-Token aus ChampionChecker-Email
+$email = null; // Nutzer-Email
 
 // Query-Parameter sind im Email-Link enthalten
 $token = $_GET['token'] ?? null;
@@ -28,8 +30,7 @@ if (isset($_POST['newPassword']) && $token && $email) {
         alert('Ihr Passwort wurde erfolgreich geändert.');
         window.location.href = 'login.php';
         </script>";
-    }
-    else {
+    } else {
         $error = $passwordResetSuccessful['response']['errors'][0]['description'] ?? '';
         $error = addslashes($error); // Sonderzeichen escapen
         echo "<script>alert('$error');</script>";

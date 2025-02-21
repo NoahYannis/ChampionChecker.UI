@@ -2,10 +2,9 @@ body {
   font-size: clamp(0.9rem, 2.5vw, 1.2rem);
 }
 
-
 section {
-  margin-block: 1rem; 
-  border-top: 3px solid #ccc; 
+  margin-block: 1rem;
+  border-top: 3px solid #ccc;
 }
 
 .timestamp-container {
@@ -13,7 +12,7 @@ section {
 }
 
 .competition-table {
-  color: black;
+  color: black; /* Immer schwarz anzeigen für besseren Kontrast */
 }
 
 .competition-table tbody tr:nth-child(1) {

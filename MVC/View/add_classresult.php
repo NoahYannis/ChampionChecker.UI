@@ -1,5 +1,10 @@
 	<?php
-	// Hier werden Klassenergebnisse hinzugefügt.
+	/*
+	Hier werden Klassenergebnisse hinzugefügt.
+	Hinweis Noah Guderjahn: Das war meine erste View im Projekt. Zu Beginn des Projektes kannte ich mich wenig mit PHP
+	und überhaupt nicht mit JavaScript aus, weswegen die Seite hier code- und ux-mäßig nicht auf dem Niveau wie die meisten ist.
+	Durch diese Unterschiede merke ich den Fortschritt sehr deutlich, den ich in dieser Zeit gemacht habe :)
+	*/
 
 	require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 

@@ -257,7 +257,7 @@ class ClassController implements IController
             CURLOPT_SSL_VERIFYHOST => false
         ]);
 
-        $response = curl_exec($curl);
+        $response = curl_exec($curl); 
         curl_close($curl);
 
         if ($response === false) {

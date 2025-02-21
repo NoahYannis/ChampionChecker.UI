@@ -2,12 +2,13 @@
 header('Content-Type: application/json; charset=utf-8');
 
 require_once '../vendor/autoload.php';
+
 use MVC\Controller\ClassController;
 
 if (!isset($_SESSION['classes'])) {
-$allClasses = ClassController::getInstance()->getAll();
-$_SESSION['classes'] = $allClasses;
-}   
+    $allClasses = ClassController::getInstance()->getAll();
+    $_SESSION['classes'] = $allClasses;
+}
 
 $classStudents = [];
 

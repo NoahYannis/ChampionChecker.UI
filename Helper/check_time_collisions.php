@@ -6,6 +6,7 @@ require_once '../vendor/autoload.php';
 use MVC\Controller\CompetitionController;
 use MVC\Controller\StudentController;
 
+// Lädt alle Schüler entweder aus dem Cache oder der Datenbank.
 function loadAllStudents($cacheDuration = 300): array
 {
     if (isset($_SESSION['students']) && isset($_SESSION['overview_students_timestamp'])) {
@@ -35,6 +36,8 @@ foreach ($allStudents as $student) {
     }
 
     $competitionTimes = [];
+
+    // Daten der Schülerstationen abfragen.
     foreach ($studentCompetitions as $compId => $compName) {
         $competition = array_filter($competitionData, fn($comp) => $comp->getId() == $compId);
         $competition = reset($competition);

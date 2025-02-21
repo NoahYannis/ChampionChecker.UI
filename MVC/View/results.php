@@ -168,7 +168,7 @@ function printCompetitionResult()
     echo "</table>";
 
 
-    // Einzelergebnisse ab Rolle Lehrkraft sichtbar
+    // Einzelergebnisse nur ab Rolle Lehrkraft sichtbar
     if (UserController::getInstance()->getRole()->value > 1) {
         echo "<h2>Schüler-Ergebnisse:</h2>";
         echo "<table id='results-table-students' class='table-style'>";
@@ -375,6 +375,8 @@ include 'nav.php';
 
                 if (data.success) {
                     const row = table.rows[rowIndex];
+
+                    // Gelöschte Zeile aus Tabelle und Cache entfernen.
                     if (row) {
                         storedValues.delete(row);
                         row.remove();
@@ -458,7 +460,7 @@ include 'nav.php';
         }
 
 
-        // Überprüft, ob eine Punktzahl bearbeitet wurde. storedScore[0] speichert die Wettbewerbs-ID, storedScore[1] den gecachten Wert dazu.
+        // Überprüft, ob eine Punktzahl bearbeitet wurde. storedScore[0] speichert die Stations-ID, storedScore[1] den gecachten Wert dazu.
         function checkIfScoreWasModified(inputValue, storedScore) {
             return inputValue !== storedScore[1];
         }

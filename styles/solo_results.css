@@ -32,7 +32,7 @@
 
 .best-attempt {
   border: 2px solid gold !important;
-  outline: none;
+  outline: none; /* Gold-Umrandung auch bei Fokus anzeigen */
   box-shadow: 0 0 3px gold;
 }
 

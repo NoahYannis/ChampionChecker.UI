@@ -132,6 +132,7 @@ abbr {
   margin-left: 0.625rem;
 }
 
+/* Spinner-Animation */
 @keyframes spin {
   0% {
     transform: rotate(0deg);
@@ -239,6 +240,7 @@ button {
   }
 }
 
+/* Basis-Styles für Aktionsbuttons (Hinzufügen, Entfernen, Bearbeiten...) */
 .circle-button {
   border-radius: 16px;
   padding-inline: 0.625rem;
@@ -349,6 +351,7 @@ option {
   }
 }
 
+/* Namesanzeige für Schüler, Stationen und Klassen */
 .name-badge {
   display: inline-block;
   border-radius: 16px;

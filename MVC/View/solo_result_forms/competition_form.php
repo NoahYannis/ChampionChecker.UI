@@ -1,4 +1,5 @@
 <?php
+// Standard-Formular für die meisten Stationen bis auf Tischtennis (tournament_form).
 
 require '../../../vendor/autoload.php';
 
@@ -6,7 +7,7 @@ use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
 
 
-$inputJSON = file_get_contents('php://input');
+$inputJSON = file_get_contents('php://input'); // Schüler-Daten kommen aus add_soloresult
 $studentParticipants = json_decode($inputJSON, true);
 
 function getStudentClassName($id)
@@ -25,6 +26,7 @@ function getStudentClassName($id)
 </head>
 
 <body>
+    <!-- Auswahl der Versuchsanzahl und Messungseinheit -->
     <div class="flex-container row">
         <div>
             <label for="attempts-selection">Versuche:</label>
@@ -51,6 +53,7 @@ function getStudentClassName($id)
         </div>
     </div>
 
+    <!-- Eintragung der Schüler-Versuchsergebnisse -->
     <table id="attempt-table" class="table-style">
         <thead>
             <tr>
@@ -82,6 +85,7 @@ function getStudentClassName($id)
 
     <h2>Auswertung:</h2>
 
+    <!-- Automatisch, basierend auf Ergebnissen generierte Auswertungstabelle -->
     <table id="evaluation-table" class="table-style">
         <thead>
             <tr>
@@ -106,11 +110,11 @@ function getStudentClassName($id)
 
         let evaluationTableBody = document.querySelector("#evaluation-table tbody");
 
-        let pointsDistribution = [7, 5, 4, 3, 2, 1];
+        let pointsDistribution = [7, 5, 4, 3, 2, 1]; // 1.Platz = 7P, 2.Platz = 5P ...
         let unit = "p"; // Punkte
 
 
-        // Standardmäß ein Versuch pro Schüler
+        // Standardmäß ein Versuchsfeld pro Schüler anzeigen
         displayAttemptInputs(1);
         updateEvaluationTable();
 
@@ -198,6 +202,7 @@ function getStudentClassName($id)
 
             let bestAttemptInput;
 
+            // Bei Punkten und Meter gewinnt der größere Wert, bei Zeiten der kleinere.
             if (unit === "z") {
                 bestAttemptInput = attemptInputs.reduce((best, input) => {
                     let [bestMinutes, bestSeconds] = best.value.split(":").map(Number);

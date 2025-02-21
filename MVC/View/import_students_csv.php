@@ -54,8 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             lastName: trim($data['lastName']),
             isMale: filter_var($data['isMale'], FILTER_VALIDATE_BOOLEAN),
             classId: $classController->getIdFromName(trim($data['className'])),
-            competitions: null,
-            competitionResults: null
+            competitions: null, // Nicht über CSV-Import setzbar
+            competitionResults: null // Nicht über CSV-Import setzbar
         );
 
         $result = $studentController->create($student);
@@ -69,9 +69,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($importSuccess) {
         $response['message'] = 'Schüler erfolgreich importiert.';
-        unset($_SESSION['overview_students_timestamp']);
     }
 
+    unset($_SESSION['overview_students_timestamp']); // Schüler-Cache zurücksetzen, da selbst bei Fehlern ein Teil-Import stattgefunden haben könnte.
     echo json_encode($response);
     exit;
 }

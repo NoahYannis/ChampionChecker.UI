@@ -110,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     exit;
 }
 
+// Liefert eine Auflistung aller Schüler mit ID als Key, und Name als Value
 function getStudentDictionary(array $studentIds): array
 {
     global $studentController;
@@ -129,6 +130,8 @@ function getStudentDictionary(array $studentIds): array
     return $studentDictionary;
 }
 
+
+// Liefert eine Auflistung aller Klassen mit ID als Key und Name als Value
 function getClassDictionary(array $classIds): array
 {
     global $classController;
@@ -184,8 +187,13 @@ include 'nav.php';
         <h1>Stationenverwaltung</h1>
     </header>
 
+    <!-- Anzeige für Ergebnis von Speichervorgängen -->
     <div id="result-message" class="result-message hidden"></div>
+
+    <!-- Zeigt den Zeitpunkt der letzten Aktualisierung der Daten an -->
     <div id="timestamp-container" class="timestamp-container"></div>
+
+    <!-- Bearbeiten/Speichern und Abbrechen-Button -->
     <div class="button-container">
         <button class="circle-button edit-button" id="edit-button">
             <i class="fas fa-pencil-alt"></i>
@@ -924,7 +932,6 @@ include 'nav.php';
                         nameBadge.remove();
                     }
                 }
-
             });
         }
     </script>

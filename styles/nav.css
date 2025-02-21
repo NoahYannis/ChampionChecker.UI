@@ -2,6 +2,7 @@
   /* Hamburger-Höhe = Höhe der Balken + Zwischenlücken */
   --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
 
+  /* Weitere Hamburger-Menü-Eigenschaften */
   --bar-width: 40px;
   --bar-height: 6px;
   --hamburger-gap: 6px;
@@ -173,6 +174,7 @@
   }
 }
 
+/* Wird beim Klick auf das Profilbild angezeigt */
 .profile-menu {
   display: flex;
   flex-direction: column;

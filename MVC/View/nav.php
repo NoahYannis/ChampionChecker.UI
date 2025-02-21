@@ -60,6 +60,8 @@ $profileImageUrl = $isAuthenticated
             </ul>
         </div>
     </aside>
+
+    <!-- Navigationsleiste oben -->
     <nav class="nav-bar">
         <div class="hamburger-logo-group">
             <label class="hamburger-menu">
@@ -118,7 +120,7 @@ $profileImageUrl = $isAuthenticated
 
         <div class="profile" id="profile"
             style="background-image: url('<?= $profileImageUrl; ?>');"
-            data-content-initials="">
+            data-content-initials=":)"> <!-- Für Gast-Nutzer ":)" als Profil-Initialien anzeigen -->
         </div>
 
         <div class="profile-menu" id="profile-menu" style="display: none;">
@@ -170,6 +172,7 @@ $profileImageUrl = $isAuthenticated
     document.addEventListener("DOMContentLoaded", () => {
         const isAuthenticated = <?php echo json_encode($isAuthenticated); ?>;
 
+        // Profil-Initialien für autorisierte Nutzer setzen
         (isAuthenticated) && profilePic.setAttribute(
             'data-content-initials',
             localStorage.getItem("Initials") ?? ""
