@@ -174,6 +174,26 @@ $profileImageUrl = $isAuthenticated
             'data-content-initials',
             localStorage.getItem("Initials") ?? ""
         );
+
+        // Ansichtspräferenz des Nutzers abfragen.
+        let darkMode = localStorage.getItem("darkmode");
+
+        // Beim ersten Öffnen ist hier noch nichts gesetzt => Systemeinstellungen abfragen.
+        if (!darkMode) {
+            darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "enabled" : "disabled";
+        }
+
+        if (darkMode === "enabled") {
+            body.classList.add("darkmode");
+            themeIcon.classList.add("fa-moon");
+            themeIcon.classList.remove("fa-sun");
+        } else {
+            themeIcon.classList.add("fa-sun");
+            themeIcon.classList.remove("fa-moon");
+        }
+
+        // Präferenz im LocalStorage speichern.
+        localStorage.setItem("darkmode", darkMode);
     })
 
     // Sidebar bei Klick auf Hamburger-Icon toggeln
