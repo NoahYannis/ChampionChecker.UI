@@ -45,7 +45,6 @@ $profileImageUrl = $isAuthenticated
                 <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
                     <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
                     <li><a href="add_soloresult.php">Einzelergebnis hinzufügen</a></li>
-                    <hr />
                     <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
                 <?php endif; ?>
 
