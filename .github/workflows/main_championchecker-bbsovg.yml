@@ -46,4 +46,4 @@ jobs:
         app-name: 'championchecker-bbsovg'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_da45d6c4bf7948149983ccd4b893d3de }}
-        images: 'index.docker.io/${{ secrets.DOCKER_USERNAME }}/championchecker.ui:${{ github.sha }}'
+        images: 'index.docker.io/noahyannisg/championchecker.ui:${{ github.sha }}'
