@@ -27,7 +27,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: index.docker.io/${{ secrets.DOCKER_USERNAME }}/championchecker.ui:${{ github.sha }}
+        tags: index.docker.io/noahyannisg/championchecker.ui:${{ github.sha }}
         file: ./Dockerfile
         build-args: GITHUB_PAT=${{ secrets.PAT }}
 
