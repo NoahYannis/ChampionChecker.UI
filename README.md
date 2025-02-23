@@ -2,7 +2,7 @@
 
 ### Überblick
 
-**ChampionChecker** ist eine digitale Lösung zur Organisation und Auswertung des jährlichen Sportfests der BBSOVG Magdeburg. Die Anwendung ersetzt den bisherigen papierbasierten Prozess durch eine moderne Webanwendung, die eine effizientere Organisation, Echtzeit-Auswertung und bessere Zusammenarbeit zwischen Lehrkräften und Wettkampfleitern ermöglicht.
+**[ChampionChecker](https://championchecker-bbsovg.azurewebsites.net/ChampionChecker.UI/MVC/View/home.php)** ist eine digitale Lösung zur Organisation und Auswertung des jährlichen Sportfests der BBSOVG Magdeburg. Die Anwendung ersetzt den bisherigen papierbasierten Prozess durch eine moderne Webanwendung, die eine effizientere Organisation, Echtzeit-Auswertung und bessere Zusammenarbeit zwischen Lehrkräften und Wettkampfleitern ermöglicht.
 
 ---
 
