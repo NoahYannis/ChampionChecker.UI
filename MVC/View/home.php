@@ -112,6 +112,8 @@ $competitionResults = loadCompetitionResults();
         <h1>Auswertung</h1>
     </header>
 
+    <h2>CI/CD Test :)</h2>
+
     <!-- Anzeig Auswertungsfortschritt -->
     <div class="flex-container">
         <p id="evaluation-text"></p>
