@@ -108,8 +108,8 @@ $profileImageUrl = $isAuthenticated
                         <a href="teachers_overview.php">Lehrer</a>
                         <ul class="dropdown-menu">
                             <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
-                            <li><a href="add_teachers_manual.php">Lehrer hinzufügen</a></li>
-                            <li><a href="import_teachers_csv.php">CSV-Import Lehrer</a></li>
+                            <li><a href="add_teachers_overview.php?mode=manual">Lehrer hinzufügen</a></li>
+                            <li><a href="add_teachers_overview.php?mode=csv">CSV-Import Lehrer</a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
