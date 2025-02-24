@@ -8,6 +8,7 @@ use MVC\Controller\CompetitionController;
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\UserController;
 use MVC\Model\CompetitionResult;
+use MVC\Model\CompetitionStatus;
 
 session_start();
 
@@ -117,7 +118,8 @@ include 'nav.php';
 					data-gender="<?= htmlspecialchars($comp->getIsMale() === true ? 'M' : ($comp->getIsMale() === false ? 'W' : 'N')) ?>"
 					data-participants="<?= htmlspecialchars(json_encode($comp->getStudentParticipants())) ?>"
 					data-info="<?= htmlspecialchars($comp->getAdditionalInfo()) ?>"
-					<?= (count($comp->getStudentParticipants()) == 0) ? 'disabled' : '' ?>>
+					<?= (count($comp->getStudentParticipants()) == 0
+						|| $comp->getStatus() == CompetitionStatus::Beendet) ? 'disabled' : '' ?>>
 					<?= htmlspecialchars($comp->getName()) ?>
 				</option>
 			<?php endforeach; ?>
@@ -259,6 +261,11 @@ include 'nav.php';
 					"Beim Auswerten der Station ist ein Fehler aufgetreten.";
 
 				alert(message);
+
+				if (data.success) {
+					fetch(`../../Helper/set_comp_completed.php?compId=${compId}`)
+						.catch(error => console.error("Fehler:", error));
+				}
 			} catch (error) {
 				console.error('Error:', error);
 			} finally {

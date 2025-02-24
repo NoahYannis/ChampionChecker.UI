@@ -50,7 +50,9 @@ class CompetitionController implements IController
                 name: $data['name'],
                 classParticipants: $data['classParticipants'] ?? [],
                 studentParticipants: $data['studentParticipants'] ?? [],
-                date: $data['date'],
+                isTeam: $data['isTeam'],
+                isMale: $data['isMale'],
+                date: new DateTime($data['date']),
                 refereeId: $data['refereeId'],
                 status: CompetitionStatus::from($data['status']),
                 additionalInfo: $data['additionalInfo']
@@ -109,7 +111,9 @@ class CompetitionController implements IController
             'name' => $model->getName(),
             'classParticipants' => $model->getClassParticipants(),
             'studentParticipants' => $model->getStudentParticipants(),
-            'date' => $model->getDate(),
+            'isTeam' => $model->getIsTeam(),
+            'isMale' => $model->getIsMale(),
+            'date' => $model->getDate()->format(format: 'Y-m-d\TH:i'),
             'refereeId' => $model->getRefereeId(),
             'status' => $model->getStatus(),
             'additionalInfo' => $model->getAdditionalInfo()
@@ -132,7 +136,7 @@ class CompetitionController implements IController
             'studentParticipants' => empty($model->getStudentParticipants()) ? null : $model->getStudentParticipants(),
             'isTeam' => $model->getIsTeam(),
             'isMale' => $model->getIsMale(),
-            'date' => $model->getDate()->format(DateTime::ATOM),
+            'date' => $model->getDate()->format(format: 'Y-m-d\TH:i'),
             'refereeId' => $model->getRefereeId(),
             'status' => $model->getStatus(),
             'additionalInfo' => $model->getAdditionalInfo()
@@ -151,7 +155,7 @@ class CompetitionController implements IController
                     } else {
                         unset($_SESSION['soloresult_competitions']);
                     }
-                    
+
                     break;
                 }
             }
