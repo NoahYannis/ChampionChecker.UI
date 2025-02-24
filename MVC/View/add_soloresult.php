@@ -199,9 +199,16 @@ include 'nav.php';
 
 		function updateCompetitionInfo(selectedOption) {
 			document.getElementById("comp-name").textContent = selectedOption.value;
-			document.getElementById("comp-time").textContent = new Date(selectedOption.dataset.time).toLocaleString('de-DE');
 			document.getElementById("comp-other").textContent = selectedOption.dataset.info;
 			document.getElementById("comp-gender").textContent = selectedOption.dataset.gender;
+			document.getElementById("comp-time").textContent = new Date(selectedOption.dataset.time).toLocaleString('de-DE', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+				hour: '2-digit',
+				minute: '2-digit',
+				timeZone: 'Europe/Berlin'
+			});
 
 			let participants = Object.values(JSON.parse(selectedOption.dataset.participants));
 			const participantsHTML = participants.map(p => {

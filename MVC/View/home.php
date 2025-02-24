@@ -66,7 +66,7 @@ function printCompetitionResult($competitionResults)
 {
     global $classController;
 
-    echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
+    echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
 
     // Gesamtpunkte pro Klasse berechnen
     $pointsByClass = aggregatePointsByClass($competitionResults);
@@ -185,7 +185,14 @@ $competitionResults = loadCompetitionResults();
                     const dateCell = document.createElement('td');
 
                     nameCell.textContent = competition.name;
-                    dateCell.textContent = new Date(competition.date).toLocaleString('de-DE');
+                    dateCell.textContent = new Date(competition.date).toLocaleString('de-DE', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'Europe/Berlin'
+                    });
 
                     row.appendChild(nameCell);
                     row.appendChild(dateCell);

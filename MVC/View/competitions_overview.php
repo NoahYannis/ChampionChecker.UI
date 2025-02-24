@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 'N' => null,
                 default => null,
             },
-            date: DateTime::createFromFormat("Y-m-d\TH:i:s", $data['date']),
+            date: DateTime::createFromFormat("Y-m-d\TH:i", $data['date']),
             refereeId: 0,
             status: CompetitionStatus::fromString($data['state']),
             additionalInfo: trim($data['additionalInfo'])
@@ -306,7 +306,6 @@ include 'nav.php';
                     day: '2-digit',
                     hour: '2-digit',
                     minute: '2-digit',
-                    second: '2-digit',
                     timeZone: 'Europe/Berlin'
                 }).format(date);
                 dateCell.textContent = formattedDate;
@@ -685,7 +684,7 @@ include 'nav.php';
 
 
         function createISODateValueFromString(dateTimeString) {
-            // Anzeigeformat: 09.10.24, 20:13:29 (dd-mm-yyyy)
+            // Anzeigeformat: 09.10.24, 20:13 (dd-mm-yyyy)
             // Nötiges Format für datetime-local input: yyyy-MM-ddThh:mm
             let dateParts = dateTimeString.split(",").map(part => part.trim());
             let date = dateParts[0];
