@@ -251,6 +251,14 @@ include 'nav.php';
 			submitSpinner.style.display = 'inline-block';
 
 			try {
+				const isDuplicate = await fetch(`../../Helper/check_is_duplicate_result.php
+				?studentId=${resultsToCreate[0].studentId}&compId=${compId}`).then(d => d.json());
+
+				if (isDuplicate) {
+					alert(`Es existieren bereits Ergebnisse für diese Station und Teilnehmer. Bitte löschen oder bearbeiten Sie diese.`);
+					return;
+				}
+
 				const response = await fetch('add_soloresult.php', {
 					method: 'POST',
 					headers: {
