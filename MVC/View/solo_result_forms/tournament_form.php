@@ -37,11 +37,11 @@
     <?php
     // Receive the participants data via POST
     $participantsData = json_decode(file_get_contents('php://input'), true);
-    $numPlayers = count($participantsData['participants']);
+    $numPlayers = count($participantsData);
 
     // Set players' names based on participants
     $players = [];
-    foreach ($participantsData['participants'] as $index => $participant) {
+    foreach ($participantsData as $participant) {
         $players[] = $participant['firstName'] . ' ' . $participant['lastName'];
     }
 
