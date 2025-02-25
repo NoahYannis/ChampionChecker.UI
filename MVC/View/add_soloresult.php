@@ -1,5 +1,6 @@
 <?php
-// Hier werden Einzelergebnisse angelegt. Nach Auswahl einer Station aus dem Select wird ein weiteres Formular für die Auswertung eingebunden.
+// Hier werden Einzelergebnisse angelegt. `
+//Nach Auswahl einer Station aus dem Select wird ein weiteres Formular für die Auswertung eingebunden.
 
 require '../../vendor/autoload.php'; // Lädt alle benötigten Klassen automatisch aus MVC-Ordner, siehe composer.json.
 
@@ -7,6 +8,7 @@ use MVC\Controller\CompetitionController;
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\UserController;
 use MVC\Model\CompetitionResult;
+use MVC\Model\CompetitionStatus;
 
 session_start();
 
@@ -104,6 +106,7 @@ include 'nav.php';
 		<h1>Einzelergebnisse eintragen</h1>
 	</header>
 
+	<!-- Stationsauswahl. Infos für JavaScript an die HTML-Optionen per Data-Attribut schreiben. -->
 	<div class="flex-container">
 		<select id="competitions">
 			<option selected disabled value="default">Station auswählen:</option>
@@ -115,13 +118,15 @@ include 'nav.php';
 					data-gender="<?= htmlspecialchars($comp->getIsMale() === true ? 'M' : ($comp->getIsMale() === false ? 'W' : 'N')) ?>"
 					data-participants="<?= htmlspecialchars(json_encode($comp->getStudentParticipants())) ?>"
 					data-info="<?= htmlspecialchars($comp->getAdditionalInfo()) ?>"
-					<?= (count($comp->getStudentParticipants()) == 0) ? 'disabled' : '' ?>>
+					<?= (count($comp->getStudentParticipants()) == 0
+						|| $comp->getStatus() == CompetitionStatus::Beendet) ? 'disabled' : '' ?>>
 					<?= htmlspecialchars($comp->getName()) ?>
 				</option>
 			<?php endforeach; ?>
 		</select>
 	</div>
 
+	<!-- Zeigt Infos über die ausgewählte Station an -->
 	<div id="competition-info-section" class="hidden">
 		<label>Stations-Informationen:</label>
 		<table id="info-table" class="table-style">
@@ -151,7 +156,7 @@ include 'nav.php';
 	<div id="result-form"></div> <!-- Hier wird nach Auswahl einer Option das Ergebnisformular angezeigt-->
 
 	<button id="submit-station" class="submit-station hidden">Station abschließen
-		<div class="spinner" id="spinner"></div>
+		<div id="submit-spinner" class="spinner hidden"></div>
 	</button>
 
 	<script>
@@ -160,6 +165,7 @@ include 'nav.php';
 		let resultForm = document.getElementById("result-form");
 		let competitionInfoTable = document.getElementById("info-table");
 		let separator = document.getElementById("horizontal-separator");
+		let submitSpinner = document.getElementById("submit-spinner");
 
 		compSelect.addEventListener("change", (event) => {
 			const selectedOption = event.target.selectedOptions[0];
@@ -191,7 +197,7 @@ include 'nav.php';
 					resultForm.innerHTML = html;
 					submitButton.classList.remove("hidden");
 					const formScript = resultForm.querySelector("script");
-					eval(formScript.textContent);
+					eval(formScript.textContent); // Script des eingebunden Formulars ausführen, u.A. um Handler zu registrieren.
 				})
 				.catch(error => console.error("Error loading form:", error));
 		}
@@ -199,9 +205,16 @@ include 'nav.php';
 
 		function updateCompetitionInfo(selectedOption) {
 			document.getElementById("comp-name").textContent = selectedOption.value;
-			document.getElementById("comp-time").textContent = new Date(selectedOption.dataset.time).toLocaleString('de-DE');
 			document.getElementById("comp-other").textContent = selectedOption.dataset.info;
 			document.getElementById("comp-gender").textContent = selectedOption.dataset.gender;
+			document.getElementById("comp-time").textContent = new Date(selectedOption.dataset.time).toLocaleString('de-DE', {
+				year: 'numeric',
+				month: '2-digit',
+				day: '2-digit',
+				hour: '2-digit',
+				minute: '2-digit',
+				timeZone: 'Europe/Berlin'
+			});
 
 			let participants = Object.values(JSON.parse(selectedOption.dataset.participants));
 			const participantsHTML = participants.map(p => {
@@ -235,7 +248,7 @@ include 'nav.php';
 				});
 			});
 
-			spinner.style.display = 'inline-block';
+			submitSpinner.style.display = 'inline-block';
 
 			try {
 				const response = await fetch('add_soloresult.php', {
@@ -252,10 +265,15 @@ include 'nav.php';
 					"Beim Auswerten der Station ist ein Fehler aufgetreten.";
 
 				alert(message);
+
+				if (data.success) {
+					fetch(`../../Helper/set_comp_completed.php?compId=${compId}`)
+						.catch(error => console.error("Fehler:", error));
+				}
 			} catch (error) {
 				console.error('Error:', error);
 			} finally {
-				spinner.style.display = 'none';
+				submitSpinner.style.display = 'none';
 			}
 		}
 	</script>

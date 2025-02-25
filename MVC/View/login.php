@@ -29,7 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
 include 'nav.php';
 ?>
 
@@ -68,7 +67,6 @@ include 'nav.php';
         </form>
 
         <div class="divider-container">
-            <hr class="divider">
             <span class="divider-text">Noch nicht registriert?</span>
         </div>
 
@@ -83,6 +81,7 @@ include 'nav.php';
         const passwordInput = document.getElementById("password");
         const togglePasswordIcon = document.getElementById('password-toggle');
 
+        // Passwort ein/ausblenden.
         togglePasswordIcon.addEventListener('click', function() {
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);

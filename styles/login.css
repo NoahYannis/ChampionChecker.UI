@@ -41,17 +41,6 @@ input[type="submit"] {
   margin: auto;
 }
 
-.divider-text {
-  position: absolute;
-  top: -0.625rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 0 0.625rem;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
 .btn-register {
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
@@ -108,11 +97,6 @@ input[type="submit"] {
   .divider-container {
     margin-top: 2.5rem;
     width: 50%;
-  }
-
-  .divider-text {
-    font-size: 1.25rem;
-    margin-bottom: 1.25rem;
   }
 
   button {

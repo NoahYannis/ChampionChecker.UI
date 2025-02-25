@@ -3,6 +3,7 @@ require '../../vendor/autoload.php';
 
 use MVC\Controller\UserController;
 use MVC\Controller\TeacherController;
+use MVC\Controller\ClassController;
 use MVC\Model\Teacher;
 use MVC\Model\Role;
 
@@ -43,13 +44,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $teacherController = TeacherController::getInstance();
 
+    // Cache zurücksetzen, damit beim nächsten Laden der Lehrerverwaltung der aktuelle Stand abgefragt wird.
+    unset($_SESSION['teachers']);
+    unset($_SESSION['overview_teachers_timestamp']);
+
     foreach ($teachersData as $data) {
+        $classes = [];
+
+        if (!empty($data['class1'])) {
+            $classModel = ClassController::getInstance()->getByName(strtoupper($data['class1']));
+            if ($classModel) {
+                $classes[$classModel->getId()] = strtoupper($classModel->getName());
+            }
+        }
+
+        if (!empty($data['class2'])) {
+            $classModel = ClassController::getInstance()->getByName(strtoupper($data['class2']));
+            if ($classModel) {
+                $classes[$classModel->getId()] = strtoupper($classModel->getName());
+            }
+        }
+
         $teacher = new Teacher(
             id: null, // wird von API gesetzt
             firstName: htmlspecialchars($data['firstName'], ENT_QUOTES, 'UTF-8'),
             lastName: htmlspecialchars($data['lastName'], ENT_QUOTES, 'UTF-8'),
             shortCode: htmlspecialchars($data['shortCode'], ENT_QUOTES, 'UTF-8'),
-            classes: null,
+            isParticipating: $data['isParticipating'] ?? false,
+            classes: $classes,
             additionalInfo: null
         );
 
@@ -65,10 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($importSuccess) {
         $response['message'] = 'Lehrer erfolgreich importiert.';
-        if (isset($_SESSION['teachers'])) {
-            unset($_SESSION['teachers']);
-            unset($_SESSION['overview_teachers_timestamp']);
-        }
     }
 
     echo $response['message'];

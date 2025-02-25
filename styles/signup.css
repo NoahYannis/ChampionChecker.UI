@@ -54,17 +54,6 @@ input[type="submit"] {
   margin: auto;
 }
 
-.divider-text {
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: white;
-  padding: 0 10px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
 input[type="password"].input-error {
   border-color: red;
 

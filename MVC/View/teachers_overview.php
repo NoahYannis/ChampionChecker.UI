@@ -1,4 +1,6 @@
 <?php
+// Lehrerverwaltung
+
 require '../../vendor/autoload.php';
 session_start();
 
@@ -229,7 +231,10 @@ include 'nav.php';
         <h1>Lehrerverwaltung</h1>
     </header>
 
+    <!-- Zeigt das Ergebnis von Speichervorgängen an. -->
     <div id="result-message" class="result-message hidden"></div>
+
+    <!-- Lehrer hinzufügen + Edit-Modus -->
     <div class="button-container">
         <button class="circle-button add-button" onclick="window.location.href='add_teachers_overview.php?mode=manual'">
             <i class="fas fa-plus"></i>
@@ -243,6 +248,7 @@ include 'nav.php';
         <div class="spinner" id="spinner"></div>
     </div>
 
+    <!-- Lehrer-Tabelle anzeigen -->
     <section>
         <?php printTeachers($teachers); ?>
     </section>
@@ -267,6 +273,7 @@ include 'nav.php';
             cancelButton.classList.toggle("hidden");
         });
 
+        
         document.querySelector('.cancel-button').addEventListener('click', function() {
             const confirmation = confirm('Alle Änderungen gehen verloren. Bearbeitung abbrechen?');
             if (confirmation) {
@@ -336,6 +343,7 @@ include 'nav.php';
                         </span>` :
                         "-";
                 }).join(' ');
+                cells[3].classList.add("td-edit"); // Klassenzuweisung für Mobile breiter machen.
 
                 if (isParticipating) {
                     addClassSelect(cells, classData, classes);
@@ -425,6 +433,7 @@ include 'nav.php';
                 cells[1].innerHTML = `<div class='td-content'>${firstName}</div>`;
                 cells[2].innerHTML = `<div class='td-content'>${shortCode}</div>`;
                 cells[3].innerHTML = `<div class='td-content'>${classElements}</div>`;
+                cells[3].classList.remove("td-edit");
                 cells[4].innerHTML = `<div class='td-content` + (additionalInfo === '-' ? ' empty' : '') + `'>${additionalInfo}</div>`;
                 cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isParticipating ? 'green' : 'red'}'></span></div>`;
             });

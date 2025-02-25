@@ -1,9 +1,8 @@
 :root {
-  --primary-color: #f8d294;
-
   /* Hamburger-Höhe = Höhe der Balken + Zwischenlücken */
   --hamburger-height: calc(var(--bar-height) * 3 + var(--hamburger-gap) * 2);
 
+  /* Weitere Hamburger-Menü-Eigenschaften */
   --bar-width: 40px;
   --bar-height: 6px;
   --hamburger-gap: 6px;
@@ -45,7 +44,7 @@
         font-size: clamp(1rem, 2vw, 1.2rem);
         text-decoration: none;
         font-weight: 500;
-        color: black;
+        color: var(--text-color);
         padding: 0.6125rem 1rem;
         word-break: break-word;
         transition: color 0.3s ease;
@@ -103,14 +102,14 @@
 
   a {
     display: block;
-    color: black;
+    color: var(--text-color);
   }
 
   .dropdown-menu {
     z-index: 1;
     display: none;
     position: absolute;
-    background-color: hsl(0, 0%, 95%);
+    background-color: var(--primary-color);
     box-shadow: 2px 2px 5px hsla(0, 0%, 0%, 0.8);
 
     li {
@@ -175,11 +174,12 @@
   }
 }
 
+/* Wird beim Klick auf das Profilbild angezeigt */
 .profile-menu {
   display: flex;
   flex-direction: column;
   position: absolute;
-  background-color: #ffffff;
+  background-color: var(--primary-color);
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   z-index: 1000;
@@ -195,7 +195,6 @@
     li {
       padding: 0.625rem 1rem;
       font-size: 1rem;
-      color: #333;
       cursor: pointer;
       border-bottom: 1px solid #ddd;
 
@@ -203,17 +202,17 @@
         font-size: 1rem;
         font-weight: bold;
         text-decoration: none;
-        color: black;
+        color: var(--text-color);
         padding: 0.625rem 1rem;
         display: block;
         width: 100%;
       }
 
       &:hover {
-        background-color: lightgray;
+        background-color: var(--primary-color-hover);
 
         a {
-          color: black;
+          color: var(--text-color);
         }
       }
     }
@@ -251,7 +250,7 @@
   content: "";
   width: var(--bar-width);
   height: var(--bar-height);
-  background-color: black;
+  background-color: var(--text-color);
   border-radius: 9999px;
   transform-origin: left center;
   transition: opacity var(--animation-timing), width var(--animation-timing),

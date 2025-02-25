@@ -29,7 +29,6 @@ $profileImageUrl = $isAuthenticated
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navigation</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet/less" type="text/css" href="../../styles/styles.less" />
     <link rel="stylesheet" type="text/css" href="../../styles/nav.css" />
@@ -45,7 +44,6 @@ $profileImageUrl = $isAuthenticated
                 <?php if (UserController::getInstance()->getRole()->value > 1): ?> <!-- Lehrkraft oder Admin -->
                     <li><a href="add_classresult.php">Klassenergebnis hinzufügen</a></li>
                     <li><a href="add_soloresult.php">Einzelergebnis hinzufügen</a></li>
-                    <hr />
                     <li><a href="competitions_overview.php">Stationenverwaltung</a></li>
                 <?php endif; ?>
 
@@ -60,6 +58,8 @@ $profileImageUrl = $isAuthenticated
             </ul>
         </div>
     </aside>
+
+    <!-- Navigationsleiste oben -->
     <nav class="nav-bar">
         <div class="hamburger-logo-group">
             <label class="hamburger-menu">
@@ -108,8 +108,8 @@ $profileImageUrl = $isAuthenticated
                         <a href="teachers_overview.php">Lehrer</a>
                         <ul class="dropdown-menu">
                             <li><a href="teachers_overview.php">Lehrerverwaltung</a></li>
-                            <li><a href="add_teachers_manual.php">Lehrer hinzufügen</a></li>
-                            <li><a href="import_teachers_csv.php">CSV-Import Lehrer</a></li>
+                            <li><a href="add_teachers_overview.php?mode=manual">Lehrer hinzufügen</a></li>
+                            <li><a href="add_teachers_overview.php?mode=csv">CSV-Import Lehrer</a></li>
                         </ul>
                     </li>
                 <?php endif; ?>
@@ -118,7 +118,7 @@ $profileImageUrl = $isAuthenticated
 
         <div class="profile" id="profile"
             style="background-image: url('<?= $profileImageUrl; ?>');"
-            data-content-initials="">
+            data-content-initials=":)"> <!-- Für Gast-Nutzer ":)" als Profil-Initialien anzeigen -->
         </div>
 
         <div class="profile-menu" id="profile-menu" style="display: none;">
@@ -127,11 +127,6 @@ $profileImageUrl = $isAuthenticated
                     <li>
                         <a href="#" onclick="logout()">
                             <i class="fas fa-sign-out-alt"></i> Ausloggen
-                        </a>
-                    </li>
-                    <li>
-                        <a href="#">
-                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
                         </a>
                     </li>
                 <?php else: ?>
@@ -145,31 +140,61 @@ $profileImageUrl = $isAuthenticated
                             <i class="fas fa-sign-in-alt"></i> Anmelden
                         </a>
                     </li>
-                    <li>
-                        <a href="#">
-                            <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
-                        </a>
-                    </li>
                 <?php endif; ?>
+                <li>
+                    <a href="#">
+                        <i class="<?php echo $icon; ?>"></i>Rolle: <?php echo $userRole->name; ?>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" id="theme-toggle">
+                        <i class="fas fa-sun"></i>Ansicht
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>
 </body>
 
 <script>
+    const body = document.querySelector("body");
     const profilePic = document.getElementById('profile');
     const profileMenu = document.getElementById('profile-menu');
     const hamburgerInput = document.getElementById('hamburger-input');
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const sideBar = document.querySelector('.sidebar');
 
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = themeToggle.querySelector('i');
+
     document.addEventListener("DOMContentLoaded", () => {
         const isAuthenticated = <?php echo json_encode($isAuthenticated); ?>;
 
+        // Profil-Initialien für autorisierte Nutzer setzen
         (isAuthenticated) && profilePic.setAttribute(
             'data-content-initials',
             localStorage.getItem("Initials") ?? ""
         );
+
+        // Ansichtspräferenz des Nutzers abfragen.
+        let darkMode = localStorage.getItem("darkmode");
+
+        // Beim ersten Öffnen ist hier noch nichts gesetzt => Systemeinstellungen abfragen.
+        if (!darkMode) {
+            darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches ? "enabled" : "disabled";
+        }
+
+        if (darkMode === "enabled") {
+            body.classList.add("darkmode");
+            themeIcon.classList.add("fa-moon");
+            themeIcon.classList.remove("fa-sun");
+        } else {
+            themeIcon.classList.add("fa-sun");
+            themeIcon.classList.remove("fa-moon");
+        }
+
+        // Präferenz im LocalStorage speichern.
+        localStorage.setItem("darkmode", darkMode);
     })
 
     // Sidebar bei Klick auf Hamburger-Icon toggeln
@@ -199,6 +224,13 @@ $profileImageUrl = $isAuthenticated
             hamburgerInput.checked = false;
             sideBar.classList.toggle("open");
         }
+    });
+
+    themeToggle.addEventListener('click', () => {
+        themeIcon.classList.toggle('fa-sun');
+        themeIcon.classList.toggle('fa-moon');
+        const isDark = body.classList.toggle("darkmode");
+        localStorage.setItem("darkmode", isDark ? "enabled" : "disabled");
     });
 
     function logout() {

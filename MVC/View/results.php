@@ -37,6 +37,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
         'message' => $patchResult ? 'Änderungen erfolgreich gespeichert.' : 'Einige Änderungen konnten nicht übernommen werden.'
     ];
 
+    if ($patchResult) {
+        unset($_SESSION['competitionResultsTimestamp']); // Home-Cache zurücksetzen, da sich Ergebnisse geändert haben.
+    }
+
     echo json_encode($response);
     exit;
 }
@@ -52,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
     $deleteResult = $compResController->delete($compResId);
 
     if ($deleteResult['success'] === true) {
+        unset($_SESSION['results_competitionResultsTimestamp']);
         echo json_encode(['success' => true, 'message' => 'Das Ergebnis wurde erfolgreich entfernt.']);
     } else {
         $errorMessage = addslashes(htmlspecialchars($deleteResult["error"], ENT_NOQUOTES, 'UTF-8'));
@@ -61,8 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
 }
 
 
-
-/** Gibt alle Klassen-Stationsergebnisse zurück. Als nächster Schritt sollen hier ebenfalls Schüler-Ergebnisse für Admin und Lehrkräfte angezeigt werden.
+/** Gibt alle Stationsergebnisse zurück. 
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
  * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
  */
@@ -91,6 +95,7 @@ function loadCompetitionResults($cacheDuration = 300): array
     $_SESSION['results_competitionResults_class'] = $classResults;
     $_SESSION['results_competitionResults_students'] = $studentResults;
     $_SESSION['results_competitionResultsTimestamp'] = time();
+    $_SESSION['results_competitionResults'] = $competitionResults;
 
     return $competitionResults;
 }
@@ -163,7 +168,7 @@ function printCompetitionResult()
     echo "</table>";
 
 
-    // Einzelergebnisse ab Rolle Lehrkraft sichtbar
+    // Einzelergebnisse nur ab Rolle Lehrkraft sichtbar
     if (UserController::getInstance()->getRole()->value > 1) {
         echo "<h2>Schüler-Ergebnisse:</h2>";
         echo "<table id='results-table-students' class='table-style'>";
@@ -171,7 +176,8 @@ function printCompetitionResult()
         echo "<tr>";
         echo "<th onclick='filterTable(0, \"results-table-students\")'>Station</th>";
         echo "<th onclick='filterTable(1, \"results-table-students\")'>Schüler</th>";
-        echo "<th onclick='filterTable(2, \"results-table-students\")'>Punkte</th>";
+        echo "<th onclick='filterTable(2, \"results-table-students\")'>Klasse</th>";
+        echo "<th onclick='filterTable(3, \"results-table-students\")'>Punkte</th>";
         echo "</tr>";
         echo "</thead>";
         echo "<tbody>";
@@ -184,6 +190,7 @@ function printCompetitionResult()
             $student = StudentController::getInstance()->getById($result->getStudentId());
             $studentName = $student ? "{$student->getFirstName()} {$student->getLastName()}" : "???";
             echo "<td>" . htmlspecialchars($studentName) . "</td>";
+            echo "<td>" . ClassController::getInstance()->getClassName($student->getClassId()) . "</td>";
             $pointsAchieved = htmlspecialchars($result->getPointsAchieved());
             echo "<td data-points=\"$pointsAchieved\"><span class=\"td-content\">$pointsAchieved</span></td>";
             echo "</tr>";
@@ -235,7 +242,7 @@ include 'nav.php';
     <script>
         let sortDirections = {};
         let isEditing = false;
-        let storedValues = [];
+        let storedValues = new Map();
         let changedScores = [];
         let pointsCells = document.querySelectorAll('td[data-points]');
 
@@ -288,10 +295,12 @@ include 'nav.php';
             let deleteHeaderStudents = document.createElement("th");
 
             pointsCells.forEach(cell => {
+                const row = cell.parentElement;
                 const currentPoints = cell.dataset.points;
-                const rowIndex = cell.parentElement.rowIndex;
                 const compResId = cell.parentElement.querySelector("td[data-id]").dataset.id;
-                storedValues[rowIndex] = [compResId, currentPoints];
+
+                storedValues.set(row, [compResId, currentPoints]); // Zu jeder Zeile die Stations-ID und Punktzahl speichern.
+
                 cell.innerHTML = `<input type="text" value="${currentPoints}" class="edit-input" maxlength="2">`;
 
                 let deleteColumn = document.createElement("td");
@@ -305,7 +314,8 @@ include 'nav.php';
                 deleteButton.addEventListener('click', () => {
                     const confirmation = confirm('Sind Sie sicher, dass Sie dieses Ergebnis löschen möchten?');
                     if (confirmation) {
-                        deleteCompResult(compResId, cell.parentElement.rowIndex);
+                        const table = cell.closest('table');
+                        deleteCompResult(compResId, table, cell.parentElement.rowIndex);
                     }
                 });
             });
@@ -317,8 +327,14 @@ include 'nav.php';
 
         function exitEditState(wasCanceled = false) {
             pointsCells.forEach(cell => {
-                let storedValue = storedValues[cell.parentElement.rowIndex];
-                let storedScore = storedValues[cell.parentElement.rowIndex][1];
+                const row = cell.parentElement;
+                const storedValue = storedValues.get(row);
+
+                if (!storedValue) {
+                    return;
+                }
+
+                const storedScore = storedValue[1];
 
                 if (wasCanceled) {
                     cell.innerHTML = `<span>${storedScore}</span>`;
@@ -326,7 +342,7 @@ include 'nav.php';
                     const inputValue = cell.querySelector('input')?.value;
 
                     if (!wasCanceled && checkIfScoreWasModified(inputValue, storedValue)) {
-                        const compResId = cell.parentElement.querySelector("td[data-id]").dataset.id;
+                        const compResId = row.querySelector("td[data-id]").dataset.id;
                         const scoreData = {
                             compResId,
                             pointsAchieved: inputValue
@@ -339,14 +355,14 @@ include 'nav.php';
                 }
             });
 
-            storedValues = [];
+            storedValues.clear();
             headerRowClasses.querySelector("th:last-child").remove();
             headerRowStudents.querySelector("th:last-child").remove();
             document.querySelectorAll(".delete-button").forEach(b => b.parentElement.remove());
         }
 
 
-        async function deleteCompResult(compResId, rowIndex) {
+        async function deleteCompResult(compResId, table, rowIndex) {
             spinner.style.display = 'inline-block';
             editButton.disabled = true;
 
@@ -356,12 +372,15 @@ include 'nav.php';
                 });
 
                 const data = await response.json();
+
                 if (data.success) {
-                    const row = classResultTable.rows[rowIndex]; // TODO: Anpassen auf Einzelergebnisse
+                    const row = table.rows[rowIndex];
+
+                    // Gelöschte Zeile aus Tabelle und Cache entfernen.
                     if (row) {
+                        storedValues.delete(row);
                         row.remove();
                         pointsCells = document.querySelectorAll('td[data-points]');
-                        storedValues.splice(rowIndex, 1);
                     }
                 }
 
@@ -407,7 +426,6 @@ include 'nav.php';
 
 
         async function saveChangedScores(changedScores) {
-            console.log(changedScores);
             if (changedScores.length === 0) {
                 return;
             }
@@ -442,7 +460,7 @@ include 'nav.php';
         }
 
 
-        // Überprüft, ob eine Punktzahl bearbeitet wurde. storedScore[0] speichert die Wettbewerbs-ID, storedScore[1] den gecachten Wert dazu.
+        // Überprüft, ob eine Punktzahl bearbeitet wurde. storedScore[0] speichert die Stations-ID, storedScore[1] den gecachten Wert dazu.
         function checkIfScoreWasModified(inputValue, storedScore) {
             return inputValue !== storedScore[1];
         }

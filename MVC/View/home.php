@@ -8,12 +8,13 @@ include 'nav.php';
 use MVC\Controller\CompetitionResultController;
 use MVC\Controller\ClassController;
 use MVC\Controller\CompetitionController;
+use MVC\Controller\StudentController;
 use MVC\Model\CompetitionResult;
 
 
 $classController = ClassController::getInstance();
 
-/** Gibt alle Klassenergebnisse zurück
+/** Gibt alle Klassen- und Einzelergebnisse zurück.
  * @param int $cacheDuration Die Dauer (in Sekunden), für die die Ergebnisse im Cache gehalten werden sollen. Standard ist 300 Sekunden.
  * @return CompetitionResult[] Ein Array von Wettbewerbsergebnissen.
  */
@@ -21,17 +22,11 @@ function loadCompetitionResults($cacheDuration = 300): array
 {
     if (isset($_SESSION['competitionResults']) && isset($_SESSION['competitionResultsTimestamp'])) {
         if ((time() - $_SESSION['competitionResultsTimestamp']) < $cacheDuration) {
-            return array_filter($_SESSION['competitionResults'], function ($result) {
-                return $result->getClassId() !== null;
-            });
+            return $_SESSION['competitionResults'];
         }
     }
 
     $competitionResults = CompetitionResultController::getInstance()->getAll();
-
-    $competitionResults = array_filter($competitionResults, function ($result) {
-        return $result->getClassId() !== null; 
-    });
 
     $_SESSION['competitionResults'] = $competitionResults;
     $_SESSION['competitionResultsTimestamp'] = time();
@@ -39,12 +34,20 @@ function loadCompetitionResults($cacheDuration = 300): array
     return $competitionResults;
 }
 
+// Addiert alle Klassenpunkte und die Ergebnisse ihrer Schüler auf.
 function aggregatePointsByClass($competitionResults)
 {
     $pointsByClass = [];
 
     foreach ($competitionResults as $result) {
         $classId = $result->getClassId();
+
+        if ($classId == null) // Einzelergebnis, daher Schülerklasse ermitteln
+        {
+            $student = StudentController::getInstance()->getById($result->getStudentId());
+            $classId = $student->getClassId();
+        }
+
         $points = $result->getPointsAchieved();
 
         // Punkte zur Gesamtpunktzahl für die Klasse addieren
@@ -63,7 +66,7 @@ function printCompetitionResult($competitionResults)
 {
     global $classController;
 
-    echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i:s', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
+    echo "<p class='timestamp-container'>Zuletzt aktualisiert: " . date('d.m.Y H:i', $_SESSION['competitionResultsTimestamp']) . "<br></p>";
 
     // Gesamtpunkte pro Klasse berechnen
     $pointsByClass = aggregatePointsByClass($competitionResults);
@@ -109,16 +112,19 @@ $competitionResults = loadCompetitionResults();
         <h1>Auswertung</h1>
     </header>
 
+    <!-- Anzeig Auswertungsfortschritt -->
     <div class="flex-container">
         <p id="evaluation-text"></p>
         <div id="evaluation-progressbar" class="progressbar hidden" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
         <div class="spinner" id="spinner"></div>
     </div>
 
+    <!-- Ergebnisanzeige -->
     <section>
         <?php printCompetitionResult($competitionResults); ?>
     </section>
 
+    <!-- Anzeige anstehende Stationen -->
     <section>
         <div class="flex-container">
             <h2>Anstehende Stationen</h2>
@@ -150,12 +156,12 @@ $competitionResults = loadCompetitionResults();
             try {
                 spinner.style.display = 'block';
                 const response = await fetch("../../Helper/get_comp_evaluation_progress.php").then(r => r.json());
-                const completed = response[0];
-                const total = response[1];
+                const completed = response[0]; // Abgeschlossene Stationen
+                const total = response[1]; // Insgesamte Stationsanzahl
                 const progress = Math.min(Math.round((completed / total) * 100), 100);
 
                 progressText.textContent = `Es wurden ${completed} von ${total} Stationen ausgewertet.`;
-                progressBar.style.setProperty('--value', progress);
+                progressBar.style.setProperty('--value', progress); // Custom CSS-Eigenschaft für Fortschritt der Progressbar
                 progressBar.setAttribute('aria-valuenow', progress);
                 progressBar.classList.remove('hidden');
             } catch (error) {
@@ -179,7 +185,14 @@ $competitionResults = loadCompetitionResults();
                     const dateCell = document.createElement('td');
 
                     nameCell.textContent = competition.name;
-                    dateCell.textContent = new Date(competition.date).toLocaleString('de-DE');
+                    dateCell.textContent = new Date(competition.date).toLocaleString('de-DE', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        timeZone: 'Europe/Berlin'
+                    });
 
                     row.appendChild(nameCell);
                     row.appendChild(dateCell);

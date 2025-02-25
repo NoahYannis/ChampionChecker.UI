@@ -1,4 +1,5 @@
 <?php
+// Standard-Formular für die meisten Stationen bis auf Tischtennis (tournament_form).
 
 require '../../../vendor/autoload.php';
 
@@ -6,7 +7,7 @@ use MVC\Controller\ClassController;
 use MVC\Controller\StudentController;
 
 
-$inputJSON = file_get_contents('php://input');
+$inputJSON = file_get_contents('php://input'); // Schüler-Daten kommen aus add_soloresult
 $studentParticipants = json_decode($inputJSON, true);
 
 function getStudentClassName($id)
@@ -21,11 +22,11 @@ function getStudentClassName($id)
 
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="../../../styles/solo_results.css" />
     <title>Stationsauswertung</title>
 </head>
 
 <body>
+    <!-- Auswahl der Versuchsanzahl und Messungseinheit -->
     <div class="flex-container row">
         <div>
             <label for="attempts-selection">Versuche:</label>
@@ -52,6 +53,7 @@ function getStudentClassName($id)
         </div>
     </div>
 
+    <!-- Eintragung der Schüler-Versuchsergebnisse -->
     <table id="attempt-table" class="table-style">
         <thead>
             <tr>
@@ -83,6 +85,7 @@ function getStudentClassName($id)
 
     <h2>Auswertung:</h2>
 
+    <!-- Automatisch, basierend auf Ergebnissen generierte Auswertungstabelle -->
     <table id="evaluation-table" class="table-style">
         <thead>
             <tr>
@@ -107,13 +110,15 @@ function getStudentClassName($id)
 
         let evaluationTableBody = document.querySelector("#evaluation-table tbody");
 
-        let pointsDistribution = [7, 5, 4, 3, 2, 1];
+        let pointsDistribution = [7, 5, 4, 3, 2, 1]; // 1.Platz = 7P, 2.Platz = 5P ...
         let unit = "p"; // Punkte
 
 
-        // Standardmäß ein Versuch pro Schüler
+        // Standardmäß ein Versuchsfeld pro Schüler anzeigen
         displayAttemptInputs(1);
         updateEvaluationTable();
+
+        window.addEventListener("resize", updateFlexContainerLayout);
 
         attemptsSelection.addEventListener("change", () => {
             let count = attemptsSelection.selectedOptions[0].value;
@@ -132,7 +137,6 @@ function getStudentClassName($id)
                 let currentInputs = cell.querySelectorAll("input");
                 let inputCount = currentInputs.length;
 
-
                 while (inputCount > count) {
                     cell.removeChild(cell.lastChild);
                     inputCount--;
@@ -140,7 +144,9 @@ function getStudentClassName($id)
 
                 while (inputCount < count) {
                     let flexContainer = document.createElement("div");
-                    flexContainer.classList.add("flex-container", "row");
+
+                    // Je nach Viewport-Breite die Label über oder neben das Versuchsinput platzieren.
+                    flexContainer.classList.add("flex-container", window.matchMedia("(max-width: 37rem)").matches ? "column" : "row");
 
                     let label = document.createElement("label");
                     label.textContent = (inputCount + 1) + ". Versuch:";
@@ -196,6 +202,7 @@ function getStudentClassName($id)
 
             let bestAttemptInput;
 
+            // Bei Punkten und Meter gewinnt der größere Wert, bei Zeiten der kleinere.
             if (unit === "z") {
                 bestAttemptInput = attemptInputs.reduce((best, input) => {
                     let [bestMinutes, bestSeconds] = best.value.split(":").map(Number);
@@ -258,6 +265,14 @@ function getStudentClassName($id)
                     <td>${result.result}</td>
                     <td>${pointsDistribution[index] || 0}</td>
                 `;
+            });
+        }
+
+        // Anordnung der Versuchszeile anpassen wenn sich die Viewport-Breite ändert.
+        function updateFlexContainerLayout() {
+            attemptTable.querySelectorAll(".flex-container").forEach(fc => {
+                fc.classList.toggle("row", !window.matchMedia("(max-width: 37rem)").matches);
+                fc.classList.toggle("column", window.matchMedia("(max-width: 37rem)").matches);
             });
         }
     </script>

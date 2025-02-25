@@ -73,7 +73,7 @@ include 'nav.php';
                     <span id="password-toggle" class="fa fa-fw fa-eye toggle-password-icon"></span>
                 </div>
 
-                <!-- Enthält die Passwort-Anforderungen -->
+                <!-- Passwort-Anforderungen -->
                 <div id="check-container" class="password-check-container hidden">
                     <div class="password-check-row">
                         <span id="uppercase-check" class="password-check-icon">
@@ -114,7 +114,6 @@ include 'nav.php';
         </form>
 
         <div class="divider-container">
-            <hr class="divider">
             <span class="divider-text">Bereits registriert?</span>
         </div>
 

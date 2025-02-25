@@ -156,8 +156,13 @@ include 'nav.php';
         <h1>Schülerübersicht</h1>
     </header>
 
+    <!-- Zeigt das Ergebnis des Speichervorgangs an. -->
     <div id="result-message" class="result-message hidden"></div>
+
+    <!-- Zeigt den Zeitpunkt der letzten Cache-Aktualisierung an -->
     <div id="timestamp-container" class="timestamp-container"></div>
+
+    <!-- Neue Schüler Anlegen + Edit-Button -->
     <div class="button-container">
         <button title="Neue Schüler im CSV-Format importieren" class="circle-button add-button" onclick="window.location.href='import_students_csv.php'">
             <i class="fas fa-plus"></i>
@@ -232,6 +237,8 @@ include 'nav.php';
                         name: element.textContent.trim()
                     }));
 
+
+                // Status Schüleranmeldung
                 let isRegistrationFinalized = cells[5].querySelector(".status-circle.green") !== null;
 
                 // Werte zwischenspeichern, falls die Bearbeitung abgebrochen wird.
@@ -261,6 +268,7 @@ include 'nav.php';
 
                 let competitionSelect = createCompetitionSelect(allCompetitions, cells[4]);
                 cells[4].appendChild(competitionSelect);
+                cells[4].classList.add("td-big"); // Zeile breiter machen für Mobile
             });
         }
 
@@ -307,9 +315,8 @@ include 'nav.php';
                         </span>`;
                     }).join(' ');
 
-
+                cells[4].classList.remove("td-big");
                 cells[5].innerHTML = `<div class='td-content'><span class='status-circle ${isRegistrationFinalized ? 'green' : 'red'}'></span></div>`;
-
             });
 
             storedValues = [];
@@ -378,6 +385,7 @@ include 'nav.php';
 
         async function generateStudentTable(studentJSON) {
             let timeStamp = "<?php echo isset($_SESSION['overview_students_timestamp']) ? date('d.m.Y H:i:s', $_SESSION['overview_students_timestamp']) : ''; ?>";
+            studentJSON = Array.isArray(studentJSON) ? studentJSON : Object.values(studentJSON);
 
             if (timeStamp) {
                 document.getElementById('timestamp-container').innerHTML = `<p>Zuletzt aktualisiert: ${timeStamp}</p>`;
@@ -508,7 +516,7 @@ include 'nav.php';
             if (isEditing) {
                 return;
             }
-            
+
             // Richtung togglen
             sortDirections[columnIndex] = sortDirections[columnIndex] === "asc" ? "desc" : "asc";
             let sortOrder = sortDirections[columnIndex];
@@ -523,6 +531,7 @@ include 'nav.php';
         }
 
 
+        // Namensabzeichen bei Änderung des Selects hinzufügen oder entfernen.
         function toggleCompetitionBadge(competitions, competitionSelect, selectedOptions, previousSelectedOptions, participantCell) {
             competitions.forEach(comp => {
                 const option = competitionSelect.querySelector(`option[value="${comp.name}"]`);

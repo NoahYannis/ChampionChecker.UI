@@ -82,9 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
                 'N' => null,
                 default => null,
             },
-            date: DateTime::createFromFormat("Y-m-d\TH:i:s", $data['date']),
+            date: DateTime::createFromFormat("Y-m-d\TH:i", $data['date']),
             refereeId: 0,
-            referee: null, // TODO: Nur ID übergeben
             status: CompetitionStatus::fromString($data['state']),
             additionalInfo: trim($data['additionalInfo'])
         );
@@ -111,6 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     exit;
 }
 
+// Liefert eine Auflistung aller Schüler mit ID als Key, und Name als Value
 function getStudentDictionary(array $studentIds): array
 {
     global $studentController;
@@ -130,6 +130,8 @@ function getStudentDictionary(array $studentIds): array
     return $studentDictionary;
 }
 
+
+// Liefert eine Auflistung aller Klassen mit ID als Key und Name als Value
 function getClassDictionary(array $classIds): array
 {
     global $classController;
@@ -185,8 +187,13 @@ include 'nav.php';
         <h1>Stationenverwaltung</h1>
     </header>
 
+    <!-- Anzeige für Ergebnis von Speichervorgängen -->
     <div id="result-message" class="result-message hidden"></div>
+
+    <!-- Zeigt den Zeitpunkt der letzten Aktualisierung der Daten an -->
     <div id="timestamp-container" class="timestamp-container"></div>
+
+    <!-- Bearbeiten/Speichern und Abbrechen-Button -->
     <div class="button-container">
         <button class="circle-button edit-button" id="edit-button">
             <i class="fas fa-pencil-alt"></i>
@@ -299,7 +306,6 @@ include 'nav.php';
                     day: '2-digit',
                     hour: '2-digit',
                     minute: '2-digit',
-                    second: '2-digit',
                     timeZone: 'Europe/Berlin'
                 }).format(date);
                 dateCell.textContent = formattedDate;
@@ -345,6 +351,12 @@ include 'nav.php';
 
             rows = Array.from(tbody.getElementsByTagName("tr"));
             table.appendChild(tbody);
+
+            // Stationsleiter-Zelle ausblenden, da Speichern und Ändern nicht implementiert.
+            table.querySelectorAll("th:nth-child(3), td:nth-child(3)").forEach(cell => {
+                cell.classList.add("hidden");
+            });
+
             document.querySelector('section').appendChild(table);
         }
 
@@ -672,7 +684,7 @@ include 'nav.php';
 
 
         function createISODateValueFromString(dateTimeString) {
-            // Anzeigeformat: 09.10.24, 20:13:29 (dd-mm-yyyy)
+            // Anzeigeformat: 09.10.24, 20:13 (dd-mm-yyyy)
             // Nötiges Format für datetime-local input: yyyy-MM-ddThh:mm
             let dateParts = dateTimeString.split(",").map(part => part.trim());
             let date = dateParts[0];
@@ -919,7 +931,6 @@ include 'nav.php';
                         nameBadge.remove();
                     }
                 }
-
             });
         }
     </script>

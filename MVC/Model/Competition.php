@@ -41,7 +41,6 @@ class Competition implements JsonSerializable
         private ?bool $isMale = null,
         private $date = null,
         private ?int $refereeId = null,
-        private ?Referee $referee = null,
         private CompetitionStatus $status = CompetitionStatus::Geplant,
         private ?string $additionalInfo = null,
     ) {
@@ -59,7 +58,6 @@ class Competition implements JsonSerializable
             'isMale' => $this->isMale,
             'date' => $this->date ? $this->date->format(DateTime::ATOM) : null,
             'refereeId' => $this->refereeId,
-            'referee' => $this->referee,
             'status' => $this->status->name,
             'additionalInfo' => $this->additionalInfo
         ];
@@ -149,16 +147,6 @@ class Competition implements JsonSerializable
     public function setRefereeId(?int $refereeId): void
     {
         $this->refereeId = $refereeId;
-    }
-
-    public function getReferee(): ?Referee
-    {
-        return $this->referee;
-    }
-
-    public function setReferee(?Referee $referee): void
-    {
-        $this->referee = $referee;
     }
 
     public function getStatus(): CompetitionStatus

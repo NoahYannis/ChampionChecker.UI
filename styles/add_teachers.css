@@ -15,6 +15,7 @@
   margin-bottom: 0.5rem;
 }
 
+/* Toggle zwischen manuellem Hinzufügen oder CSV-Import */
 .add-teacher-toggle {
   input[type="checkbox"]:checked + .slider {
     background-color: lightgreen;
