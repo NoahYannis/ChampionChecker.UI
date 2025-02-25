@@ -164,13 +164,17 @@ include 'nav.php';
 		compSelect.addEventListener("change", (event) => {
 			const selectedOption = event.target.selectedOptions[0];
 			const mode = selectedOption.dataset.mode;
-			loadResultFormView(mode);
+			
+			// Parse the participants data
+			const participants = JSON.parse(selectedOption.dataset.participants);
+			
+			loadResultFormView(mode, participants);
 			updateCompetitionInfo(selectedOption);
 		});
 
 		submitButton.addEventListener("click", async () => await submitStationResults());
 
-		function loadResultFormView(mode) {
+		function loadResultFormView(mode, participants) {
 			let url = mode === "tournament" ?
 				"solo_result_forms/tournament_form.php" :
 				"solo_result_forms/competition_form.php";
@@ -180,7 +184,7 @@ include 'nav.php';
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: compSelect.selectedOptions[0].dataset.participants
+					body: JSON.stringify({ participants: participants }) 
 				})
 				.then(response => response.text())
 				.then(html => {
