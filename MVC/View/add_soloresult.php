@@ -173,7 +173,6 @@ include 'nav.php';
 			
 			// Parse the participants data
 			const participants = JSON.parse(selectedOption.dataset.participants);
-			
 			loadResultFormView(mode, participants);
 			updateCompetitionInfo(selectedOption);
 		});
@@ -185,12 +184,18 @@ include 'nav.php';
 				"solo_result_forms/tournament_form.php" :
 				"solo_result_forms/competition_form.php";
 
+			let participantArray = Object.entries(participants).map(([id, data]) => ({
+				id,
+				firstName: data.firstName,
+				lastName: data.lastName
+			}));
+
 			fetch(url, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify({ participants: participants }) 
+					body: JSON.stringify({ participants: participantArray }) 
 				})
 				.then(response => response.text())
 				.then(html => {
@@ -237,9 +242,13 @@ include 'nav.php';
 			let resultsToCreate = [];
 			let compId = compSelect.selectedOptions[0].dataset.id;
 
+			console.log(evaluationTableRows);
+			console.log(compId);
 			evaluationTableRows.forEach(row => {
 				let studentId = row.querySelector("td:first-child").dataset.id;
 				let pointsAchieved = row.querySelector("td:nth-child(6)").textContent;
+				console.log(studentId);
+				console.log(pointsAchieved);
 
 				resultsToCreate.push({
 					compId: compId,

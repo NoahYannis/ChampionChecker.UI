@@ -38,11 +38,13 @@
     // Receive the participants data via POST
     $participantsData = json_decode(file_get_contents('php://input'), true);
     $numPlayers = count($participantsData['participants']);
+    $playerID = [];
 
     // Set players' names based on participants
     $players = [];
     foreach ($participantsData['participants'] as $index => $participant) {
         $players[] = $participant['firstName'] . ' ' . $participant['lastName'];
+        $playerID[] =  $participant['id']; // Store player ID
     }
 
     // create an array to later check for name changes
@@ -86,7 +88,7 @@
 
     <!-- Region Tischtennis weiblich -->
     <table>
-        <caption>Tischtennis Turnier (Weiblich) bis 11 P.; 2 P. Abstand; Jeder gegen Jeden</caption>
+        <caption>Tischtennis Turnier bis 11 P.; 2 P. Abstand; Jeder gegen Jeden</caption>
         
         <?php foreach ($matches as $match): ?>
             <tr class="match-row" data-player1="<?= $match['player1'] ?>" data-player2="<?= $match['player2'] ?>">
@@ -110,7 +112,8 @@
         <caption>Endergebnis (Sieg 2P. Unentschieden 1P.)</caption>
         <thead>
             <tr>
-                <th>NR</th>
+                <th>Schüler ID</th>
+                <th>Schüler ID</th>
                 <th colspan="2">Name</th>
                 <th>Punkte</th>
                 <th>kl. Punkte</th>
@@ -121,8 +124,9 @@
         <tbody>
             <?php for ($i = 1; $i <= $numPlayers; $i++): ?>
                 <tr class="result-row" data-player-id="<?= $i ?>" dataplayer="<?= $player[$i] ?>">
-                    <td><?= $i ?>.</td>
-                    <td colspan="2"><?= isset($players[$i - 1]) ? $players[$i - 1] : "" ?>
+                <td><?= $playerID[$i - 1] ?></td>
+                <td><?= $playerID[$i - 1] ?></td>
+                <td colspan="2"><?= isset($players[$i - 1]) ? $players[$i - 1] : "" ?>
                     </td>
                     <td><input type="text" class="total-points" style="width: 70px; text-align: right;" maxlength="3" required /></td>
                     <td><input type="text" class="small-points" style="width: 70px; text-align: right;" maxlength="3" required /></td>
@@ -209,11 +213,6 @@
             row.querySelector('.small-points').value = playerPoints[playerId].smallPoints;
         });
 
-        // After updating total points and small points, calculate ranks and extra points
-        calculateRankings();
-    }
-
-    function calculateRankings() {
         // Create an array of players with their data
         const players = [];
         document.querySelectorAll('.result-row').forEach(row => {
