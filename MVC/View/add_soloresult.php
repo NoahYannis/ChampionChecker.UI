@@ -170,32 +170,21 @@ include 'nav.php';
 		compSelect.addEventListener("change", (event) => {
 			const selectedOption = event.target.selectedOptions[0];
 			const mode = selectedOption.dataset.mode;
-			
-			// Parse the participants data
-			const participants = JSON.parse(selectedOption.dataset.participants);
-			loadResultFormView(mode, participants);
+			loadResultFormView(mode);
 			updateCompetitionInfo(selectedOption);
 		});
 
 		submitButton.addEventListener("click", async () => await submitStationResults());
 
-		function loadResultFormView(mode, participants) {
-			let url = mode === "tournament" ?
-				"solo_result_forms/tournament_form.php" :
-				"solo_result_forms/competition_form.php";
-
-			let participantArray = Object.entries(participants).map(([id, data]) => ({
-				id,
-				firstName: data.firstName,
-				lastName: data.lastName
-			}));
+		function loadResultFormView(mode) {
+			let url = `solo_result_forms/${mode}_form.php`;
 
 			fetch(url, {
 					method: "POST",
 					headers: {
 						"Content-Type": "application/json"
 					},
-					body: JSON.stringify({ participants: participantArray }) 
+					body: compSelect.selectedOptions[0].dataset.participants
 				})
 				.then(response => response.text())
 				.then(html => {
@@ -244,15 +233,16 @@ include 'nav.php';
 
 			evaluationTableRows.forEach(row => {
 				let studentId = row.querySelector("td:first-child").dataset.id;
-				let pointsAchieved = row.querySelector("td:nth-child(6) input").value.trim();
-				console.log('Points Achieved:', pointsAchieved);
+				let pointsAchieved = row.querySelector("td[data-column='pointsAchieved']").textContent.trim();
 				resultsToCreate.push({
 					compId: compId,
 					studentId: studentId,
 					pointsAchieved: pointsAchieved
 				});
 			});
+
 			console.log(resultsToCreate);
+			return;
 
 			submitSpinner.style.display = 'inline-block';
 
@@ -272,9 +262,6 @@ include 'nav.php';
 					},
 					body: JSON.stringify(resultsToCreate)
 				});
-
-				const textResponse = await response.text(); // Read response as text
-console.log("Raw Response:", textResponse);
 
 				const data = await response.json();
 				let message = data.success ?

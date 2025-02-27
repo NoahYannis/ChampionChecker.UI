@@ -263,7 +263,7 @@ function getStudentClassName($id)
                     <td>${result.firstName}</td>
                     <td>${result.className}</td>
                     <td>${result.result}</td>
-                    <td>${pointsDistribution[index] || 0}</td>
+                    <td data-column="pointsAchieved">${pointsDistribution[index] || 0}</td>
                 `;
             });
         }
