@@ -128,7 +128,8 @@ function printCompetitionResult()
 
     echo "<div id='result-message' class='result-message hidden'></div>";
 
-    if (UserController::getInstance()->getRole() === Role::Admin) {
+    // Bearbeitung für Lehrer und Admins
+    if (UserController::getInstance()->getRole()->value > 1) { 
         echo
         '<div class="button-container">
         <button class="circle-button edit-button" id="edit-button">
