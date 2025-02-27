@@ -241,9 +241,6 @@ include 'nav.php';
 				});
 			});
 
-			console.log(resultsToCreate);
-			return;
-
 			submitSpinner.style.display = 'inline-block';
 
 			try {
