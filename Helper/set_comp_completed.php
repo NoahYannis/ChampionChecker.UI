@@ -7,7 +7,6 @@ use MVC\Controller\CompetitionController;
 
 $compId = $_GET['compId']; // Kommt aus add_soloresults.php
 
-return;
 if (empty($compId)) {
     die("Es wurde keine Stations-ID übermittelt");
 }

@@ -42,7 +42,7 @@
 
     // Set players' names based on participants
     $players = [];
-    foreach ($participantsData as $participant) {
+    foreach ($participantsData['participants'] as $participant) {
         $players[] = $participant['firstName'] . ' ' . $participant['lastName'];
         $playerID[] =  $participant['id']; // Store player ID
     }
@@ -86,7 +86,6 @@
     $matches = generateRoundRobinSchedule($numPlayers);
     ?>
 
-    <!-- Region Tischtennis weiblich -->
     <table>
         <caption>Tischtennis Turnier bis 11 P.; 2 P. Abstand; Jeder gegen Jeden</caption>
         
@@ -108,12 +107,11 @@
     </table>
 
     <!-- Region Endergebnis -->
-    <table class="table-style">
+    <table id="evaluation-table" class="table-style">
         <caption>Endergebnis (Sieg 2P. Unentschieden 1P.)</caption>
         <thead>
             <tr>
-                <th>Schüler ID</th>
-                <th>Schüler ID</th>
+                <th>Nr.</th>
                 <th colspan="2">Name</th>
                 <th>Punkte</th>
                 <th>kl. Punkte</th>
@@ -123,15 +121,16 @@
         </thead>
         <tbody>
             <?php for ($i = 1; $i <= $numPlayers; $i++): ?>
-                <tr class="result-row" data-player-id="<?= $i ?>" dataplayer="<?= $player[$i] ?>">
-                <td><?= $playerID[$i - 1] ?></td>
-                <td><?= $playerID[$i - 1] ?></td>
+                <tr class="result-row"  data-player-id="<?= $i ?>" dataplayer="<?= $players[$i - 1] ?>">
+                <td data-id="<?= $playerID[$i - 1] ?>"><?= $i ?>.</td>
                 <td colspan="2"><?= isset($players[$i - 1]) ? $players[$i - 1] : "" ?>
                     </td>
                     <td><input type="text" class="total-points" style="width: 70px; text-align: right;" maxlength="3" required /></td>
                     <td><input type="text" class="small-points" style="width: 70px; text-align: right;" maxlength="3" required /></td>
                     <td><input type="text" name="platz_<?= $i ?>" style="width: 70px; text-align: right;" maxlength="2" /></td>
-                    <td><input type="text" name="extra_punkte_<?= $i ?>" style="width: 70px; text-align: right;" maxlength="2" /></td>
+                    <td>
+                        <input type="text" name="extra_punkte_<?= $i ?>" style="width: 70px; text-align: right;" maxlength="2" />
+                    </td>
                 </tr>
             <?php endfor; ?>
         </tbody>
@@ -269,6 +268,7 @@
             const row = document.querySelector(`.result-row[data-player-id="${player.playerId}"]`);
             row.querySelector('[name^="platz_"]').value = player.rank;
             row.querySelector('[name^="extra_punkte_"]').value = player.extraPoints;
+            console.log(row.querySelector('[name^="extra_punkte_"]').value);
         });
     }
 </script>

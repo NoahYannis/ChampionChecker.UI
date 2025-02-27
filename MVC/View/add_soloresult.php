@@ -179,7 +179,7 @@ include 'nav.php';
 
 		submitButton.addEventListener("click", async () => await submitStationResults());
 
-		function loadResultFormView(mode) {
+		function loadResultFormView(mode, participants) {
 			let url = mode === "tournament" ?
 				"solo_result_forms/tournament_form.php" :
 				"solo_result_forms/competition_form.php";
@@ -242,20 +242,17 @@ include 'nav.php';
 			let resultsToCreate = [];
 			let compId = compSelect.selectedOptions[0].dataset.id;
 
-			console.log(evaluationTableRows);
-			console.log(compId);
 			evaluationTableRows.forEach(row => {
 				let studentId = row.querySelector("td:first-child").dataset.id;
-				let pointsAchieved = row.querySelector("td:nth-child(6)").textContent;
-				console.log(studentId);
-				console.log(pointsAchieved);
-
+				let pointsAchieved = row.querySelector("td:nth-child(6) input").value.trim();
+				console.log('Points Achieved:', pointsAchieved);
 				resultsToCreate.push({
 					compId: compId,
 					studentId: studentId,
 					pointsAchieved: pointsAchieved
 				});
 			});
+			console.log(resultsToCreate);
 
 			submitSpinner.style.display = 'inline-block';
 
@@ -275,6 +272,9 @@ include 'nav.php';
 					},
 					body: JSON.stringify(resultsToCreate)
 				});
+
+				const textResponse = await response.text(); // Read response as text
+console.log("Raw Response:", textResponse);
 
 				const data = await response.json();
 				let message = data.success ?
