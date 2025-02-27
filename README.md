@@ -82,14 +82,15 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 ---
 
 ### Ergebnisse ansehen
-- Übersicht über alle Klassenergebnisse. Zusätzliche Anzeige aller Schüler-Ergebnisse für Lehrkräfte und Admins
-- Bearbeitungsmöglichkeit der Ergebnisse für Admins
+- Auf der Ergebnisseite werden alle Klassenergebnisse angezeigt. Lehrkräfte und Admins können zusätzlich Schüler-Ergebnisse einsehen
+- Admins können die Klassen- und Schülerergebnisse bearbeiten durch Klick auf den blauen Bearbeitungsbutton.
   ![Ergebnisse ansehen](resources/documentation-images/ergebnis-ansicht.png)
 
 ---
 
 ### Klassenergebnisse hinzufügen
-- Nach Auswahl der Station werden alle teilnehmenden Klassen der Station angezeigt.
+- Nach Auswahl der Station werden alle teilnehmenden Klassen der Station angezeigt. Stationen ohne Klassen sind deaktiviert.
+- Um ein Ergebnis hinzuzufügen wählen Sie die jeweilige Klasse aus und geben Sie die erreichte Punktzahl ein.
   ![Klassenergebnisse hinzufügen](resources/documentation-images/klassenpunkte-eintragen.png)
 
 ---
@@ -100,14 +101,17 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 
 - Die Anzahl der Versuche pro Schüler und die Mess-Einheit ist flexibel konfigurierbar
 - Bei Eingabe eines Werts wird der beste Schüler-Versuch automatisch ermittelt und hervorgehoben. Die Auswertung wird automatisch berechnet und bei Änderungen aktualisiert.
+- Bei Klick auf den "Station abschließen"-Button wird ein Hinweis angezeigt, dass die Vollständigkeit der Ergebnisse bestätigt werden soll
+- Erfolgreich ausgewertete Einzelstationen werden automatisch in der Stationenverwaltung auf "Beendet" gesetzt, wodurch der Auswertungsfortschritt direkt aktualisiert wird
   ![Einzelergebnisse Auswertung](resources/documentation-images/einzelergebnis-auswertung.png)
 
 ---
 
 ### Stationenverwaltung
-- Anzeige aller Stationen und Informationen darüber
-- Lehrkräfte können Teilnehmer, Status und Sonstige Notizen bearbeiten
-- Admin kann alle Daten ändern
+- Hier werden alle Informationen über die Stationen angezeigt
+- Bei Teamstationen werden die Klassennamen angezeigt, bei Einzelstationen die Schülernamen
+- Admins haben volle Bearbeitungsrechte, Lehrkräfte können Teilnehmer, Status und sonstige Notizen bearbeiten
+- Um eine Station zu bearbeiten klicken Sie auf den blauen Bearbeitungsbutton
   ![Stationenverwaltung](resources/documentation-images/stationsverwaltung.png)
   ![Stationenverwaltung Edit](resources/documentation-images/stationsverwaltung-edit.png)
 
@@ -136,6 +140,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 - Überblick über alle Lehrkräfte und deren Teilnahme am Sportfest
   ![Lehrerverwaltung](resources/documentation-images/lehrerverwaltung.png)
 - Neue Lehrer hinzufügen: Auswahl zwischen manueller Erstellung und CSV-Import analog zu Schüler-CSV-Import
+- Bei aktiver Teilnahme können dem Lehrer zwei Klassen zugewiesen werden
   ![Lehrer Hinzufügen](resources/documentation-images/lehrer-hinzufügen.png)
 
 ---

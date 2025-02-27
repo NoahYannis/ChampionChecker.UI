@@ -439,7 +439,6 @@ include 'nav.php';
 
                 const statusSelect = document.createElement("select");
                 statusSelect.id = "status-select";
-                statusSelect.disabled = !isAdmin;
 
                 let selectedOption = document.createElement("option");
                 selectedOption.textContent = state;

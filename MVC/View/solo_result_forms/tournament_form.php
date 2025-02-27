@@ -42,7 +42,7 @@
 
     // Set players' names based on participants
     $players = [];
-    foreach ($participantsData['participants'] as $index => $participant) {
+    foreach ($participantsData as $participant) {
         $players[] = $participant['firstName'] . ' ' . $participant['lastName'];
         $playerID[] =  $participant['id']; // Store player ID
     }

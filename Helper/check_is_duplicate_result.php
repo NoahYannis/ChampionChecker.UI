@@ -1,5 +1,5 @@
 <?php
-// Prüft, ob ein Klassenergebnis einer Klasse bei einer Station bereits existiert.
+// Prüft, ob ein Klassenergebnis oder Einzelergebnis bei einer Station bereits existiert.
 
 require_once '../vendor/autoload.php';
 
@@ -8,11 +8,16 @@ use MVC\Controller\CompetitionResultController;
 session_start();
 
 $currentCompResults = loadCompetitionResults();
-$selectedClass = $_SESSION['classresult_selectedClass'] ?? null;
-$selectedCompetition = $_SESSION['classresult_selectedCompetition'] ?? null;
 
-$duplicateResults = array_filter($currentCompResults, function ($comp) use ($selectedClass, $selectedCompetition) {
-    return $comp->getClassId() == $selectedClass->getId() && $comp->getCompetitionId() == $selectedCompetition->getId();
+$selectedClass = !isset($_GET['studentId']) ? $_SESSION['classresult_selectedClass'] : null; // Für Klassen
+$selectedStudent = $_GET['studentId'] ?? null; // Für Schüler
+
+$selectedCompetition = $_GET['compId'] ?? $_SESSION['classresult_selectedCompetition'] ?? null;
+
+$duplicateResults = array_filter($currentCompResults, function ($comp) use ($selectedClass, $selectedStudent, $selectedCompetition) {
+    return ($selectedClass && $comp->getClassId() == $selectedClass->getId()) || 
+           ($selectedStudent && $comp->getStudentId() == $selectedStudent) &&
+           $comp->getCompetitionId() == $selectedCompetition;
 });
 
 $isDuplicateResult = !empty($duplicateResults);
@@ -20,7 +25,6 @@ echo json_encode($isDuplicateResult);
 exit;
 
 
-// Lädt die Stationsergebnisse. Falls ein gültiges Cache besteht daraus, ansonsten aus der Datenbank.
 function loadCompetitionResults($cacheDuration = 300): array
 {
     // Gecachte Daten für die Dauer des Cache zurückgeben.
