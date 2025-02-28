@@ -63,6 +63,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 - Lehrkraft 🏫 → Kann zusätzlich zur allgemeinen Übersicht:
   - Alle Klassen- und Schüler-Ergebnisse einsehen
   - Neue Klassen- und Schüler-Ergebnisse eintragen
+  - Bestehende Ergebnisse korrigieren
   - Die Schülerübersicht abrufen und neue Schüler anlegen
   - Die Stationenübersicht einsehen und dort Teilnehmer setzen
 - Admin ⚙️ → Hat vollen Zugriff und kann alle Daten inklusive Lehrkräfte verwalten, bearbeiten und anpassen.
@@ -83,7 +84,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 
 ### Ergebnisse ansehen
 - Auf der Ergebnisseite werden alle Klassenergebnisse angezeigt. Lehrkräfte und Admins können zusätzlich Schüler-Ergebnisse einsehen
-- Admins können die Klassen- und Schülerergebnisse bearbeiten durch Klick auf den blauen Bearbeitungsbutton.
+- Lehrkräfte und Admins können die Klassen- und Schülerergebnisse bearbeiten durch Klick auf den blauen Bearbeitungsbutton.
   ![Ergebnisse ansehen](resources/documentation-images/ergebnis-ansicht.png)
 
 ---
@@ -99,7 +100,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 - Bei Auswahl einer Station werden Stations-Infos angezeigt
   ![Einzelergebnisse hinzufügen](resources/documentation-images/einzelergebnis-info.png)
 
-- Die Anzahl der Versuche pro Schüler und die Mess-Einheit ist flexibel konfigurierbar
+- Die Anzahl der Versuche pro Schüler und die Mess-Einheit ist flexibel konfigurierbar (Punkte, Meter, Zeit)
 - Bei Eingabe eines Werts wird der beste Schüler-Versuch automatisch ermittelt und hervorgehoben. Die Auswertung wird automatisch berechnet und bei Änderungen aktualisiert.
 - Bei Klick auf den "Station abschließen"-Button wird ein Hinweis angezeigt, dass die Vollständigkeit der Ergebnisse bestätigt werden soll
 - Erfolgreich ausgewertete Einzelstationen werden automatisch in der Stationenverwaltung auf "Beendet" gesetzt, wodurch der Auswertungsfortschritt direkt aktualisiert wird
@@ -129,7 +130,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 
 ### Schüler CSV-Import
 - Schüler lassen sich bequem über eine CSV-Datei ins System bringen
-- Anforderung an das CSV-Format wird im Import-Dialog angezeigt
+- Anforderungen an das CSV-Format werden im Import-Dialog angezeigt
 - Vorschau über zu importierende Schüler, Import bei Klick auf den Button
   ![Schüler CSV-Import](resources/documentation-images/csv-schüler.png)
 
@@ -140,7 +141,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 - Überblick über alle Lehrkräfte und deren Teilnahme am Sportfest
   ![Lehrerverwaltung](resources/documentation-images/lehrerverwaltung.png)
 - Neue Lehrer hinzufügen: Auswahl zwischen manueller Erstellung und CSV-Import analog zu Schüler-CSV-Import
-- Bei aktiver Teilnahme können dem Lehrer zwei Klassen zugewiesen werden
+- Bei aktiver Teilnahme können der Lehrkraft direkt bis zu zwei Klassen zugewiesen werden
   ![Lehrer Hinzufügen](resources/documentation-images/lehrer-hinzufügen.png)
 
 ---
