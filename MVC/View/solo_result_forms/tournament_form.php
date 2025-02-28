@@ -54,27 +54,26 @@
         $players = range(1, $numPlayers);
 
         if ($numPlayers % 2 == 1) {
-            $players[] = "BYE"; // Add a bye if odd number of players
+            $players[] = "BYE"; // füge ein bye hinzu, wenn es eine ungerade Anzahl an Spielern ist
             $numPlayers++;
         }
 
         $numRounds = $numPlayers - 1;
         for ($round = 0; $round < $numRounds; $round++) {
-            $roundMatches = []; // Reset the roundMatches array for each round
+            $roundMatches = []; // leere das roundMatches array für jede runde
             for ($i = 0; $i < $numPlayers / 2; $i++) {
                 $player1 = $players[$i];
                 $player2 = $players[$numPlayers - 1 - $i];
 
-                // Exclude matches involving "bye"
+                // ignoriere Runden mit "bye"
                 if ($player1 !== "BYE" && $player2 !== "BYE") {
                     $roundMatches[] = ['player1' => $player1, 'player2' => $player2];
                 }
             }
 
-            // Shuffle matches to prevent back-to-back same players if possible
+            // mische matches damit wenn möglich kein Spieler 2 mal hintereinander spielt
             shuffle($roundMatches);
             $schedule = array_merge($schedule, $roundMatches);
-            // Rotate players (except first player)
             array_splice($players, 1, 0, array_pop($players));
         }
 
@@ -159,7 +158,7 @@
 
         // Gültigkeit eingegebener Zahlen prüfen
         function validateNumber(input) {
-            input.value = input.value.replace(/\D/g, ''); // Remove non-numeric characters
+            input.value = input.value.replace(/\D/g, ''); // nicht numerische Werte entfernen
 
             // Bei über zwei Stellen diese kürzen
             if (input.value.length > 2) {
