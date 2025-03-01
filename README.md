@@ -36,13 +36,13 @@ Mit **ChampionChecker** wird das Sportfest einfacher, schneller und transparente
 
 ✅ **Effiziente Anmeldung & Verwaltung**
 - Schüler- und Lehrerdaten lassen sich per CSV-Import schnell hinzufügen.
-- Alle Informationen der Schüler, Lehrer und Stationen sind für authentifizierte Nutzer auf einen Blick sichtbar.
+- Einfache Übersicht über alle Schüler, Stationen und Lehrer für autorisierte Nutzer
 - Einfache Kollaboration zwischen Lehrkräften und Wettkampfleitung.
 
 ✅ **Bessere Planung & Steuerung**
 - Lehrkräfte, Schüler und Stationen können effizienter koordiniert werden.
 - Automatische Erkennung von Zeitkonflikten bei Schülerstationen für eine bessere Planung.
-- Flexible Anpassung der Stationsplanung jederzeit möglich.
+- Flexible Bearbeitung der Stationendaten jederzeit möglich.
 
 ---
 
@@ -64,9 +64,9 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
   - Alle Klassen- und Schüler-Ergebnisse einsehen
   - Neue Klassen- und Schüler-Ergebnisse eintragen
   - Bestehende Ergebnisse korrigieren
-  - Die Schülerübersicht abrufen und neue Schüler anlegen
+  - Die Schülerübersicht aufrufen und neue Schüler anlegen
   - Die Stationenübersicht einsehen und dort Teilnehmer setzen
-- Admin ⚙️ → Hat vollen Zugriff und kann alle Daten inklusive Lehrkräfte verwalten, bearbeiten und anpassen.
+- Admin ⚙️ → Hat vollen Zugriff und kann alle Daten inklusive Lehrkräfte verwalten.
 
 ![Auswertung](resources/documentation-images/profile.png)
 
@@ -78,6 +78,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 ### Auswertung
 - Anzeige des Auswertungsfortschritts und der aktuellen Platzierungen 
 - Anzeige der anstehenden Wettbewerbe
+  
   ![Auswertung](resources/documentation-images/auswertung.png)
 
 ---
@@ -85,6 +86,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 ### Ergebnisse ansehen
 - Auf der Ergebnisseite werden alle Klassenergebnisse angezeigt. Lehrkräfte und Admins können zusätzlich Schüler-Ergebnisse einsehen
 - Lehrkräfte und Admins können die Klassen- und Schülerergebnisse bearbeiten durch Klick auf den blauen Bearbeitungsbutton.
+  
   ![Ergebnisse ansehen](resources/documentation-images/ergebnis-ansicht.png)
 
 ---
@@ -92,18 +94,21 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 ### Klassenergebnisse hinzufügen
 - Nach Auswahl der Station werden alle teilnehmenden Klassen der Station angezeigt. Stationen ohne Klassen sind deaktiviert.
 - Um ein Ergebnis hinzuzufügen wählen Sie die jeweilige Klasse aus und geben Sie die erreichte Punktzahl ein.
+  
   ![Klassenergebnisse hinzufügen](resources/documentation-images/klassenpunkte-eintragen.png)
 
 ---
 
 ### Einzelergebnisse hinzufügen
 - Bei Auswahl einer Station werden Stations-Infos angezeigt
+  
   ![Einzelergebnisse hinzufügen](resources/documentation-images/einzelergebnis-info.png)
 
 - Die Anzahl der Versuche pro Schüler und die Mess-Einheit ist flexibel konfigurierbar (Punkte, Meter, Zeit)
-- Bei Eingabe eines Werts wird der beste Schüler-Versuch automatisch ermittelt und hervorgehoben. Die Auswertung wird automatisch berechnet und bei Änderungen aktualisiert.
-- Bei Klick auf den "Station abschließen"-Button wird ein Hinweis angezeigt, dass die Vollständigkeit der Ergebnisse bestätigt werden soll
-- Erfolgreich ausgewertete Einzelstationen werden automatisch in der Stationenverwaltung auf "Beendet" gesetzt, wodurch der Auswertungsfortschritt direkt aktualisiert wird
+- Bei Eingabe eines Werts wird der beste Versuch jedes Schülers automatisch ermittelt und hervorgehoben. Die Auswertung wird automatisch berechnet und bei Änderungen aktualisiert.
+- Bei Klick auf den "Station abschließen"-Button wird ein Hinweis angezeigt, dass die Vollständigkeit der Ergebnisse bestätigt werden soll.
+- Erfolgreich ausgewertete Einzelstationen werden automatisch als "Beendet" gekennzeichnet, wodurch der Auswertungsfortschritt direkt aktualisiert wird. Ausgewertete Einzelergebnisse fließen mit in die Auswertung   mit ein
+  
   ![Einzelergebnisse Auswertung](resources/documentation-images/einzelergebnis-auswertung.png)
 
 ---
@@ -113,6 +118,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 - Bei Teamstationen werden die Klassennamen angezeigt, bei Einzelstationen die Schülernamen
 - Admins haben volle Bearbeitungsrechte, Lehrkräfte können Teilnehmer, Status und sonstige Notizen bearbeiten
 - Um eine Station zu bearbeiten klicken Sie auf den blauen Bearbeitungsbutton
+  
   ![Stationenverwaltung](resources/documentation-images/stationsverwaltung.png)
   ![Stationenverwaltung Edit](resources/documentation-images/stationsverwaltung-edit.png)
 
@@ -124,6 +130,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 - Hinweis auf Zeitkonflikte bei Schüler-Stationen (rotes "!")
 - Information über Anmeldungsstand der Schüler (Zwischenstand oder offiziell)
 - Neue Schüler können über das "+" hinzugefügt werden (CSV-Import)
+  
   ![Schülerübersicht](resources/documentation-images/schülerübersicht.png)
 
 ---
@@ -132,6 +139,7 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 - Schüler lassen sich bequem über eine CSV-Datei ins System bringen
 - Anforderungen an das CSV-Format werden im Import-Dialog angezeigt
 - Vorschau über zu importierende Schüler, Import bei Klick auf den Button
+
   ![Schüler CSV-Import](resources/documentation-images/csv-schüler.png)
 
 ---
@@ -139,19 +147,22 @@ Um Daten zu ändern oder geschützte Informationen zu sehen, ist eine Anmeldung 
 ### Lehrerverwaltung
 - Zugriff nur für Administratoren
 - Überblick über alle Lehrkräfte und deren Teilnahme am Sportfest
+  
   ![Lehrerverwaltung](resources/documentation-images/lehrerverwaltung.png)
+
 - Neue Lehrer hinzufügen: Auswahl zwischen manueller Erstellung und CSV-Import analog zu Schüler-CSV-Import
 - Bei aktiver Teilnahme können der Lehrkraft direkt bis zu zwei Klassen zugewiesen werden
+  
   ![Lehrer Hinzufügen](resources/documentation-images/lehrer-hinzufügen.png)
 
 ---
 
 ### Ansichtsmodus
 - Die Anwendung bietet einen Hell- und Dunkelmodus an, der flexibel umgeschaltet werden kann
+  
   ![Hellmodus](resources/documentation-images/lightmode.png)
   ![Dunkelmodus](resources/documentation-images/darkmode.png)
 
-- [Dynamischer Wechsel des Ansichtsmodus](resources/documentation-images/championchecker-view.mp4)
 
 ---
 
